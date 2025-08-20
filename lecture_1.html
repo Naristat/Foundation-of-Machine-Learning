@@ -2,40 +2,92 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Lecture 1 - Introduction</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lecture 1: Basic Matrix Theory</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #fafafa;
-      margin: 40px;
-      line-height: 1.6;
-    }
-    h1 {
-      color: #333;
-    }
-    a {
-      display: inline-block;
-      margin-top: 20px;
-      text-decoration: none;
-      color: #0077cc;
-      font-weight: bold;
-    }
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; background: #f9f9f9; }
+    h1, h2 { color: #2c3e50; }
+    .example { background: #ecf0f1; padding: 10px; border-left: 4px solid #3498db; margin: 15px 0; }
+    code { background: #eee; padding: 2px 6px; border-radius: 4px; }
+    .nav { margin-top: 30px; }
+    .nav a { margin-right: 15px; text-decoration: none; color: #3498db; }
   </style>
 </head>
 <body>
-  <h1>Lecture 1: Introduction</h1>
+
+  <h1>Lecture 1: Basic Matrix Theory</h1>
+
   <p>
-    Welcome to Lecture 1 of this series. In this session, we will cover the 
-    basics and set the foundation for the upcoming lectures.
+    In this lecture, we introduce the fundamental concepts of <strong>matrices</strong>. 
+    A matrix is a rectangular array of numbers arranged in rows and columns. 
+    Matrices are widely used in mathematics, statistics, data science, and machine learning.
   </p>
+
+  <h2>1. Definition of a Matrix</h2>
   <p>
-    Topics covered in this lecture:
-    <ul>
-      <li>Overview of the course</li>
-      <li>Key concepts and terminology</li>
-      <li>Structure of future lectures</li>
-    </ul>
+    A matrix with <em>m</em> rows and <em>n</em> columns is called an <em>m × n</em> matrix:
   </p>
-  <a href="index.html">⬅ Back to Lecture Index</a>
+  <div class="example">
+    A = 
+    <table border="1" cellpadding="6">
+      <tr><td>a<sub>11</sub></td><td>a<sub>12</sub></td><td>…</td><td>a<sub>1n</sub></td></tr>
+      <tr><td>a<sub>21</sub></td><td>a<sub>22</sub></td><td>…</td><td>a<sub>2n</sub></td></tr>
+      <tr><td>⋮</td><td>⋮</td><td>⋱</td><td>⋮</td></tr>
+      <tr><td>a<sub>m1</sub></td><td>a<sub>m2</sub></td><td>…</td><td>a<sub>mn</sub></td></tr>
+    </table>
+  </div>
+
+  <h2>2. Types of Matrices</h2>
+  <ul>
+    <li><strong>Row Matrix:</strong> A matrix with only one row.</li>
+    <li><strong>Column Matrix:</strong> A matrix with only one column.</li>
+    <li><strong>Square Matrix:</strong> A matrix with equal number of rows and columns.</li>
+    <li><strong>Diagonal Matrix:</strong> A square matrix where all off-diagonal elements are zero.</li>
+    <li><strong>Identity Matrix:</strong> A diagonal matrix with all diagonal entries equal to 1.</li>
+    <li><strong>Zero Matrix:</strong> A matrix where all elements are zero.</li>
+  </ul>
+
+  <h2>3. Matrix Operations</h2>
+  <p>Some basic operations on matrices include:</p>
+  <ul>
+    <li><strong>Addition:</strong> Matrices of the same size can be added by adding corresponding elements.</li>
+    <li><strong>Scalar Multiplication:</strong> Each element of a matrix is multiplied by a scalar.</li>
+    <li><strong>Transpose:</strong> The rows become columns and columns become rows.</li>
+    <li><strong>Matrix Multiplication:</strong> If A is (m × n) and B is (n × p), then AB is (m × p).</li>
+  </ul>
+
+  <div class="example">
+    Example: <br>
+    A = 
+    <table border="1" cellpadding="6">
+      <tr><td>1</td><td>2</td></tr>
+      <tr><td>3</td><td>4</td></tr>
+    </table>
+    <br>
+    B = 
+    <table border="1" cellpadding="6">
+      <tr><td>5</td><td>6</td></tr>
+      <tr><td>7</td><td>8</td></tr>
+    </table>
+    <p>A + B = 
+      <table border="1" cellpadding="6">
+        <tr><td>6</td><td>8</td></tr>
+        <tr><td>10</td><td>12</td></tr>
+      </table>
+    </p>
+  </div>
+
+  <h2>4. Applications of Matrices</h2>
+  <ul>
+    <li>Solving systems of linear equations</li>
+    <li>Transformations in computer graphics</li>
+    <li>Representation of data in statistics</li>
+    <li>Modeling in machine learning and AI</li>
+  </ul>
+
+  <div class="nav">
+    <a href="lecture2.html">Next Lecture →</a>
+  </div>
+
 </body>
 </html>
