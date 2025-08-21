@@ -68,6 +68,32 @@
   </style>
 </head>
 <body>
+
+   <!-- Bio Section -->
+  <div class="bio">
+    <h2>👨‍🏫 About Me</h2>
+    <p>Hello! I'm <b>Your Name</b>, a research scholar and teacher in Statistics and Machine Learning.  
+       I created these lectures to make learning ML easier and more practical, with real-world applications.</p>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    👁️ Site Views: <span id="viewCount">0</span>
+  </footer>
+
+  <script>
+    // Simple Site View Counter (localStorage-based)
+    if (!localStorage.getItem("site_views")) {
+      localStorage.setItem("site_views", 1);
+    } else {
+      let count = parseInt(localStorage.getItem("site_views")) + 1;
+      localStorage.setItem("site_views", count);
+    }
+    document.getElementById("viewCount").textContent = localStorage.getItem("site_views");
+  </script>
+</body>
+</html>
+  
   <h1>📘 Fundamentals of Machine Learning - Lectures</h1>
   <div class="lectures">
     <!-- Lecture Links -->
