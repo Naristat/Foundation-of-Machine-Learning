@@ -1,12 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecture 12</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lecture 12: Linear and Non-Linear Programming</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; color: #333; }
+    h1, h2, h3 { color: #2c3e50; }
+    .example, .application { background: #eef; padding: 12px; margin: 15px 0; border-left: 5px solid #2980b9; }
+    .formula { font-family: 'Courier New', monospace; background: #fff; padding: 8px; display: inline-block; margin: 5px 0; }
+    ul { margin-left: 20px; }
+  </style>
 </head>
 <body>
-    <h1>Lecture 12</h1>
-    <p>Content for Lecture 12 will go here.</p>
+  <h1>Lecture 12: Linear Programming (LP) and Non-Linear Programming (NLP)</h1>
+
+  <h2>1. Introduction</h2>
+  <p>
+    Optimization is the process of finding the best solution (minimum or maximum) for a given objective function 
+    subject to certain constraints. 
+  </p>
+  <ul>
+    <li><b>Linear Programming (LP):</b> Optimization where both the objective function and constraints are linear.</li>
+    <li><b>Non-Linear Programming (NLP):</b> Optimization where objective function or constraints (or both) are non-linear.</li>
+  </ul>
+
+  <h2>2. Linear Programming (LP)</h2>
+  <p><b>General Form:</b></p>
+  <div class="formula">
+    Maximize (or Minimize): Z = c<sup>T</sup>x <br>
+    Subject to: A x ≤ b , x ≥ 0
+  </div>
+
+  <h3>Example of LP:</h3>
+  <div class="example">
+    Maximize profit: <b>Z = 40x + 30y</b><br>
+    Subject to:<br>
+    x + y ≤ 12<br>
+    2x + y ≤ 16<br>
+    x, y ≥ 0
+  </div>
+  <p>Here, x and y are decision variables, and constraints form a feasible region (polygon). The optimal solution lies on the boundary.</p>
+
+  <h3>Applications of LP:</h3>
+  <div class="application">
+    <ul>
+      <li>Resource allocation (production planning, diet problems)</li>
+      <li>Transportation and supply chain optimization</li>
+      <li>Portfolio optimization in finance</li>
+      <li>Scheduling and workforce management</li>
+    </ul>
+  </div>
+
+  <h2>3. Non-Linear Programming (NLP)</h2>
+  <p><b>General Form:</b></p>
+  <div class="formula">
+    Minimize (or Maximize): f(x) <br>
+    Subject to: g<sub>i</sub>(x) ≤ 0, h<sub>j</sub>(x) = 0
+  </div>
+
+  <h3>Example of NLP:</h3>
+  <div class="example">
+    Minimize: f(x, y) = x<sup>2</sup> + y<sup>2</sup> <br>
+    Subject to: x + y = 1, x ≥ 0, y ≥ 0
+  </div>
+  <p>Here, the objective is quadratic (non-linear), but the constraint is linear.</p>
+
+  <h3>Applications of NLP:</h3>
+  <div class="application">
+    <ul>
+      <li>Machine learning model training (loss minimization, e.g. logistic regression, neural networks)</li>
+      <li>Engineering design problems (non-linear stress, fluid dynamics)</li>
+      <li>Energy optimization (power flow problems)</li>
+      <li>Economics (utility maximization with non-linear functions)</li>
+    </ul>
+  </div>
+
+  <h2>4. Difference Between LP and NLP</h2>
+  <table border="1" cellpadding="8" cellspacing="0">
+    <tr><th>Aspect</th><th>Linear Programming (LP)</th><th>Non-Linear Programming (NLP)</th></tr>
+    <tr><td>Objective function</td><td>Linear</td><td>Non-linear</td></tr>
+    <tr><td>Constraints</td><td>Linear</td><td>Can be non-linear</td></tr>
+    <tr><td>Complexity</td><td>Relatively simple</td><td>Harder, may have local minima</td></tr>
+    <tr><td>Solution Methods</td><td>Simplex, Interior-point</td><td>Gradient descent, Newton, KKT conditions</td></tr>
+  </table>
+
+  <h2>5. Relevance in Machine Learning</h2>
+  <ul>
+    <li>LP is used in <b>Support Vector Machines (SVM)</b> for linear margin optimization.</li>
+    <li>NLP is used in <b>Neural Networks, Logistic Regression, Deep Learning</b> since loss functions are non-linear.</li>
+    <li>Regularization techniques (L1, L2) add linear or quadratic terms, connecting LP & NLP concepts.</li>
+  </ul>
+
+  <h2>6. Summary</h2>
+  <ul>
+    <li>LP deals with linear functions & constraints; efficient to solve.</li>
+    <li>NLP handles real-world complex scenarios where non-linearity appears.</li>
+    <li>Both are cornerstones of optimization in Machine Learning.</li>
+  </ul>
 </body>
 </html>
