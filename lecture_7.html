@@ -1,12 +1,371 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecture 7</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title> Lecture 7- Principal Component Analysis (PCA) — Intro, Example & ML Applications</title>
+  <style>
+    :root {
+      --bg: #0f172a;          /* slate-900 */
+      --panel: #111827;       /* gray-900 */
+      --muted: #94a3b8;       /* slate-400 */
+      --text: #e5e7eb;        /* gray-200 */
+      --accent: #38bdf8;      /* sky-400 */
+      --accent-2: #34d399;    /* emerald-400 */
+      --warn: #f59e0b;        /* amber-500 */
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+    * { box-sizing: border-box }
+    body {
+      margin: 0; padding: 40px 18px; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text); background: radial-gradient(1200px 600px at 75% -10%, rgba(56,189,248,.08), transparent), var(--bg);
+    }
+    .container { max-width: 1100px; margin: 0 auto; }
+    header { display: grid; gap: 14px; }
+    h1 { font-size: clamp(28px, 5vw, 46px); margin: 0; letter-spacing: .2px; }
+    p.lead { color: var(--muted); font-size: clamp(16px, 2.1vw, 18px); margin: 0 0 8px }
+
+    .grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 18px; align-items: stretch; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+    .card { background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.015)); border: 1px solid rgba(148,163,184,.15);
+      border-radius: var(--radius); box-shadow: var(--shadow); overflow: clip; }
+    .card h2 { margin: 0; padding: 18px 20px; font-size: 20px; border-bottom: 1px solid rgba(148,163,184,.12);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0)); }
+    .card .content { padding: 18px 20px 22px; line-height: 1.6 }
+    .badge { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: #0a0a0a; background: #e2f0ff; border-radius: 999px; padding: 6px 10px; }
+
+    code, kbd { background: rgba(2,6,23,.6); color: #e2e8f0; padding: 2px 6px; border-radius: 8px; border: 1px solid rgba(148,163,184,.2) }
+    .muted { color: var(--muted) }
+    ul { margin: 10px 0 0 18px }
+    li { margin: 6px 0 }
+
+    .controls { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+    .controls label { display: grid; gap: 8px; font-size: 13px; color: var(--muted) }
+    .controls input[type="range"], .controls select, .controls input[type="checkbox"] {
+      accent-color: var(--accent);
+    }
+    .row { display: flex; gap: 10px; align-items: center }
+    .btn { background: linear-gradient(180deg, rgba(56,189,248,.85), rgba(56,189,248,.7)); border: none; color: #063653; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-weight: 600; }
+    .btn.secondary { background: linear-gradient(180deg, rgba(148,163,184,.35), rgba(148,163,184,.2)); color: var(--text) }
+
+    .figure { position: relative; width: 100%; height: 460px; background: radial-gradient(600px 250px at 20% -40%, rgba(20,184,166,.06), transparent), rgba(2,6,23,.45); border-top: 1px solid rgba(148,163,184,.12); }
+    canvas { width: 100%; height: 100% }
+    .legend { position: absolute; right: 12px; bottom: 12px; display: grid; gap: 6px; font-size: 12px; }
+    .legend .item { display: inline-flex; gap: 6px; align-items: center }
+    .color { width: 14px; height: 14px; border-radius: 999px; }
+
+    footer { margin-top: 26px; color: var(--muted); font-size: 12px }
+    .apps { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+    @media (max-width: 680px){ .apps{ grid-template-columns: 1fr } }
+    .apps .app { background: rgba(2,6,23,.45); border: 1px dashed rgba(148,163,184,.25); border-radius: 14px; padding: 12px 12px 12px 14px }
+    .apps .app strong { color: var(--accent-2) }
+  </style>
 </head>
 <body>
-    <h1>Lecture 7</h1>
-    <p>Content for Lecture 7 will go here.</p>
+  <div class="container">
+    <header>
+      <div class="badge">📘 Machine Learning Concept — PCA</div>
+      <h1>Principal Component Analysis (PCA)</h1>
+      <p class="lead">Reduce dimensionality by finding new, orthogonal axes that capture the greatest variance in your data. Useful for visualization, compression, denoising, and as a preprocessing step for many ML models.</p>
+    </header>
+
+    <section class="grid" style="margin-top:18px">
+      <div class="card">
+        <h2>Intuition & Math</h2>
+        <div class="content">
+          <p><strong>Idea.</strong> PCA rotates your data into new coordinates (principal components) so that the first axis captures as much spread (variance) as possible, the second the next most, and so on. Components are orthogonal.</p>
+          <p><strong>Steps.</strong></p>
+          <ol>
+            <li>Standardize features (optional but common): subtract mean and divide by standard deviation.</li>
+            <li>Compute the covariance matrix <code>Σ = (1/(n−1)) X<sup>T</sup>X</code> for mean-centered data <code>X</code>.</li>
+            <li>Find eigenvalues/eigenvectors of <code>Σ</code>. Eigenvectors are principal directions; eigenvalues are the variance explained.</li>
+            <li>Sort by descending eigenvalue and project: <code>Z = X · W</code> where columns of <code>W</code> are top-k eigenvectors.</li>
+          </ol>
+          <p><strong>Explained variance ratio.</strong> For eigenvalues λ, <code>EVR<sub>i</sub> = λ<sub>i</sub> / Σλ</code>. Choose k such that cumulative EVR reaches your target (e.g., 95%).</p>
+          <p class="muted">Note: PCA is linear; it captures linear structure. For curved manifolds, consider Kernel PCA, t‑SNE, or UMAP.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Interactive Example (2D)</h2>
+        <div class="content">
+          <div class="controls" style="margin-bottom:12px">
+            <label>Dataset
+              <select id="preset">
+                <option value="rotated">Correlated, rotated ellipse</option>
+                <option value="two">Two clusters</option>
+                <option value="circle">Circle (no dominant direction)</option>
+              </select>
+            </label>
+            <label>Noise (σ)
+              <input type="range" id="noise" min="0" max="1" step="0.02" value="0.30" />
+            </label>
+            <label class="row"><input id="standardize" type="checkbox" checked /> Standardize features</label>
+            <div class="row">
+              <button class="btn" id="regen">Regenerate</button>
+              <button class="btn secondary" id="project">Project → 1D</button>
+            </div>
+          </div>
+          <div class="figure card" style="height: 360px; border: 1px solid rgba(148,163,184,.15);">
+            <canvas id="plot" width="900" height="360"></canvas>
+            <div class="legend">
+              <span class="item"><span class="color" id="c-data" style="background: #93c5fd"></span>Data</span>
+              <span class="item"><span class="color" id="c-pc1" style="background: #34d399"></span>PC1</span>
+              <span class="item"><span class="color" id="c-pc2" style="background: #f59e0b"></span>PC2</span>
+            </div>
+          </div>
+          <p id="stats" class="muted" style="margin-top:10px">—</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:18px">
+      <h2>Worked Example (by hand, conceptually)</h2>
+      <div class="content">
+        <p>Suppose we have points in 2D: <code>(2, 0), (0, 1), (3, 2), (4, 1)</code>.</p>
+        <ol>
+          <li>Mean-center → subtract the mean of each column.</li>
+          <li>Compute covariance matrix <code>Σ</code>.</li>
+          <li>Compute eigenpairs of <code>Σ</code> (for 2×2, closed form); the eigenvector with larger eigenvalue is PC1.</li>
+          <li>Project onto PC1 to get a 1D summary; PC1 captures the trend with maximal variance.</li>
+        </ol>
+        <p>This HTML uses the same procedure under the hood for the interactive demo.</p>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:18px">
+      <h2>Common Applications in Machine Learning</h2>
+      <div class="content">
+        <div class="apps">
+          <div class="app"><strong>Exploratory visualization</strong><br/>Plot high‑D data in 2D/3D to see clusters/outliers before modeling.</div>
+          <div class="app"><strong>Noise reduction / denoising</strong><br/>Keep top components; drop low‑variance components dominated by noise.</div>
+          <div class="app"><strong>Feature compression</strong><br/>Reduce dimensionality to speed up models (e.g., linear models, k‑NN).</div>
+          <div class="app"><strong>Preprocessing for clustering</strong><br/>Run PCA before k‑means to remove correlated dimensions.</div>
+          <div class="app"><strong>Image compression</strong><br/>Treat pixels as features; PCA approximates images with fewer components.</div>
+          <div class="app"><strong>Genomics / NLP</strong><br/>Summarize thousands of features (genes, token counts) into compact factors.</div>
+          <div class="app"><strong>Anomaly detection</strong><br/>Model normal patterns in top PCs; anomalies have high residual in discarded PCs.</div>
+          <div class="app"><strong>Recommendation systems</strong><br/>PCA/SVD on user–item matrices uncovers latent preference factors.</div>
+        </div>
+        <p style="margin-top:12px" class="muted"><strong>When to avoid:</strong> if features are on very different scales (without standardization), if relationships are highly nonlinear, or if interpretability of original features is critical.</p>
+      </div>
+    </section>
+
+    <footer>
+      <p>Tip: In practice, use a library (e.g., <code>scikit‑learn</code>: <code>PCA(n_components=...)</code>). Standardize with <code>StandardScaler</code> first when units differ.</p>
+    </footer>
+  </div>
+
+  <script>
+    // --- Utility math helpers ---
+    const mean = (arr) => arr.reduce((a,b)=>a+b,0)/arr.length;
+    const std = (arr) => { const m = mean(arr); return Math.sqrt(arr.reduce((s,v)=>s+(v-m)*(v-m),0)/(arr.length-1)); };
+
+    function centerAndScale(X, standardize){
+      // X: n x 2 array
+      const n = X.length; const d = 2;
+      const cols = [X.map(r=>r[0]), X.map(r=>r[1])];
+      const mu = [mean(cols[0]), mean(cols[1])];
+      const sig = [std(cols[0]), std(cols[1])];
+      const out = X.map(r=>[
+        (r[0]-mu[0]) / (standardize? (sig[0]||1):1),
+        (r[1]-mu[1]) / (standardize? (sig[1]||1):1)
+      ]);
+      return {X: out, mu, sig};
+    }
+
+    function covariance2(X){
+      const n = X.length; if(n<2) return [[0,0],[0,0]];
+      const mx = mean(X.map(r=>r[0]));
+      const my = mean(X.map(r=>r[1]));
+      let sxx=0, syy=0, sxy=0;
+      for(const [x,y] of X){
+        const dx=x-mx, dy=y-my;
+        sxx += dx*dx; syy += dy*dy; sxy += dx*dy;
+      }
+      const k = 1/(n-1);
+      return [[k*sxx, k*sxy],[k*sxy, k*syy]];
+    }
+
+    // Closed-form eigen-decomposition for 2x2 symmetric matrix [[a,b],[b,d]]
+    function eigen2(a,b,d){
+      const tr = a+d;
+      const det = a*d - b*b;
+      const disc = Math.sqrt(Math.max(tr*tr/4 - det, 0));
+      const l1 = tr/2 + disc; // larger eigenvalue
+      const l2 = tr/2 - disc;
+      // eigenvector for l1: (b, l1-a) unless b ~ 0
+      function vecFor(lambda){
+        if(Math.abs(b) > 1e-12){
+          const v = [b, lambda - a];
+          const n = Math.hypot(v[0], v[1]);
+          return [v[0]/n, v[1]/n];
+        } else {
+          // then matrix is ~ diagonal
+          return (a >= d) ? [1,0] : [0,1];
+        }
+      }
+      const v1 = vecFor(l1);
+      // orthogonal vector for v2
+      const v2 = [-v1[1], v1[0]];
+      return {values:[l1,l2], vectors:[v1,v2]};
+    }
+
+    // --- Demo dataset generators ---
+    function randn(){
+      // Box-Muller
+      let u = 0, v = 0; while(u===0) u = Math.random(); while(v===0) v=Math.random();
+      return Math.sqrt(-2*Math.log(u)) * Math.cos(2*Math.PI*v);
+    }
+    function genRotated(n=250, sigma=0.3){
+      const theta = Math.PI/4; const c=Math.cos(theta), s=Math.sin(theta);
+      const base = [1.8, 0.4];
+      const pts = Array.from({length:n}, _=>{
+        const x = base[0]*randn();
+        const y = base[1]*randn();
+        const rx = c*x - s*y + sigma*randn();
+        const ry = s*x + c*y + sigma*randn();
+        return [rx, ry];
+      });
+      return pts;
+    }
+    function genTwoClusters(n=260, sigma=0.25){
+      const centers = [[-1.2,-0.2],[1.2,0.6]];
+      const pts=[];
+      for(const [cx,cy] of centers){
+        for(let i=0;i<n/2;i++) pts.push([cx + sigma*randn(), cy + sigma*randn()]);
+      }
+      return pts;
+    }
+    function genCircle(n=300, sigma=0.06){
+      const r=1; const pts=[];
+      for(let i=0;i<n;i++){
+        const t = 2*Math.PI*Math.random();
+        const rr = r + sigma*randn();
+        pts.push([rr*Math.cos(t), rr*Math.sin(t)]);
+      }
+      return pts;
+    }
+
+    // --- Plotting ---
+    const canvas = document.getElementById('plot');
+    const ctx = canvas.getContext('2d');
+    let RAW = genRotated();
+    let centered = [];
+    let pcs = null;
+
+    function compute(){
+      const standardize = document.getElementById('standardize').checked;
+      const {X} = centerAndScale(RAW, standardize);
+      centered = X;
+      const S = covariance2(centered);
+      const {values:[l1,l2], vectors:[v1,v2]} = eigen2(S[0][0], S[0][1], S[1][1]);
+      const total = l1+l2;
+      pcs = {v1, v2, l1, l2, evr1: l1/total, evr2: l2/total};
+    }
+
+    function getBounds(X){
+      const xs = X.map(p=>p[0]), ys = X.map(p=>p[1]);
+      const minx = Math.min(...xs), maxx = Math.max(...xs);
+      const miny = Math.min(...ys), maxy = Math.max(...ys);
+      // pad
+      const dx = (maxx-minx)||1, dy=(maxy-miny)||1;
+      return {minx:minx-0.2*dx, maxx:maxx+0.2*dx, miny:miny-0.2*dy, maxy:maxy+0.2*dy};
+    }
+
+    function toScreen(x,y,b){
+      const W=canvas.width, H=canvas.height; // map data to canvas coords
+      const sx = (x - b.minx) / (b.maxx - b.minx) * (W-60) + 30;
+      const sy = H - ((y - b.miny) / (b.maxy - b.miny) * (H-60) + 30);
+      return [sx,sy];
+    }
+
+    function draw(){
+      compute();
+      const b = getBounds(centered);
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      // grid
+      ctx.globalAlpha = 0.35;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for(let i=0;i<=10;i++){
+        const x = 30 + i*(canvas.width-60)/10;
+        const y = 30 + i*(canvas.height-60)/10;
+        ctx.moveTo(x,30); ctx.lineTo(x,canvas.height-30);
+        ctx.moveTo(30,y); ctx.lineTo(canvas.width-30,y);
+      }
+      ctx.strokeStyle = 'rgba(148,163,184,0.18)';
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      // points
+      ctx.fillStyle = '#93c5fd';
+      for(const [x,y] of centered){
+        const [sx,sy] = toScreen(x,y,b);
+        ctx.beginPath(); ctx.arc(sx,sy,2.5,0,2*Math.PI); ctx.fill();
+      }
+
+      // draw PCs through origin
+      function drawAxis(v, color){
+        // line param t * v, t in [-T, T]
+        const T = 4*Math.max(b.maxx-b.minx, b.maxy-b.miny);
+        const p1 = [-T*v[0], -T*v[1]];
+        const p2 = [ T*v[0],  T*v[1]];
+        const [x1,y1] = toScreen(p1[0],p1[1],b);
+        const [x2,y2] = toScreen(p2[0],p2[1],b);
+        ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.globalAlpha = .95;
+        ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+      drawAxis(pcs.v1, '#34d399');
+      drawAxis(pcs.v2, '#f59e0b');
+
+      const stats = document.getElementById('stats');
+      stats.innerHTML = `EVR: <strong>PC1 ${(pcs.evr1*100).toFixed(1)}%</strong>, PC2 ${(pcs.evr2*100).toFixed(1)}%  ·  \n` +
+        `λ: [${pcs.l1.toFixed(3)}, ${pcs.l2.toFixed(3)}]  ·  n = ${centered.length}`;
+    }
+
+    function projectTo1D(){
+      if(!pcs) return;
+      const u = pcs.v1; // unit vector
+      const scores = centered.map(p=>p[0]*u[0] + p[1]*u[1]);
+      // render a simple 1D strip plot
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      // axis
+      ctx.strokeStyle = 'rgba(148,163,184,0.3)';
+      ctx.beginPath(); ctx.moveTo(40, canvas.height/2); ctx.lineTo(canvas.width-40, canvas.height/2); ctx.stroke();
+      // scale
+      const min = Math.min(...scores), max = Math.max(...scores); const pad=(max-min)||1;
+      for(const s of scores){
+        const x = 40 + (s - min) / (max - min + 1e-9) * (canvas.width-80);
+        ctx.beginPath(); ctx.moveTo(x, canvas.height/2 - 30); ctx.lineTo(x, canvas.height/2 + 30); ctx.strokeStyle = '#93c5fd'; ctx.lineWidth = 2; ctx.stroke();
+      }
+      // labels
+      ctx.fillStyle = '#e5e7eb'; ctx.font = '14px ui-sans-serif, system-ui';
+      ctx.fillText('Projection of points onto PC1 (1D representation)', 40, 40);
+      ctx.fillStyle = 'var(--muted)';
+      ctx.fillText(`Explained variance ratio (PC1): ${(pcs.evr1*100).toFixed(1)}%`, 40, 62);
+    }
+
+    // --- UI wiring ---
+    function regenerate(){
+      const sigma = parseFloat(document.getElementById('noise').value);
+      const preset = document.getElementById('preset').value;
+      if(preset === 'rotated') RAW = genRotated(260, sigma);
+      if(preset === 'two') RAW = genTwoClusters(260, sigma);
+      if(preset === 'circle') RAW = genCircle(300, sigma);
+      draw();
+    }
+
+    document.getElementById('regen').addEventListener('click', regenerate);
+    document.getElementById('project').addEventListener('click', projectTo1D);
+    document.getElementById('standardize').addEventListener('change', draw);
+    document.getElementById('noise').addEventListener('input', ()=>{ /* live preview */ regenerate(); });
+    document.getElementById('preset').addEventListener('change', regenerate);
+
+    // initial
+    regenerate();
+  </script>
 </body>
 </html>
