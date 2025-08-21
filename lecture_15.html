@@ -1,12 +1,305 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecture 15</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Lecture 15 — Optimization Examples: Linear Regression & SVD</title>
+  <style>
+    :root{
+      --bg:#f6f8fb; --card:#fff; --accent:#0b6cf0; --muted:#243b4a;
+    }
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial; background:var(--bg); color:var(--muted); margin:0;padding:28px}
+    .wrap{max-width:1000px;margin:0 auto}
+    header{display:flex;align-items:center;gap:16px}
+    h1{margin:0;color:#0f1724}
+    .meta{color:#64748b;font-size:0.95rem}
+    .card{background:var(--card);border-radius:12px;padding:20px;margin-top:18px;box-shadow:0 8px 20px rgba(2,6,23,0.06)}
+    h2{color:#0f1724}
+    pre{background:#0f1724;color:#eef6ff;padding:12px;border-radius:8px;overflow:auto}
+    code{background:#eef4ff;padding:2px 6px;border-radius:6px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    label{display:block;margin-top:8px;font-weight:600}
+    input[type=number], textarea, select {width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef8}
+    button{margin-top:10px;padding:10px 14px;border-radius:10px;border:none;background:var(--accent);color:#fff;cursor:pointer}
+    .note{font-size:0.95rem;color:#475569}
+    .result{background:#f8fafc;padding:12px;border-radius:8px;margin-top:10px;white-space:pre-wrap}
+  </style>
 </head>
 <body>
-    <h1>Lecture 15</h1>
-    <p>Content for Lecture 15 will go here.</p>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Lecture 15 — Optimization Examples</h1>
+        <div class="meta">Linear Regression (Normal equation, Gradient Descent, Ridge) &amp; SVD / Pseudoinverse — step-by-step with code</div>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>Overview</h2>
+      <p class="note">This lecture gives concrete optimization procedures used in ML: closed-form & iterative solutions for linear regression, regularization (ridge), and stable solutions via SVD (pseudoinverse). Each method includes intuition, step-by-step math, and runnable code.</p>
+    </section>
+
+    <section class="card">
+      <h2>Part A — Linear Regression: Problem & Objective</h2>
+      <p>
+        Given data \(X\in\mathbb{R}^{n\times p}\) (rows = samples, columns = features) and targets \(y\in\mathbb{R}^n\), we use a linear model:
+      </p>
+      <p style="text-align:center;font-weight:700">y ≈ X β</p>
+      <p>Minimize squared error (ordinary least squares):</p>
+      <p style="text-align:center"><b>J(β) = ||y - Xβ||₂²</b></p>
+      <p>Goal: find β that minimizes J(β).</p>
+    </section>
+
+    <section class="card">
+      <h2>Part B — Closed-form: Normal Equations</h2>
+      <p><b>Derivation (brief):</b></p>
+      <ol>
+        <li>J(β) = (y - Xβ)<sup>T</sup>(y - Xβ).</li>
+        <li>Gradient: ∇β J = -2 X<sup>T</sup>(y - Xβ).</li>
+        <li>Set ∇β J = 0 → X<sup>T</sup>X β = X<sup>T</sup>y.</li>
+        <li>Solve (if invertible): <b>β̂ = (X<sup>T</sup>X)<sup>-1</sup> X<sup>T</sup> y</b>.</li>
+      </ol>
+      <p class="note">Use <code>np.linalg.solve</code> in code rather than explicit matrix inverse for numerical stability.</p>
+
+      <h3>Python (NumPy) — closed-form</h3>
+      <pre>
+import numpy as np
+
+# X: n x p, y: n
+XtX = X.T @ X
+Xty = X.T @ y
+beta_closed = np.linalg.solve(XtX, Xty)   # equivalent to (XtX)^{-1} X^T y
+      </pre>
+    </section>
+
+    <section class="card">
+      <h2>Part C — Gradient Descent (iterative)</h2>
+      <p><b>Update rule:</b></p>
+      <p style="text-align:center"><b>β ← β - η ∇β J = β - 2η X<sup>T</sup>(Xβ - y)</b></p>
+      <p>Algorithm: choose learning rate η, initialize β₀ (e.g., zeros), iterate until convergence (monitor loss or gradient norm).</p>
+
+      <h3>Python (NumPy) — gradient descent</h3>
+      <pre>
+# Simple gradient descent for linear regression
+beta = np.zeros(p)
+lr = 1e-3
+for epoch in range(10000):
+    grad = 2 * X.T @ (X @ beta - y)   # shape (p,)
+    beta -= lr * grad
+# check convergence, adjust lr, or use adaptive optimizers
+      </pre>
+
+      <p class="note">GD is simple but requires tuning η; for many problems SGD or mini-batch is preferred.</p>
+    </section>
+
+    <section class="card">
+      <h2>Part D — Ridge Regression (Tikhonov regularization)</h2>
+      <p>Add L2 regularization to stabilize ill-conditioned problems:</p>
+      <p style="text-align:center"><b>J<sub>ridge</sub>(β) = ||y - Xβ||₂² + λ ||β||₂²</b></p>
+      <p>Closed-form solution:</p>
+      <p style="text-align:center"><b>β̂ = (X<sup>T</sup>X + λ I)<sup>-1</sup> X<sup>T</sup> y</b></p>
+
+      <h3>Python (NumPy) — ridge</h3>
+      <pre>
+lam = 1.0
+p = X.shape[1]
+beta_ridge = np.linalg.solve(X.T @ X + lam * np.eye(p), X.T @ y)
+      </pre>
+      <p class="note">λ > 0 improves conditioning; pick λ by cross-validation.</p>
+    </section>
+
+    <section class="card">
+      <h2>Part E — SVD &amp; Pseudoinverse (numerical stability)</h2>
+      <p>
+        When X is rank-deficient or X<sup>T</sup>X is ill-conditioned, use the SVD: X = U Σ V<sup>T</sup>.
+        The Moore–Penrose pseudoinverse X<sup>+</sup> = V Σ<sup>+</sup> U<sup>T</sup> gives the minimum-norm solution:
+      </p>
+      <p style="text-align:center"><b>β̂ = X<sup>+</sup> y = V Σ<sup>+</sup> U<sup>T</sup> y</b></p>
+      <p>Where Σ<sup>+</sup> replaces each non-zero σᵢ by 1/σᵢ and leaves zeros as zero. Truncating small σᵢ yields a form of regularization (truncated SVD).</p>
+
+      <h3>Python (NumPy) — SVD solution</h3>
+      <pre>
+U, s, Vt = np.linalg.svd(X, full_matrices=False)   # X = U @ diag(s) @ Vt
+S_inv = np.diag([1/si if si > 1e-12 else 0.0 for si in s])
+X_pinv = Vt.T @ S_inv @ U.T
+beta_svd = X_pinv @ y
+      </pre>
+
+      <p class="note">SVD-based solution is numerically stable and reveals rank & conditioning (singular values s).</p>
+    </section>
+
+    <section class="card">
+      <h2>Part F — Worked numeric example (small)</h2>
+      <p>Data:</p>
+      <pre>
+X = [[1, 1],
+     [1, 2],
+     [1, 3]]
+y = [1, 2, 2]
+      </pre>
+      <p>Compute normal eqn, ridge, SVD — they produce comparable β in this example.</p>
+
+      <h3>Python full example (copy to Jupyter)</h3>
+      <pre>
+import numpy as np
+
+X = np.array([[1.,1.],[1.,2.],[1.,3.]])
+y = np.array([1.,2.,2.])
+
+# closed-form
+beta_closed = np.linalg.solve(X.T @ X, X.T @ y)
+
+# ridge
+lam = 1e-3
+beta_ridge = np.linalg.solve(X.T @ X + lam*np.eye(2), X.T @ y)
+
+# SVD pseudo-inverse
+U, s, Vt = np.linalg.svd(X, full_matrices=False)
+S_inv = np.diag([1/si if si > 1e-12 else 0. for si in s])
+beta_svd = Vt.T @ S_inv @ U.T @ y
+
+print("closed:", beta_closed)
+print("ridge:", beta_ridge)
+print("svd  :", beta_svd)
+      </pre>
+
+      <p class="note">Try changing the data to make columns collinear (e.g., repeat a column) and observe differences.</p>
+    </section>
+
+    <section class="card">
+      <h2>Part G — Interpretation & Practical Tips</h2>
+      <ul>
+        <li><b>When to use closed-form:</b> Small p, p ≪ n, and well-conditioned XtX.</li>
+        <li><b>When to use iterative (GD/SGD):</b> Very large n or streaming data; mini-batches are standard in deep learning.</li>
+        <li><b>When to use SVD:</b> Ill-conditioned X or when you need low-rank approximations / PCA links.</li>
+        <li><b>Regularization:</b> Use ridge (L2) to stabilize inverse, use L1 (Lasso) for sparsity (requires iterative solvers).</li>
+        <li><b>Scale features:</b> Standardize features before gradient-based optimization; it improves convergence.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Part H — Interactive: Small Gradient Descent Demo (Intercept + Slope)</h2>
+      <p class="note">This playground runs a small batch gradient descent on a manually-entered 1-D dataset (fit y = w0 + w1 x). Use it to see how parameters evolve step-by-step.</p>
+
+      <div class="grid">
+        <div>
+          <label>Data points (x,y) — one per line, comma separated (example below):</label>
+          <textarea id="data" rows="6">1,1
+2,2
+3,2</textarea>
+          <label>Learning rate (η)</label>
+          <input type="number" id="lr" value="0.05" step="0.01">
+          <label>Epochs (iterations)</label>
+          <input type="number" id="epochs" value="50" step="1">
+          <button onclick="runLRGD()">Run Gradient Descent</button>
+          <div id="gd_out" class="result"></div>
+        </div>
+
+        <aside class="card" style="height:fit-content">
+          <h3 style="margin-top:0">Quick guide</h3>
+          <ol>
+            <li>Enter small dataset or use example lines.</li>
+            <li>Click run — the demo prints w0/w1 updates and loss.</li>
+            <li>Reset the textarea to try other datasets.</li>
+          </ol>
+        </aside>
+      </div>
+
+      <script>
+        function parseXY(text){
+          try{
+            const lines = text.trim().split('\\n').map(l=>l.trim()).filter(Boolean);
+            const X=[], y=[];
+            for(const L of lines){
+              const parts = L.split(',').map(s=>s.trim());
+              if(parts.length!==2) return null;
+              const xv = parseFloat(parts[0]), yv = parseFloat(parts[1]);
+              if(Number.isNaN(xv) || Number.isNaN(yv)) return null;
+              X.push(xv); y.push(yv);
+            }
+            return {X, y};
+          }catch(e){return null;}
+        }
+
+        function runLRGD(){
+          const raw = document.getElementById('data').value;
+          const parsed = parseXY(raw);
+          const out = document.getElementById('gd_out');
+          if(!parsed){ out.innerText = 'Invalid data format. Use lines like: 1,2'; return; }
+          const X = parsed.X, y = parsed.y;
+          const n = X.length;
+          let w0=0, w1=0; // init
+          const lr = parseFloat(document.getElementById('lr').value) || 0.01;
+          const epochs = parseInt(document.getElementById('epochs').value) || 100;
+          out.innerText = '';
+          for(let ep=0; ep<epochs; ep++){
+            // compute gradients (batch)
+            let grad0=0, grad1=0, loss=0;
+            for(let i=0;i<n;i++){
+              const pred = w0 + w1*X[i];
+              const err = pred - y[i];
+              loss += err*err;
+              grad0 += 2*err;
+              grad1 += 2*err*X[i];
+            }
+            loss = loss / n;
+            grad0 = grad0 / n;
+            grad1 = grad1 / n;
+            // update
+            w0 = w0 - lr * grad0;
+            w1 = w1 - lr * grad1;
+            if(ep % Math.max(1, Math.floor(epochs/10)) === 0){
+              out.innerText += `ep ${ep}: w0=${w0.toFixed(4)}, w1=${w1.toFixed(4)}, loss=${loss.toFixed(4)}\\n`;
+            }
+          }
+          out.innerText += `final: w0=${w0.toFixed(4)}, w1=${w1.toFixed(4)}\\n`;
+          // show closed-form for comparison
+          // build design matrix and solve normal eqn
+          const XtX = [[0,0],[0,0]];
+          const Xty = [0,0];
+          for(let i=0;i<n;i++){
+            const xi = 1, xij = X[i];
+            XtX[0][0] += xi*xi; XtX[0][1] += xi*xij;
+            XtX[1][0] += xij*xi; XtX[1][1] += xij*xij;
+            Xty[0] += xi*y[i]; Xty[1] += xij*y[i];
+          }
+          // solve 2x2
+          const det = XtX[0][0]*XtX[1][1] - XtX[0][1]*XtX[1][0];
+          if(Math.abs(det) < 1e-12){
+            out.innerText += 'Closed-form: singular matrix (cannot solve).';
+          } else {
+            const inv00 = XtX[1][1]/det, inv01 = -XtX[0][1]/det;
+            const inv10 = -XtX[1][0]/det, inv11 = XtX[0][0]/det;
+            const b0 = inv00*Xty[0] + inv01*Xty[1];
+            const b1 = inv10*Xty[0] + inv11*Xty[1];
+            out.innerText += `closed-form: w0=${b0.toFixed(4)}, w1=${b1.toFixed(4)}\\n`;
+          }
+        }
+      </script>
+
+    </section>
+
+    <section class="card">
+      <h2>Part I — Links between SVD, PCA and regression</h2>
+      <ul>
+        <li><b>PCA</b> is computed via SVD of the centered data matrix; principal components correspond to right singular vectors (V).</li>
+        <li><b>Truncated SVD</b> gives best low-rank approximation (Eckart–Young theorem) — useful for denoising and dimensionality reduction.</li>
+        <li>Using truncated SVD for regression (project onto top-k singular vectors) acts as a regularizer (reduces variance).</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Part J — Exercises (recommended)</h2>
+      <ol>
+        <li>Generate a dataset where two features are highly collinear. Compare β̂ from closed-form, ridge, and SVD (with truncation).</li>
+        <li>Implement mini-batch gradient descent and compare convergence speed with full-batch GD on a larger generated dataset.</li>
+        <li>Perform PCA (SVD) on a dataset and reconstruct using top-k components; measure reconstruction error as a function of k.</li>
+      </ol>
+    </section>
+
+    <footer style="margin-top:18px;text-align:center;color:#64748b">
+      Lecture 15 — Linear Regression & SVD (Optimization examples). Contact instructor for downloadable notebooks.
+    </footer>
+  </div>
 </body>
 </html>
