@@ -1,12 +1,320 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecture 5</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lecture 5 — Definite Matrices (Positive Definite & Semidefinite)</title>
+  <style>
+    :root{
+      --bg:#f6f8fb; --card:#fff; --accent:#0b6cf0; --muted:#2f4150;
+    }
+    body{
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background:var(--bg); color:var(--muted); margin:0; padding:28px;
+    }
+    .wrap{max-width:980px;margin:0 auto}
+    header{display:flex;align-items:center;gap:16px}
+    h1{margin:0;color:#0f1724;font-size:1.6rem}
+    .meta{color:#64748b;font-size:0.95rem}
+    .card{background:var(--card);border-radius:12px;padding:20px;margin-top:18px;box-shadow:0 8px 30px rgba(2,6,23,0.04)}
+    h2{color:#0f1724}
+    p{line-height:1.55}
+    pre{background:#f1f5f9;padding:12px;border-radius:8px;overflow:auto}
+    .cols{display:grid;grid-template-columns:1fr 340px;gap:18px}
+    table{width:100%;border-collapse:collapse;margin-top:8px}
+    th,td{padding:8px;border-bottom:1px dashed #eef2ff;text-align:left}
+    label{display:block;margin-top:8px;font-weight:600}
+    input[type=text]{width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef8}
+    button{margin-top:10px;padding:10px 14px;border-radius:10px;border:none;background:var(--accent);color:#fff;cursor:pointer}
+    .note{font-size:0.95rem;color:#475569}
+    .result{background:#f8fafc;padding:12px;border-radius:8px;margin-top:10px}
+    code{background:#eef4ff;padding:2px 6px;border-radius:6px}
+  </style>
 </head>
 <body>
-    <h1>Lecture 5</h1>
-    <p>Content for Lecture 5 will go here.</p>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Lecture 5 — Definite Matrices</h1>
+        <div class="meta">Positive definite, positive semidefinite, properties, tests, examples & ML applications</div>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>1. Definitions</h2>
+      <p>
+        Let \(A\) be a real symmetric \(n \times n\) matrix (symmetry is important for the usual definiteness notions).
+      </p>
+      <ul>
+        <li><b>Positive definite (PD):</b> \(A\) is PD if for all non-zero vectors \(x\in\mathbb{R}^n\), \(x^\top A x > 0.\)</li>
+        <li><b>Positive semidefinite (PSD):</b> \(A\) is PSD if for all \(x\), \(x^\top A x \ge 0.\)</li>
+        <li><b>Negative definite / semidefinite:</b> defined similarly with \(x^\top A x < 0\) or \(\le 0\).</li>
+        <li><b>Indefinite:</b> exists \(x,y\) such that \(x^\top A x > 0\) and \(y^\top A y < 0.\)</li>
+      </ul>
+
+      <h2>2. Key properties (symmetric matrices)</h2>
+      <ul>
+        <li>All eigenvalues of a symmetric matrix are real.</li>
+        <li>\(A\) is PD ↔ all eigenvalues of \(A\) are positive.</li>
+        <li>\(A\) is PSD ↔ all eigenvalues are non-negative.</li>
+        <li>Sylvester's criterion: \(A\) is PD ↔ all leading principal minors (determinants of top-left \(k\times k\) blocks) are positive.</li>
+        <li>If \(A\) is PD, there exists a unique Cholesky decomposition \(A = L L^\top\) with lower-triangular \(L\) and positive diagonal.</li>
+      </ul>
+
+      <h2>3. Quick tests you can use</h2>
+      <ol>
+        <li><b>Eigenvalue test:</b> compute eigenvalues and check signs. This is the most direct and reliable test.</li>
+        <li><b>Sylvester's criterion:</b> check leading principal minors (fast for small matrices).</li>
+        <li><b>Cholesky factorization:</b> try to compute it; if it succeeds (no negative square root), matrix is PD.</li>
+      </ol>
+
+      <h2>4. Worked examples</h2>
+
+      <h3>Example A (2×2 positive definite)</h3>
+      <pre>
+A = [[2, -1],
+     [-1, 2]]
+For any x = [x1, x2]:
+x^T A x = 2x1^2 - 2x1 x2 + 2 x2^2 = 2(x1^2 - x1 x2 + x2^2) > 0 for x != 0
+Eigenvalues: λ = 1, 3 (both >0) → A is PD
+      </pre>
+
+      <h3>Example B (PSD but not PD)</h3>
+      <pre>
+A = [[1, 1],
+     [1, 1]]
+This has eigenvalues λ = 0, 2 → eigenvalues non-negative → PSD (but not PD because λ=0)
+      </pre>
+
+      <h3>Example C (Indefinite)</h3>
+      <pre>
+A = [[1, 2],
+     [2, -1]]
+Eigenvalues: approx 2.236 and -2.236 (one positive, one negative) → indefinite
+      </pre>
+
+      <h2>5. Applications in Machine Learning</h2>
+      <ul>
+        <li><b>Covariance matrices:</b> Covariance matrix \(\Sigma\) is PSD (and PD if variables not collinear). PSD property ensures variances are non-negative and allows PCA (eigen-decomposition of Σ).</li>
+        <li><b>Kernel matrices (Gram matrices):</b> For a valid kernel function k(·,·), the Gram matrix \(K_{ij}=k(x_i,x_j)\) is PSD. Kernel methods (SVM, Kernel PCA) rely on this property.</li>
+        <li><b>Optimization:</b> Hessian matrices: if Hessian of loss is PD at a point, the point is a strict local minimum. Checking PD/PSD helps analyze convexity and convergence.</li>
+        <li><b>Regularization & numerical stability:</b> Adding λI (λ>0) to a matrix can make it PD (useful when inverting covariance-like matrices).</li>
+      </ul>
+
+      <hr>
+
+      <h2>6. Interactive checker: symmetry, eigenvalues, Sylvester & Cholesky (works for small matrices)</h2>
+      <div class="cols">
+        <div>
+          <p class="note">Enter a square matrix (rows separated by semicolons, elements by spaces). Example for 2×2: <code>2 -1; -1 2</code> or 3×3: <code>2 0 -1; 0 3 1; -1 1 2</code></p>
+          <label>Matrix A</label>
+          <input id="matInput" type="text" value="2 -1; -1 2">
+          <button onclick="analyze()">Analyze matrix</button>
+          <button onclick="loadExample('PD')">Load PD example</button>
+          <button onclick="loadExample('PSD')">Load PSD example</button>
+          <button onclick="loadExample('IND')">Load Indefinite example</button>
+
+          <div id="analysis" class="result"></div>
+        </div>
+
+        <aside class="card">
+          <h3 style="margin-top:0">Quick reference</h3>
+          <table>
+            <tr><th>Test</th><th>When to use</th></tr>
+            <tr><td>Eigenvalues</td><td>Direct, reliable (symmetric matrices)</td></tr>
+            <tr><td>Sylvester</td><td>Small matrices, quick determinant checks</td></tr>
+            <tr><td>Cholesky</td><td>Fast practical test for PD; also useful for solving systems</td></tr>
+          </table>
+          <p class="note" style="margin-top:8px">Note: Definite/semidefinite notions usually require symmetry. For non-symmetric matrices, consider the symmetric part (A + A^T)/2 for quadratic forms.</p>
+        </aside>
+      </div>
+
+      <script>
+        // Utility: parse matrix input like "1 2; 3 4" -> [[1,2],[3,4]]
+        function parseMatrix(s){
+          try{
+            let rows = s.split(';').map(r => r.trim()).filter(r => r.length>0);
+            let M = rows.map(r => r.split(/\s+/).map(Number));
+            let n = M.length;
+            for(let i=0;i<n;i++){
+              if(M[i].length !== n) return null; // require square
+            }
+            return M;
+          } catch(e){ return null; }
+        }
+
+        // Check symmetry up to tolerance
+        function isSymmetric(A, tol=1e-8){
+          let n = A.length;
+          for(let i=0;i<n;i++) for(let j=0;j<n;j++){
+            if(Math.abs(A[i][j] - A[j][i]) > tol) return false;
+          }
+          return true;
+        }
+
+        // Determinant (recursive) - ok for small n (n<=5)
+        function det(M){
+          let n = M.length;
+          if(n===1) return M[0][0];
+          if(n===2) return M[0][0]*M[1][1] - M[0][1]*M[1][0];
+          let sum = 0;
+          for(let j=0;j<n;j++){
+            // build minor
+            let minor = [];
+            for(let i=1;i<n;i++){
+              let row = [];
+              for(let k=0;k<n;k++) if(k!==j) row.push(M[i][k]);
+              minor.push(row);
+            }
+            sum += ((j%2===0)?1:-1) * M[0][j] * det(minor);
+          }
+          return sum;
+        }
+
+        // Cholesky decomposition attempt (returns L if success, null if fail)
+        function cholesky(A){
+          let n=A.length;
+          // copy
+          let L = Array.from({length:n},(_,i)=>Array.from({length:n},()=>0));
+          for(let i=0;i<n;i++){
+            for(let j=0;j<=i;j++){
+              let s = 0;
+              for(let k=0;k<j;k++) s += L[i][k]*L[j][k];
+              if(i===j){
+                let val = A[i][i] - s;
+                if(val <= 0) return null;
+                L[i][j] = Math.sqrt(val);
+              } else {
+                L[i][j] = (A[i][j] - s) / L[j][j];
+              }
+            }
+          }
+          return L;
+        }
+
+        // Jacobi eigenvalue algorithm for symmetric matrix (returns {eigvals, eigvecs})
+        // simple implementation for small n; iterations upto maxIter
+        function jacobiEigen(A, tol=1e-10, maxIter=100){
+          let n = A.length;
+          // copy
+          let V = Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=>i===j?1:0));
+          let B = A.map(r=>r.slice());
+          for(let iter=0; iter<maxIter; iter++){
+            // find largest off-diagonal element
+            let p=0,q=1, maxv=0;
+            for(let i=0;i<n;i++) for(let j=i+1;j<n;j++){
+              if(Math.abs(B[i][j]) > maxv){ maxv = Math.abs(B[i][j]); p=i; q=j; }
+            }
+            if(maxv < tol) break;
+            let phi = 0.5 * Math.atan2(2*B[p][q], B[q][q]-B[p][p]);
+            let c = Math.cos(phi), s = Math.sin(phi);
+            // rotate B
+            let Bpp = c*c*B[p][p] - 2*s*c*B[p][q] + s*s*B[q][q];
+            let Bqq = s*s*B[p][p] + 2*s*c*B[p][q] + c*c*B[q][q];
+            B[p][p] = Bpp; B[q][q] = Bqq; B[p][q] = 0; B[q][p] = 0;
+            for(let r=0;r<n;r++){
+              if(r!==p && r!==q){
+                let Brp = c*B[r][p] - s*B[r][q];
+                let Brq = s*B[r][p] + c*B[r][q];
+                B[r][p] = B[p][r] = Brp;
+                B[r][q] = B[q][r] = Brq;
+              }
+            }
+            // update V
+            for(let r=0;r<n;r++){
+              let vip = c*V[r][p] - s*V[r][q];
+              let viq = s*V[r][p] + c*V[r][q];
+              V[r][p] = vip; V[r][q] = viq;
+            }
+          }
+          let eigvals = Array.from({length:n},(_,i)=>B[i][i]);
+          // sort eigenvalues descending with corresponding eigenvectors
+          let idx = eigvals.map((v,i)=>[v,i]).sort((a,b)=>b[0]-a[0]).map(x=>x[1]);
+          let sortedVals = idx.map(i=>eigvals[i]);
+          let sortedVecs = idx.map(i=>V.map(row=>row[i]));
+          return {eigvals:sortedVals, eigvecs:sortedVecs};
+        }
+
+        function analyze(){
+          const out = document.getElementById('analysis');
+          out.innerHTML = '';
+          let s = document.getElementById('matInput').value;
+          let A = parseMatrix(s);
+          if(!A){ out.innerHTML = '<b style="color:#b72828">Invalid input—provide a square matrix, e.g. 1 2; 3 4</b>'; return; }
+          let n = A.length;
+          let sym = isSymmetric(A);
+          let html = `<div><b>Matrix ( ${n}×${n} )</b><pre>${JSON.stringify(A,null,2)}</pre></div>`;
+          html += `<div class="note"><b>Symmetric:</b> ${sym}</div>`;
+
+          if(!sym){
+            html += `<div class="note" style="color:#b94a48">Matrix is not symmetric — definiteness is conventionally defined for symmetric matrices. Consider (A + Aᵀ)/2.</div>`;
+          }
+
+          // compute eigenvalues via Jacobi (works best for symmetric)
+          if(sym){
+            let res = jacobiEigen(A);
+            let eigs = res.eigvals.map(x => Math.round(x*1e9)/1e9); // round
+            html += `<div><b>Eigenvalues:</b> [ ${eigs.join(', ')} ]</div>`;
+
+            // classify
+            let pos = eigs.filter(v => v > 1e-9).length;
+            let zero = eigs.filter(v => Math.abs(v) <= 1e-9).length;
+            let neg = eigs.filter(v => v < -1e-9).length;
+
+            let classification = '';
+            if(neg === 0 && zero === 0) classification = '<b style="color:green">Positive definite (PD)</b>';
+            else if(neg === 0 && zero > 0) classification = '<b style="color:orange">Positive semidefinite (PSD)</b>';
+            else if(pos === 0 && zero === 0) classification = '<b style="color:purple">Negative definite</b>';
+            else if(pos === 0 && zero > 0) classification = '<b style="color:purple">Negative semidefinite</b>';
+            else classification = '<b style="color:#b94a48">Indefinite</b>';
+
+            html += `<div style="margin-top:8px"><b>Classification:</b> ${classification}</div>`;
+
+            // Sylvester's criterion for PD (leading principal minors)
+            if(n <= 5){ // compute minors easily
+              let minorsOk = true; let minors = [];
+              for(let k=1;k<=n;k++){
+                let M = A.slice(0,k).map(r => r.slice(0,k));
+                let d = det(M);
+                minors.push(Math.round(d*1e9)/1e9);
+                if(d <= 0) minorsOk = false;
+              }
+              html += `<div style="margin-top:6px"><b>Leading principal minors:</b> [ ${minors.join(', ')} ]</div>`;
+              html += `<div class="note">Sylvester says PD iff all leading minors > 0. (This check is reliable for small n.)</div>`;
+            }
+
+            // attempt Cholesky
+            let L = cholesky(A);
+            if(L){
+              html += `<div style="margin-top:8px"><b>Cholesky:</b> succeeded → matrix is PD. L = <pre>${JSON.stringify(L,null,2)}</pre></div>`;
+            } else {
+              html += `<div style="margin-top:8px"><b>Cholesky:</b> failed (matrix not PD or numerical issue)</div>`;
+            }
+          } else {
+            // symmetric false: show symmetric part eigenvalues
+            let n = A.length;
+            let symA = Array.from({length:n}, (_,i)=>Array.from({length:n},(_,j)=> (A[i][j]+A[j][i])/2 ));
+            let res = jacobiEigen(symA);
+            let eigs = res.eigvals.map(x => Math.round(x*1e9)/1e9);
+            html += `<div class="note">Eigenvalues of sym(A) = (A + Aᵀ)/2 : [ ${eigs.join(', ')} ]</div>`;
+            html += `<div class="note">Use symmetric part for quadratic form analysis if matrix is not symmetric.</div>`;
+          }
+
+          out.innerHTML = html;
+        }
+
+        function loadExample(type){
+          if(type==='PD') document.getElementById('matInput').value = '2 -1; -1 2';
+          else if(type==='PSD') document.getElementById('matInput').value = '1 1; 1 1';
+          else if(type==='IND') document.getElementById('matInput').value = '1 2; 2 -1';
+          analyze();
+        }
+      </script>
+
+      <footer class="note" style="margin-top:12px">
+        Summary: For symmetric matrices the eigenvalue test is the most direct: all eigenvalues > 0 → PD; ≥ 0 → PSD. Sylvester and Cholesky are practical alternatives. In ML, PSD matrices appear everywhere (covariance, kernels); ensuring positive definiteness is important for invertibility and numerical stability.
+      </footer>
+    </section>
+  </div>
 </body>
 </html>
