@@ -1,12 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecture 3</title>
+  <meta charset="UTF-8">
+  <title>Lecture 3 - Probability & Statistics</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+    nav { margin-bottom: 20px; }
+    nav a { margin-right: 15px; text-decoration: none; color: #0073e6; }
+    pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
+  </style>
 </head>
 <body>
-    <h1>Lecture 3</h1>
-    <p>Content for Lecture 3 will go here.</p>
+  <nav>
+    <a href="Lecture1.html">Lecture 1</a>
+    <a href="Lecture2.html">Lecture 2</a>
+    <a href="Lecture3.html">Lecture 3</a>
+  </nav>
+
+  <h1>Lecture 3: Probability & Statistics for Machine Learning</h1>
+
+  <h2>1. Probability Basics</h2>
+  <p>Probabilities are used in Naive Bayes, HMMs, and Bayesian models.</p>
+
+  <h3>Python Example: Probability Distribution</h3>
+  <pre><code class="language-python">
+import numpy as np
+
+# Probability of coin flips
+flips = np.random.choice(['H', 'T'], size=1000)
+p_heads = np.mean(flips == 'H')
+print("P(Heads):", p_heads)
+  </code></pre>
+
+  <h2>2. Statistics in ML</h2>
+  <p>Mean, variance, and standard deviation help in feature scaling, normalization, and hypothesis testing.</p>
+
+  <h3>Python Example: Descriptive Statistics</h3>
+  <pre><code class="language-python">
+import numpy as np
+
+data = np.array([2, 4, 6, 8, 10])
+print("Mean:", np.mean(data))
+print("Variance:", np.var(data))
+print("Std Dev:", np.std(data))
+  </code></pre>
+
+  <h2>3. Application: Gaussian Distribution</h2>
+  <p>Many ML models (like Gaussian Naive Bayes) assume features follow a normal distribution.</p>
+
+  <pre><code class="language-python">
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import norm
+
+x = np.linspace(-5, 5, 100)
+y = norm.pdf(x, 0, 1)  # mean=0, std=1
+
+plt.plot(x, y)
+plt.title("Gaussian Distribution (Normal Curve)")
+plt.show()
+  </code></pre>
 </body>
 </html>
