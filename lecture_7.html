@@ -369,3 +369,163 @@
   </script>
 </body>
 </html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lecture 7: Principal Component Analysis (PCA)</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 20px;
+      line-height: 1.6;
+      background-color: #f9f9fc;
+      color: #333;
+    }
+    h1, h2, h3 {
+      color: #1a73e8;
+    }
+    .example, .application {
+      background-color: #eef5ff;
+      border-left: 6px solid #1a73e8;
+      padding: 10px;
+      margin: 15px 0;
+    }
+    .calculator {
+      background: #fff;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+    input, button {
+      margin: 5px 0;
+      padding: 8px;
+      font-size: 14px;
+      border-radius: 5px;
+      border: 1px solid #aaa;
+    }
+    button {
+      background-color: #1a73e8;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #155ab6;
+    }
+    pre {
+      background: #272822;
+      color: #f8f8f2;
+      padding: 12px;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Lecture 7: Principal Component Analysis (PCA)</h1>
+
+  <h2>1. Introduction</h2>
+  <p>
+    Principal Component Analysis (PCA) is one of the most widely used techniques in 
+    machine learning and data science for <b>dimensionality reduction</b>. It transforms 
+    a dataset with possibly correlated features into a new set of uncorrelated features 
+    called <b>principal components</b>.
+  </p>
+
+  <h2>2. Key Concepts</h2>
+  <ul>
+    <li><b>Variance:</b> PCA looks for directions in data with maximum variance.</li>
+    <li><b>Principal Components:</b> New axes obtained after linear transformation of data.</li>
+    <li><b>Orthogonality:</b> Principal components are orthogonal (uncorrelated) to each other.</li>
+    <li><b>Eigen Decomposition:</b> PCA is mathematically based on eigenvalues and eigenvectors 
+        of the covariance matrix.</li>
+  </ul>
+
+  <h2>3. Steps in PCA</h2>
+  <ol>
+    <li>Standardize the dataset (mean = 0, variance = 1).</li>
+    <li>Compute the <b>covariance matrix</b>.</li>
+    <li>Perform <b>eigenvalue decomposition</b> (or SVD) on the covariance matrix.</li>
+    <li>Select the top <i>k</i> eigenvectors corresponding to largest eigenvalues.</li>
+    <li>Project the original data onto these new axes to obtain reduced-dimension data.</li>
+  </ol>
+
+  <h2>4. Example (2D Dataset)</h2>
+  <div class="example">
+    <p>
+      Suppose we have data points in 2D space with correlation between X and Y.
+      PCA finds a new axis (first principal component) that captures most variance.
+      The second principal component is orthogonal to the first and captures remaining variance.
+    </p>
+    <pre>
+Dataset: X = [2.5, 0.5, 2.2, 1.9]
+         Y = [2.4, 0.7, 2.9, 2.2]
+
+Step 1: Compute covariance matrix
+Step 2: Find eigenvalues (λ1, λ2) and eigenvectors (v1, v2)
+Step 3: Choose v1 (corresponding to largest λ1) as first principal component
+Step 4: Transform data into new coordinates
+    </pre>
+  </div>
+
+  <h2>5. Applications in Machine Learning</h2>
+  <div class="application">
+    <ul>
+      <li><b>Dimensionality Reduction:</b> Reduces number of features to speed up ML models.</li>
+      <li><b>Data Visualization:</b> Projects high-dimensional data into 2D or 3D.</li>
+      <li><b>Noise Reduction:</b> Removes less informative components with small variance.</li>
+      <li><b>Preprocessing:</b> Used before clustering, regression, or classification tasks.</li>
+    </ul>
+  </div>
+
+  <h2>6. PCA Calculator (Simple Simulation)</h2>
+  <div class="calculator">
+    <p>Enter 2D dataset (comma separated values for X and Y):</p>
+    <label>X values: <input type="text" id="xValues" value="2.5,0.5,2.2,1.9"></label><br>
+    <label>Y values: <input type="text" id="yValues" value="2.4,0.7,2.9,2.2"></label><br>
+    <button onclick="performPCA()">Perform PCA</button>
+    <p id="pcaResult"></p>
+  </div>
+
+  <script>
+    function performPCA() {
+      let x = document.getElementById("xValues").value.split(",").map(Number);
+      let y = document.getElementById("yValues").value.split(",").map(Number);
+      if (x.length !== y.length) {
+        document.getElementById("pcaResult").innerHTML = "X and Y must have same length!";
+        return;
+      }
+      let n = x.length;
+      let meanX = x.reduce((a,b)=>a+b,0)/n;
+      let meanY = y.reduce((a,b)=>a+b,0)/n;
+
+      // Centered data
+      let xc = x.map(v=>v-meanX);
+      let yc = y.map(v=>v-meanY);
+
+      // Covariance matrix
+      let covXX = xc.map((v,i)=>v*xc[i]).reduce((a,b)=>a+b,0)/(n-1);
+      let covYY = yc.map((v,i)=>v*yc[i]).reduce((a,b)=>a+b,0)/(n-1);
+      let covXY = xc.map((v,i)=>v*yc[i]).reduce((a,b)=>a+b,0)/(n-1);
+
+      // Eigenvalues for 2x2
+      let trace = covXX + covYY;
+      let det = covXX*covYY - covXY*covXY;
+      let lambda1 = (trace + Math.sqrt(trace*trace - 4*det))/2;
+      let lambda2 = (trace - Math.sqrt(trace*trace - 4*det))/2;
+
+      document.getElementById("pcaResult").innerHTML = `
+        Covariance Matrix: [[${covXX.toFixed(3)}, ${covXY.toFixed(3)}], [${covXY.toFixed(3)}, ${covYY.toFixed(3)}]] <br>
+        Eigenvalues: λ1 = ${lambda1.toFixed(3)}, λ2 = ${lambda2.toFixed(3)} <br>
+        First principal component corresponds to λ1.
+      `;
+    }
+  </script>
+
+</body>
+</html>
