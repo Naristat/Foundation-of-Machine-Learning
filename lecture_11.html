@@ -1,12 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecture 11</title>
+  <meta charset="UTF-8">
+  <title>Lecture 11: Convex vs Non-Convex Optimization</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background-color: #f9f9fc;
+      color: #333;
+    }
+    h1, h2 {
+      color: #004d80;
+    }
+    .theory, .example, .application {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+    }
+    .highlight {
+      color: #d63384;
+      font-weight: bold;
+    }
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+    .calculator {
+      background: #fff3cd;
+      border-left: 5px solid #ffc107;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+    button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      background: #004d80;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0077b6;
+    }
+  </style>
 </head>
 <body>
-    <h1>Lecture 11</h1>
-    <p>Content for Lecture 11 will go here.</p>
+
+  <h1>Lecture 11: Convex and Non-Convex Optimization</h1>
+
+  <div class="theory">
+    <h2>1. Convex Optimization – Basics</h2>
+    <p>A set <i>C</i> is <span class="highlight">convex</span> if for any two points 
+      \(x_1, x_2 \in C\), the line segment joining them is also in <i>C</i>.  
+      Mathematically:  
+      <br> \( \theta x_1 + (1-\theta)x_2 \in C, \ \forall \theta \in [0,1] \).
+    </p>
+    <p>A function \(f(x)\) is <span class="highlight">convex</span> if:  
+      \( f(\theta x_1 + (1-\theta)x_2) \leq \theta f(x_1) + (1-\theta)f(x_2) \).
+    </p>
+    <p>A <b>convex optimization problem</b> has:  
+      <ul>
+        <li>Convex objective function (e.g., quadratic loss, hinge loss)</li>
+        <li>Convex feasible region (constraints form convex sets)</li>
+      </ul>
+    </p>
+  </div>
+
+  <div class="theory">
+    <h2>2. Properties of Convex Problems</h2>
+    <ul>
+      <li>Any local minimum is a global minimum.</li>
+      <li>Well-studied algorithms guarantee convergence.</li>
+      <li>Efficient solvers exist (Interior Point, Gradient Descent, etc.).</li>
+    </ul>
+  </div>
+
+  <div class="example">
+    <h2>3. Example of Convex and Non-Convex Functions</h2>
+    <p><b>Convex Example:</b> \( f(x) = x^2 \) → Single global minimum at \(x=0\).</p>
+    <p><b>Non-Convex Example:</b> \( f(x) = x^4 - 3x^2 + 2 \) → Multiple local minima.</p>
+  </div>
+
+  <div class="application">
+    <h2>4. Applications in Machine Learning</h2>
+    <ul>
+      <li><b>Convex Optimization:</b> Linear Regression, Logistic Regression, SVMs.</li>
+      <li><b>Non-Convex Optimization:</b> Deep Neural Networks (non-linear activations).</li>
+    </ul>
+  </div>
+
+  <div class="theory">
+    <h2>5. Convex vs Non-Convex – Comparison</h2>
+    <div class="comparison">
+      <div>
+        <h3>Convex Optimization</h3>
+        <ul>
+          <li>Easy to solve (polynomial time algorithms).</li>
+          <li>No risk of local minima traps.</li>
+          <li>Guaranteed global optimum.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Non-Convex Optimization</h3>
+        <ul>
+          <li>Hard to solve, may get stuck in local minima/saddle points.</li>
+          <li>Useful in complex models (e.g., deep learning).</li>
+          <li>Global optimum not guaranteed.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="calculator">
+    <h2>6. Interactive Gradient Descent Demo</h2>
+    <p>Select function type and try gradient descent updates:</p>
+    <select id="funcType">
+      <option value="convex">Convex: f(x) = x²</option>
+      <option value="nonconvex">Non-Convex: f(x) = x⁴ - 3x² + 2</option>
+    </select>
+    <br><br>
+    <label>Learning Rate: <input type="number" id="lr" value="0.1" step="0.01"></label>
+    <br><br>
+    <label>Starting x: <input type="number" id="x" value="2" step="0.1"></label>
+    <br><br>
+    <button onclick="step()">Do One Step</button>
+    <p id="output"></p>
+  </div>
+
+  <script>
+    function f(x, type) {
+      if (type === "convex") return x*x;
+      else return Math.pow(x,4) - 3*x*x + 2;
+    }
+
+    function grad(x, type) {
+      if (type === "convex") return 2*x;
+      else return 4*Math.pow(x,3) - 6*x;
+    }
+
+    function step() {
+      let type = document.getElementById("funcType").value;
+      let lr = parseFloat(document.getElementById("lr").value);
+      let x = parseFloat(document.getElementById("x").value);
+
+      let g = grad(x, type);
+      x = x - lr * g;
+
+      document.getElementById("x").value = x.toFixed(4);
+      document.getElementById("output").innerHTML = 
+        `New x = ${x.toFixed(4)}, f(x) = ${f(x, type).toFixed(4)}`;
+    }
+  </script>
+
 </body>
 </html>
