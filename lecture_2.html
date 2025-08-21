@@ -1,358 +1,56 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Mathematical Foundation for Machine Learning</title>
-
-  <!-- Basic styling (responsive, readable) -->
+  <meta charset="UTF-8">
+  <title>Lecture 2 - EVD & SVD</title>
   <style>
-    :root{
-      --bg:#f7f9fb; --card:#ffffff; --accent:#2563eb; --muted:#6b7280;
-      --maxw:1100px;
-      --radius:12px;
-      --glass: rgba(255,255,255,0.7);
-      font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0; background:linear-gradient(180deg,#f3f6fb, #f7f9fb);
-      color:#0f172a; -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale; line-height:1.55;
-    }
-    header{
-      background:transparent; padding:18px 20px; position:sticky; top:0; z-index:40;
-      backdrop-filter: blur(6px);
-    }
-    .container{ max-width:var(--maxw); margin:0 auto; padding:0 20px; }
-    .nav{
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-    }
-    .brand{ display:flex; align-items:center; gap:12px; font-weight:700; color:var(--accent); }
-    .brand svg{ width:38px; height:38px }
-    nav a{ margin-left:18px; text-decoration:none; color:var(--muted); font-weight:600; }
-    nav a:hover{ color:var(--accent) }
-
-    main{ max-width:var(--maxw); margin:28px auto; padding:0 20px 80px; }
-
-    .hero{
-      display:grid; grid-template-columns:1fr 380px; gap:24px; align-items:center;
-      margin-bottom:22px;
-    }
-    .hero-card{ background:var(--card); padding:26px; border-radius:var(--radius);
-      box-shadow:0 6px 24px rgba(12,18,40,0.06);
-    }
-    .hero h1{ margin:0 0 8px; font-size:24px; }
-    .hero p{ margin:0 0 14px; color:var(--muted) }
-
-    .toc{ display:flex; flex-direction:column; gap:10px }
-    .toc a{ text-decoration:none; padding:12px 14px; border-radius:10px; display:block;
-      background:linear-gradient(180deg,#fbfdff,#ffffff); color:#0b1220; font-weight:600; }
-    .toc a small{ display:block; color:var(--muted); font-weight:500; margin-top:4px }
-
-    section.card{
-      background:var(--card); border-radius:12px; padding:20px; margin-bottom:18px;
-      box-shadow:0 6px 18px rgba(12,18,40,0.04);
-    }
-    h2{ margin:0 0 8px; color:#0f172a }
-    h3{ margin:10px 0 8px; color:#123; font-size:18px }
-    p{ margin:0 0 10px; color:var(--muted) }
-
-    .example{ background:#f3f6fb; padding:12px; border-left:4px solid var(--accent); border-radius:8px; margin:10px 0; font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace; color:#0b1220 }
-    table{ border-collapse:collapse }
-    td, th{ padding:8px; border:1px solid #e6eef8; }
-
-    .grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-    .small{ font-size:0.92rem; color:var(--muted) }
-
-    .controls{ display:flex; gap:8px; align-items:center; margin-top:12px; }
-    button.btn{ padding:8px 12px; border-radius:8px; border:0; cursor:pointer; background:var(--accent); color:#fff; font-weight:700 }
-    button.ghost{ background:transparent; border:1px solid #d1e3ff; color:var(--accent) }
-
-    pre{ background:#0b1220; color:#e6f0ff; padding:12px; border-radius:8px; overflow:auto; font-size:13px }
-    code.inline{ background:#eef2ff; padding:2px 6px; border-radius:6px; color:#063; font-family:monospace }
-
-    .collapsible { border-radius:10px; overflow:hidden; border:1px solid #e6eef8 }
-    .collapsible summary{ list-style:none; padding:12px 14px; cursor:pointer; background:linear-gradient(180deg,#fff,#fbfdff); font-weight:700 }
-    .collapsible div{ padding:12px 14px; background: #fcfeff }
-
-    footer{ padding:28px 20px; text-align:center; color:var(--muted); font-size:14px }
-    @media (max-width:880px){
-      .hero{ grid-template-columns:1fr; }
-      .grid-2{ grid-template-columns:1fr; }
-      nav a{ display:none }
-    }
+    body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+    nav { margin-bottom: 20px; }
+    nav a { margin-right: 15px; text-decoration: none; color: #0073e6; }
+    pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
   </style>
-
-  <!-- MathJax for rendering math -->
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script id="MathJax-script" async
-    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
-  </script>
-
-  <!-- numeric.js for small demo (SVD) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
-
 </head>
 <body>
+  <nav>
+    <a href="Lecture1.html">Lecture 1</a>
+    <a href="Lecture2.html">Lecture 2</a>
+    <a href="Lecture3.html">Lecture 3</a>
+  </nav>
 
-  <header>
-    <div class="container nav">
-      <div class="brand" aria-hidden="true">
-        <!-- simple logo -->
-        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="2" y="2" width="44" height="44" rx="10" fill="#eff6ff"/>
-          <path d="M12 32L20 14L28 32H12Z" fill="#2563eb"/>
-          <circle cx="36" cy="14" r="5" fill="#60a5fa"/>
-        </svg>
-        <span>Math for ML — Lecture Series</span>
-      </div>
+  <h1>Lecture 2: Eigenvalue Decomposition (EVD) & Singular Value Decomposition (SVD)</h1>
 
-      <nav aria-label="Main navigation">
-        <a href="#lecture1">Lecture 1</a>
-        <a href="#calculus">Calculus</a>
-        <a href="#evd-svd">EVD & SVD</a>
-        <a href="#examples">Examples</a>
-        <a href="#resources">Resources</a>
-      </nav>
-    </div>
-  </header>
+  <h2>1. Eigenvalue Decomposition (EVD)</h2>
+  <p>EVD is used in ML for feature extraction, PCA, and stability analysis of systems.</p>
 
-  <main class="container">
-
-    <!-- HERO -->
-    <div class="hero-card hero">
-      <div>
-        <h1>Lecture 1 — Mathematical Foundations for ML</h1>
-        <p>A concise, practical overview: linear algebra, probability, calculus, eigen-decomposition, SVD — with machine learning examples and small interactive demos.</p>
-
-        <div class="controls">
-          <button class="btn" onclick="scrollToId('evd-svd')">Jump to EVD & SVD</button>
-          <button class="ghost" onclick="scrollToId('examples')">View Examples</button>
-        </div>
-      </div>
-
-      <aside class="hero-card">
-        <strong>Contents</strong>
-        <div class="toc" style="margin-top:10px;">
-          <a href="#lecture1">Linear Algebra <small>Vectors, Matrices, Ops</small></a>
-          <a href="#calculus">Calculus <small>Derivatives, Gradient, Chain Rule</small></a>
-          <a href="#evd-svd">EVD & SVD <small>PCA, Compression, Recommenders</small></a>
-          <a href="#examples">Examples <small>Python snippets & demos</small></a>
-          <a href="#resources">Resources <small>Links & downloads</small></a>
-        </div>
-      </aside>
-    </div>
-
-    <!-- LECTURE 1: Linear Algebra -->
-    <section id="lecture1" class="card" aria-labelledby="lec1">
-      <h2 id="lec1">1. Linear Algebra — Core Concepts</h2>
-      <p class="small">Data and models in ML are expressed with vectors and matrices. This short reference ties each concept to an ML use-case.</p>
-
-      <div class="grid-2">
-        <div>
-          <h3>Matrix & Vector</h3>
-          <p>Dataset matrix: <code class="inline">X ∈ ℝ<sup>m×n</sup></code> (m samples, n features). A prediction for linear model uses dot product <code class="inline">ŷ = wᵀx + b</code>.</p>
-
-          <div class="example">
-            \( X = \begin{bmatrix} x_{11} & x_{12} & \dots & x_{1n} \\ \vdots & \vdots & \ddots & \vdots \\ x_{m1} & x_{m2} & \dots & x_{mn} \end{bmatrix} \)
-          </div>
-
-          <h3>Operations</h3>
-          <ul class="small">
-            <li><strong>Matrix multiply:</strong> used in forward pass of neural networks — <code class="inline">Z = XW</code></li>
-            <li><strong>Transpose:</strong> used in normal equations — <code class="inline">w = (XᵀX)⁻¹Xᵀy</code></li>
-            <li><strong>Norms:</strong> L2 norm for regularization — <code class="inline">λ‖w‖²</code></li>
-          </ul>
-        </div>
-
-        <div>
-          <h3>Vector Spaces & Similarity</h3>
-          <p>Cosine similarity, Euclidean distance are vector-space notions used in information retrieval, clustering and embeddings.</p>
-
-          <div class="example">
-            Cosine similarity: \( \text{cos}(x,y) = \frac{x^T y}{\|x\|_2 \|y\|_2} \)
-          </div>
-
-          <h3>ML Uses</h3>
-          <ul class="small">
-            <li>PCA, feature transforms, embeddings (word2vec, sentence embeddings)</li>
-            <li>Distance-based methods: k-NN, clustering</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- CALCULUS -->
-    <section id="calculus" class="card" aria-labelledby="calc">
-      <h2 id="calc">2. Calculus — Optimization & Learning</h2>
-      <p class="small">Gradients, partial derivatives and the chain rule power optimization algorithms used to train models.</p>
-
-      <h3>Derivatives & Gradients</h3>
-      <p>The derivative of a scalar function gives instantaneous rate of change. For multi-parameter models we use the gradient vector:</p>
-      <div class="example">
-        \( f(x,y) = x^2 + y^2 \quad \Rightarrow \quad \nabla f = \begin{bmatrix} 2x \\ 2y \end{bmatrix} \)
-      </div>
-
-      <h3>Chain Rule & Backpropagation</h3>
-      <p>Backprop applies the chain rule to compute gradients through layers. If \(L\) is loss and \(a = g(z)\), then</p>
-      <div class="example">
-        \( \frac{dL}{dz} = \frac{dL}{da} \cdot \frac{da}{dz} \)
-      </div>
-
-      <h3>Optimization Methods</h3>
-      <ul class="small">
-        <li>Gradient Descent: \( w ← w - η ∇_w L \)</li>
-        <li>Stochastic & Mini-batch variants: practical for large datasets</li>
-        <li>Adaptive optimizers: Adam, RMSProp — scale updates per-parameter</li>
-      </ul>
-    </section>
-
-    <!-- EVD & SVD -->
-    <section id="evd-svd" class="card" aria-labelledby="evd">
-      <h2 id="evd">3. Eigenvalue Decomposition (EVD) & Singular Value Decomposition (SVD)</h2>
-      <p class="small">Both decompositions reveal structure in matrices. Use EVD for square symmetric covariance matrices; use SVD for any rectangular matrix (data, images, NLP).</p>
-
-      <div class="grid-2">
-        <div>
-          <h3>Eigenvalue Decomposition (EVD)</h3>
-          <p>If A is square and diagonalizable: \( A = V Λ V^{-1} \) with \(Av = λv\).</p>
-          <p class="small"><strong>ML application:</strong> PCA via covariance matrix \(Σ = \frac{1}{m}XᵀX\). Eigenvectors (principal directions) with largest eigenvalues capture most variance.</p>
-
-          <div class="example">
-            Covariance PCA step: compute eigenpairs of \(Σ\) and project: \(Z = X V_k\) (keep top-k eigenvectors).
-          </div>
-        </div>
-
-        <div>
-          <h3>Singular Value Decomposition (SVD)</h3>
-          <p>For any \(A ∈ ℝ^{m×n}\): \( A = U Σ V^T \) where Σ diagonal contains singular values \(σ_1 ≥ σ_2 ≥ ...\).</p>
-          <p class="small"><strong>ML application:</strong> LSA in NLP (reduce term-document matrix), low-rank recommender systems (matrix factorization), image compression.</p>
-
-          <div class="example">
-            Rank-k approximation: \( A_k = U_k Σ_k V_k^T \) is the best rank-k approximation (in Frobenius norm).
-          </div>
-        </div>
-      </div>
-
-      <h3>When to use each</h3>
-      <ul class="small">
-        <li>EVD: square, symmetric (covariance), gives orthogonal eigenvectors.</li>
-        <li>SVD: any matrix, numerically stable, gives left & right singular vectors (useful when m ≠ n).</li>
-      </ul>
-
-      <!-- small interactive demo -->
-      <div style="margin-top:14px;">
-        <strong>Interactive: Compute SVD of a small matrix (client-side)</strong>
-        <p class="small">Click <em>Compute SVD</em> and view singular values + rank-1 reconstruction.</p>
-
-        <div style="display:flex; gap:10px; align-items:center; margin-top:8px;">
-          <label class="small">Matrix (2×2):</label>
-          <input id="m00" value="3" style="width:56px;padding:6px;border-radius:6px"/>
-          <input id="m01" value="1" style="width:56px;padding:6px;border-radius:6px"/>
-          <input id="m10" value="1" style="width:56px;padding:6px;border-radius:6px"/>
-          <input id="m11" value="3" style="width:56px;padding:6px;border-radius:6px"/>
-          <button class="btn" onclick="computeSVD()">Compute SVD</button>
-          <button class="ghost" onclick="fillRand()">Random</button>
-        </div>
-
-        <div id="svdOut" style="margin-top:12px"></div>
-      </div>
-    </section>
-
-    <!-- EXAMPLES -->
-    <section id="examples" class="card" aria-labelledby="ex">
-      <h2 id="ex">4. Examples & Code Snippets</h2>
-
-      <h3>Python — PCA from SVD (scikit-learn alternative)</h3>
-      <pre><code>
-# PCA via SVD (numpy)
+  <h3>Python Example: Eigenvalues & Eigenvectors</h3>
+  <pre><code class="language-python">
 import numpy as np
-X = X_centered        # mean-centered data (m x n)
-U, S, VT = np.linalg.svd(X, full_matrices=False)
-# principal components (features -> right singular vectors)
-V = VT.T
-# project to k components:
-k = 2
-Z = X.dot(V[:, :k])
-      </code></pre>
 
-      <h3>Python — Linear Regression (normal equation)</h3>
-      <pre><code>
-# w = (X^T X)^(-1) X^T y
+A = np.array([[4, 2], 
+              [1, 3]])
+eigenvalues, eigenvectors = np.linalg.eig(A)
+
+print("Eigenvalues:", eigenvalues)
+print("Eigenvectors:\n", eigenvectors)
+  </code></pre>
+
+  <h2>2. Singular Value Decomposition (SVD)</h2>
+  <p>SVD is widely used in recommender systems, image compression, and noise reduction.</p>
+
+  <h3>Python Example: SVD</h3>
+  <pre><code class="language-python">
 import numpy as np
-X_with_bias = np.hstack([np.ones((m,1)), X])
-w = np.linalg.inv(X_with_bias.T @ X_with_bias) @ X_with_bias.T @ y
-      </code></pre>
 
-      <h3>Notes</h3>
-      <ul class="small">
-        <li>Use SVD for PCA when n (features) is large or when X is not square.</li>
-        <li>Numerical stability: avoid explicit inverse; use solvers (np.linalg.solve) or regularization.</li>
-      </ul>
-    </section>
+A = np.array([[1, 0, 0],
+              [0, 1, 0],
+              [0, 0, 0],
+              [0, 0, 0]])
 
-    <!-- RESOURCES -->
-    <section id="resources" class="card" aria-labelledby="res">
-      <h2 id="res">5. Resources & Further Reading</h2>
-      <ul class="small">
-        <li><strong>Books:</strong> "Pattern Recognition and Machine Learning" (Bishop), "Linear Algebra and Learning from Data" (Gilbert Strang)</li>
-        <li><strong>Online:</strong> MIT OCW Linear Algebra, Andrew Ng's ML course (Stanford)</li>
-        <li><strong>Libraries:</strong> NumPy, SciPy, scikit-learn (PCA, TruncatedSVD), surprise (recommenders)</li>
-      </ul>
+U, S, Vt = np.linalg.svd(A)
 
-      <h3 style="margin-top:12px">Download</h3>
-      <p class="small">You may save this page or copy sections into lecture slides. Sample Python scripts are in the Examples section.</p>
-    </section>
-  </main>
-
-  <footer>
-    © <span id="year"></span> Mathematical Foundations for ML — Produced for teaching & reference.
-  </footer>
-
-  <!-- small scripts: scrolling, SVD demo, dynamic year -->
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-
-    function scrollToId(id){
-      const el = document.getElementById(id);
-      if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
-    }
-
-    function computeSVD(){
-      const a = +document.getElementById('m00').value;
-      const b = +document.getElementById('m01').value;
-      const c = +document.getElementById('m10').value;
-      const d = +document.getElementById('m11').value;
-      const A = [[a,b],[c,d]];
-      // numeric.svd returns {U,S,V}
-      const res = numeric.svd(A);
-      const U = res.U, S = res.S, V = res.V;
-      const out = document.getElementById('svdOut');
-      out.innerHTML = `
-        <div class="small">
-          <strong>Singular values:</strong> ${S.map(s=>s.toFixed(4)).join(', ')}<br/>
-          <strong>U:</strong> <pre style="display:inline-block;background:#f3f6fb;padding:8px;border-radius:8px">${JSON.stringify(U.map(row=>row.map(v=>+v.toFixed(4))))}</pre><br/>
-          <strong>V:</strong> <pre style="display:inline-block;background:#f3f6fb;padding:8px;border-radius:8px">${JSON.stringify(V.map(row=>row.map(v=>+v.toFixed(4))))}</pre>
-        </div>
-      `;
-      // show best rank-1 approx
-      const u1 = [[U[0][0]],[U[1][0]]];
-      const v1 = [[V[0][0]],[V[1][0]]];
-      const s1 = S[0];
-      // reconstruct rank-1: s1 * u1 * v1^T
-      const recon = numeric.mul(s1, numeric.dot(u1, numeric.transpose(v1)));
-      const recHtml = `<div style="margin-top:10px" class="small"><strong>Rank-1 reconstruction:</strong><pre style="display:inline-block;background:#f3f6fb;padding:8px;border-radius:8px">${JSON.stringify(recon.map(row=>row.map(v=>+v.toFixed(4))))}</pre></div>`;
-      out.innerHTML += recHtml;
-    }
-
-    function fillRand(){
-      // small change to inputs
-      document.getElementById('m00').value = (Math.random()*4+1).toFixed(2);
-      document.getElementById('m01').value = (Math.random()*4-2).toFixed(2);
-      document.getElementById('m10').value = (Math.random()*3-1).toFixed(2);
-      document.getElementById('m11').value = (Math.random()*5).toFixed(2);
-    }
-  </script>
+print("U:\n", U)
+print("Singular values:", S)
+print("Vt:\n", Vt)
+  </code></pre>
 </body>
 </html>
