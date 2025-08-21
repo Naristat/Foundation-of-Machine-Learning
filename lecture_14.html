@@ -1,12 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecture 14</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lecture 14: Optimization for ML in Practice</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.6;
+      background: #f4f8fb;
+    }
+    h1, h2, h3 {
+      color: #003366;
+    }
+    pre {
+      background: #222;
+      color: #eee;
+      padding: 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+    .note {
+      background: #e6f7ff;
+      border-left: 4px solid #007acc;
+      padding: 10px;
+      margin: 15px 0;
+    }
+    ul {
+      margin-left: 20px;
+    }
+  </style>
 </head>
 <body>
-    <h1>Lecture 14</h1>
-    <p>Content for Lecture 14 will go here.</p>
+
+  <h1>Lecture 14: Optimization for Machine Learning in Practice</h1>
+
+  <p>
+    In this lecture, we explore how optimization algorithms are practically implemented 
+    in modern deep learning frameworks like <b>PyTorch</b> and <b>TensorFlow</b>.  
+    Optimization is at the heart of training machine learning models, especially 
+    neural networks. These frameworks provide built-in optimizers that make it easy 
+    to experiment with different techniques.
+  </p>
+
+  <h2>1. Why Optimization Matters?</h2>
+  <ul>
+    <li>Finds the best parameters (weights & biases) for a model.</li>
+    <li>Minimizes a <b>loss function</b> (e.g., MSE, cross-entropy).</li>
+    <li>Determines how fast and how well the model learns.</li>
+  </ul>
+
+  <div class="note">
+    Example: In a linear regression model, optimization finds the line that best fits 
+    the data by minimizing the squared error between predictions and actual values.
+  </div>
+
+  <h2>2. Optimization in <b>PyTorch</b></h2>
+  <h3>Example: Linear Regression with SGD</h3>
+  <pre>
+import torch
+import torch.nn as nn
+import torch.optim as optim
+
+# Sample data
+x = torch.tensor([[1.0], [2.0], [3.0], [4.0]])
+y = torch.tensor([[2.0], [4.0], [6.0], [8.0]])
+
+# Model: y = wx + b
+model = nn.Linear(1, 1)
+
+# Loss function (Mean Squared Error)
+criterion = nn.MSELoss()
+
+# Optimizer: Stochastic Gradient Descent
+optimizer = optim.SGD(model.parameters(), lr=0.01)
+
+# Training loop
+for epoch in range(100):
+    y_pred = model(x)
+    loss = criterion(y_pred, y)
+
+    optimizer.zero_grad()   # Reset gradients
+    loss.backward()         # Backpropagation
+    optimizer.step()        # Update parameters
+
+print("Learned parameters:", list(model.parameters()))
+  </pre>
+
+  <p><b>Key points:</b></p>
+  <ul>
+    <li><code>optimizer.zero_grad()</code> clears old gradients.</li>
+    <li><code>loss.backward()</code> computes gradients using backpropagation.</li>
+    <li><code>optimizer.step()</code> updates parameters.</li>
+  </ul>
+
+  <h2>3. Optimization in <b>TensorFlow</b> / Keras</h2>
+  <h3>Example: Linear Regression with Adam</h3>
+  <pre>
+import tensorflow as tf
+
+# Sample data
+x = tf.constant([[1.0], [2.0], [3.0], [4.0]])
+y = tf.constant([[2.0], [4.0], [6.0], [8.0]])
+
+# Model: y = wx + b
+model = tf.keras.Sequential([tf.keras.layers.Dense(1)])
+
+# Compile with optimizer and loss
+model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
+              loss='mse')
+
+# Train model
+model.fit(x, y, epochs=100, verbose=0)
+
+# Show learned weights
+print("Learned parameters:", model.layers[0].get_weights())
+  </pre>
+
+  <p><b>Key points:</b></p>
+  <ul>
+    <li><b>Keras</b> makes optimization more automated than PyTorch.</li>
+    <li>Different optimizers like <code>SGD</code>, <code>Adam</code>, 
+        <code>RMSprop</code> can be swapped easily.</li>
+  </ul>
+
+  <h2>4. Popular Optimizers in ML Frameworks</h2>
+  <ul>
+    <li><b>SGD</b> – Simple and widely used, requires careful tuning of learning rate.</li>
+    <li><b>Momentum</b> – Speeds up SGD by damping oscillations.</li>
+    <li><b>Adam</b> – Adaptive learning rates, works well in practice.</li>
+    <li><b>RMSprop</b> – Scales learning rates based on recent gradients.</li>
+    <li><b>AdaGrad</b> – Adjusts learning rate per parameter.</li>
+  </ul>
+
+  <h2>5. Applications in ML</h2>
+  <ul>
+    <li>Training deep neural networks for image recognition.</li>
+    <li>Natural language processing tasks like translation.</li>
+    <li>Reinforcement learning where agents optimize policies.</li>
+    <li>Large-scale recommendation systems.</li>
+  </ul>
+
+  <h2>6. Summary</h2>
+  <p>
+    PyTorch and TensorFlow make optimization practical by handling gradient computation, 
+    parameter updates, and efficient GPU usage. Choosing the right optimizer 
+    and tuning learning rates can dramatically improve performance.
+  </p>
+
 </body>
 </html>
