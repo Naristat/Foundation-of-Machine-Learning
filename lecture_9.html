@@ -1,12 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecture 9</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lecture 9: Optimization Techniques in Machine Learning</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.6;
+      background: #f4f8fb;
+      color: #222;
+    }
+    h1 {
+      text-align: center;
+      color: #1e3d59;
+    }
+    h2 {
+      color: #145374;
+    }
+    .example, .application, .calculator {
+      background: #fff;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .calculator input, .calculator button {
+      margin: 5px;
+      padding: 8px;
+    }
+    .output {
+      margin-top: 10px;
+      font-weight: bold;
+      color: #0d630d;
+    }
+  </style>
 </head>
 <body>
-    <h1>Lecture 9</h1>
-    <p>Content for Lecture 9 will go here.</p>
+
+  <h1>Lecture 9: Optimization Techniques in Machine Learning</h1>
+
+  <h2>1. Introduction</h2>
+  <p>
+    Optimization is the core of machine learning. Training a model essentially means 
+    <b>minimizing or maximizing an objective (loss) function</b>. For example:
+  </p>
+  <ul>
+    <li>Linear Regression → minimize Mean Squared Error (MSE)</li>
+    <li>Logistic Regression → minimize Cross-Entropy Loss</li>
+    <li>Neural Networks → minimize complex loss using Gradient Descent</li>
+  </ul>
+
+  <h2>2. Types of Optimization Problems</h2>
+  <ul>
+    <li><b>Unconstrained optimization:</b> No restrictions on parameter values.</li>
+    <li><b>Constrained optimization:</b> Parameters must satisfy certain conditions (e.g., non-negativity).</li>
+    <li><b>Convex vs Non-Convex problems:</b> Convex problems guarantee global minimum, 
+        non-convex may have many local minima.</li>
+  </ul>
+
+  <h2>3. Key Optimization Techniques</h2>
+  <ul>
+    <li><b>Gradient Descent (GD):</b> Iteratively update parameters opposite to the gradient direction.</li>
+    <li><b>Stochastic Gradient Descent (SGD):</b> Uses random mini-batches for faster updates.</li>
+    <li><b>Momentum:</b> Adds a fraction of the previous update to speed up convergence.</li>
+    <li><b>Adaptive Methods:</b> (Adagrad, RMSProp, Adam) adjust learning rate dynamically.</li>
+  </ul>
+
+  <div class="example">
+    <h2>4. Example: Gradient Descent for a Quadratic Function</h2>
+    <p>Suppose we want to minimize:</p>
+    <p style="text-align:center;"><b>f(x) = (x - 3)<sup>2</sup></b></p>
+    <p>
+      The derivative is <b>f'(x) = 2(x - 3)</b>. Gradient Descent update rule:
+    </p>
+    <p style="text-align:center;"><b>x<sub>new</sub> = x<sub>old</sub> - η * f'(x)</b></p>
+    <p>where η is the learning rate.</p>
+  </div>
+
+  <div class="application">
+    <h2>5. Applications in Machine Learning</h2>
+    <ul>
+      <li><b>Regression models:</b> Optimize weights to minimize error.</li>
+      <li><b>Classification:</b> Optimize cross-entropy loss for better accuracy.</li>
+      <li><b>Deep Learning:</b> Training large neural networks with millions of parameters.</li>
+      <li><b>Support Vector Machines (SVMs):</b> Use optimization to maximize margin.</li>
+      <li><b>Reinforcement Learning:</b> Optimize reward functions.</li>
+    </ul>
+  </div>
+
+  <div class="calculator">
+    <h2>6. Interactive Gradient Descent Calculator</h2>
+    <p>Minimize <b>f(x) = (x - 3)²</b> using Gradient Descent.</p>
+    <label>Initial x: <input type="number" id="xVal" value="10"></label>
+    <label>Learning rate (η): <input type="number" id="lr" step="0.01" value="0.1"></label>
+    <label>Iterations: <input type="number" id="iter" value="20"></label>
+    <button onclick="runGD()">Run Gradient Descent</button>
+    <div class="output" id="gdResult"></div>
+  </div>
+
+  <script>
+    function runGD() {
+      let x = parseFloat(document.getElementById("xVal").value);
+      const lr = parseFloat(document.getElementById("lr").value);
+      const iterations = parseInt(document.getElementById("iter").value);
+      let steps = [];
+      for (let i = 0; i < iterations; i++) {
+        let grad = 2 * (x - 3);
+        x = x - lr * grad;
+        steps.push(`Step ${i+1}: x = ${x.toFixed(4)}, f(x) = ${(x-3)**2}`);
+      }
+      document.getElementById("gdResult").innerHTML = steps.join("<br>");
+    }
+  </script>
+
 </body>
 </html>
