@@ -1,12 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecture 8</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lecture 8 — Gaussian Random Vectors</title>
+  <script>
+    // MathJax for LaTeX rendering
+    window.MathJax = { tex: { inlineMath: [["$","$"],["\\(","\\)"]], displayMath: [["$$","$$"]] }, svg: { fontCache: 'global' } };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+  <style>
+    :root{
+      --bg: #0b1220; --panel:#0f172a; --text:#e5e7eb; --muted:#94a3b8; --accent:#60a5fa; --accent2:#34d399;
+      --border: rgba(148,163,184,.25); --shadow: 0 10px 30px rgba(0,0,0,.35); --radius: 18px;
+    }
+    *{ box-sizing:border-box }
+    body{ margin:0; padding:32px 18px; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Inter, Roboto, Helvetica, Arial; color:var(--text); background:
+      radial-gradient(1000px 500px at 80% -10%, rgba(96,165,250,.08), transparent), var(--bg); }
+    .container{ max-width:1100px; margin:0 auto }
+    .badge{ display:inline-flex; gap:8px; align-items:center; font-size:12px; padding:6px 10px; border-radius:999px; background:#e0f2fe; color:#0a2540; }
+    h1{ margin:8px 0 2px; font-size: clamp(28px, 5vw, 46px) }
+    p.lead{ color:var(--muted); margin:0 0 8px }
+    .card{ background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); overflow:clip; }
+    .card h2{ margin:0; padding:16px 18px; font-size:20px; border-bottom:1px solid var(--border); background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0)); }
+    .card .content{ padding:16px 18px 20px; line-height:1.6 }
+    .grid{ display:grid; grid-template-columns:1.2fr .8fr; gap:16px }
+    @media (max-width: 900px){ .grid{ grid-template-columns:1fr } }
+    code,kbd{ background:rgba(2,6,23,.55); padding:2px 6px; border:1px solid rgba(148,163,184,.25); border-radius:8px }
+    .muted{ color:var(--muted) }
+    ul{ margin:8px 0 0 18px } li{ margin:6px 0 }
+
+    .controls{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; align-items:end }
+    .controls label{ display:grid; gap:6px; font-size:13px; color:var(--muted) }
+    input[type="range"], select, input[type="checkbox"]{ accent-color: var(--accent) }
+    .row{ display:flex; gap:12px; align-items:center }
+    .btn{ background:linear-gradient(180deg, rgba(96,165,250,.9), rgba(96,165,250,.75)); border:none; color:#08243d; padding:10px 14px; border-radius:12px; font-weight:700; cursor:pointer }
+    .btn.secondary{ background:linear-gradient(180deg, rgba(148,163,184,.35), rgba(148,163,184,.2)); color:var(--text) }
+
+    .figure{ position:relative; height:380px; border-top:1px solid var(--border); background:rgba(2,6,23,.45); }
+    canvas{ width:100%; height:100% }
+    .legend{ position:absolute; right:10px; bottom:10px; font-size:12px; display:grid; gap:6px }
+    .legend .item{ display:flex; gap:6px; align-items:center }
+    .dot{ width:12px; height:12px; border-radius:999px }
+
+    .apps{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px }
+    @media (max-width:680px){ .apps{ grid-template-columns:1fr } }
+    .apps .app{ background:rgba(2,6,23,.45); border:1px dashed var(--border); border-radius:14px; padding:10px 12px }
+  </style>
 </head>
 <body>
-    <h1>Lecture 8</h1>
-    <p>Content for Lecture 8 will go here.</p>
-</body>
-</html>
+  <div class="container">
+    <div class="badge">🎓 Probability — Lecture 8</div>
+    <h1>Gaussian Random Vectors</h1>
+    <p class="lead">A random vector $X \in \mathbb{R}^d$ is <em>Gaussian</em> if every linear form $a^\top X$ is univariate normal. We write $X \sim \mathcal{N}(\mu, \Sigma)$ with mean $\mu$ and covariance $\Sigma \succeq 0$.
+    </p>
+
+    <section class="grid" style="margin-top:14px">
+      <div class="card">
+        <h2>Definition & Density</h2>
+        <div class="content">
+          <p><strong>Density (full-rank $\Sigma$)</strong>:</p>
+          <p>$$f_X(x) = \frac{1}{(2\pi)^{d/2} \, (\det\Sigma)^{1/2}} \exp\!\Big(-\tfrac12 (x-\mu)^\top \Sigma^{-1} (x-\mu)\Big).$$</p>
+          <ul>
+            <li>$\mu = \mathbb{E}[X]$, $\Sigma = \operatorname{Cov}(X) = \mathbb{E}[(X-\mu)(X-\mu)^\top]$.</li>
+            <li>Characteristic function: $\varphi_X(t) = \exp\{ i t^\top \mu - \tfrac12 t^\top \Sigma t\}$.</li>
+            <li>Affine invariance: If $Y = A X + b$, then $Y \sim \mathcal{N}(A\mu + b, A\Sigma A^\top)$.</li>
+          </ul>
+          <p class="muted">If $\Sigma$ is singular, density lives on a lower-dimensional affine subspace; the characteristic function still characterizes the law.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Interactive 2D Gaussian Sandbox</h2>
+        <div class="content">
+          <div class="controls" style="margin-bottom:10px">
+            <label>Mean $\mu_x$<input type="range" id="mux" min="-2" max="2" step="0.05" value="0"></label>
