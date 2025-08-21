@@ -1,12 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecture 13</title>
+  <meta charset="UTF-8">
+  <title>Lecture 13: Quadratic Programming and KKT Conditions</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      line-height: 1.6;
+      background: #f8f9fa;
+      color: #222;
+    }
+    h1, h2, h3 {
+      color: #003366;
+    }
+    .example {
+      background: #e6f2ff;
+      border-left: 6px solid #003366;
+      padding: 12px;
+      margin: 15px 0;
+    }
+    .formula {
+      background: #fff3cd;
+      border-left: 6px solid #856404;
+      padding: 12px;
+      margin: 15px 0;
+      font-family: monospace;
+    }
+    ul {
+      margin-left: 20px;
+    }
+    .application {
+      background: #e8f5e9;
+      border-left: 6px solid #2e7d32;
+      padding: 12px;
+      margin: 15px 0;
+    }
+  </style>
 </head>
 <body>
-    <h1>Lecture 13</h1>
-    <p>Content for Lecture 13 will go here.</p>
+
+  <h1>Lecture 13: Quadratic Programming (QP) and KKT Conditions</h1>
+
+  <h2>1. Introduction</h2>
+  <p>
+    Quadratic Programming (QP) is a special type of optimization problem where 
+    the objective function is quadratic and the constraints are linear.
+    It is one of the most important optimization frameworks in <b>machine learning</b>,
+    especially in Support Vector Machines (SVMs), portfolio optimization, and control systems.
+  </p>
+
+  <h2>2. General Form of Quadratic Programming</h2>
+  <div class="formula">
+    Minimize: &nbsp; f(x) = 1/2 x<sup>T</sup>Qx + c<sup>T</sup>x  <br>
+    Subject to: &nbsp; Ax ≤ b, &nbsp; Ex = d
+  </div>
+  <ul>
+    <li><b>Q</b> → Symmetric matrix (defines curvature of quadratic function)</li>
+    <li><b>c</b> → Linear coefficients vector</li>
+    <li><b>A, b</b> → Inequality constraints</li>
+    <li><b>E, d</b> → Equality constraints</li>
+  </ul>
+
+  <h2>3. Types of Quadratic Programming</h2>
+  <ul>
+    <li><b>Convex QP</b>: If <i>Q</i> is positive semidefinite → global optimum guaranteed.</li>
+    <li><b>Non-convex QP</b>: If <i>Q</i> has negative eigenvalues → local minima/maxima possible.</li>
+  </ul>
+
+  <h2>4. Properties of Quadratic Programming</h2>
+  <ul>
+    <li>Convex QPs can be solved efficiently using interior-point or active-set methods.</li>
+    <li>Non-convex QPs are NP-hard in general.</li>
+    <li>Solution depends heavily on the definiteness of matrix Q.</li>
+    <li>KKT conditions provide necessary (and for convex case, sufficient) conditions for optimality.</li>
+  </ul>
+
+  <h2>5. Karush–Kuhn–Tucker (KKT) Conditions</h2>
+  <p>
+    The KKT conditions are first-order necessary conditions for a solution in nonlinear 
+    programming to be optimal, under certain regularity conditions.
+  </p>
+  <div class="formula">
+    L(x, λ, μ) = f(x) + λ<sup>T</sup>(Ex - d) + μ<sup>T</sup>(Ax - b) <br><br>
+    Conditions: <br>
+    1. Stationarity: ∇f(x) + E<sup>T</sup>λ + A<sup>T</sup>μ = 0 <br>
+    2. Primal feasibility: Ex = d, &nbsp; Ax ≤ b <br>
+    3. Dual feasibility: μ ≥ 0 <br>
+    4. Complementary slackness: μ<sub>i</sub>(a<sub>i</sub>x - b<sub>i</sub>) = 0
+  </div>
+
+  <h2>6. Example</h2>
+  <div class="example">
+    <b>Problem:</b> <br>
+    Minimize: f(x) = (1/2)(x<sub>1</sub><sup>2</sup> + x<sub>2</sub><sup>2</sup>) - x<sub>1</sub> - 2x<sub>2</sub> <br>
+    Subject to: x<sub>1</sub> + x<sub>2</sub> ≤ 1, &nbsp; x<sub>1</sub>, x<sub>2</sub> ≥ 0 <br><br>
+    <b>Solution Steps:</b>
+    <ol>
+      <li>Formulate Lagrangian with multipliers λ and μ.</li>
+      <li>Apply KKT conditions for stationarity and feasibility.</li>
+      <li>Solve system to find optimal x<sub>1</sub>, x<sub>2</sub>.</li>
+    </ol>
+    This is a convex QP since Q = I (identity matrix) is positive definite.
+  </div>
+
+  <h2>7. Applications in Machine Learning</h2>
+  <div class="application">
+    <ul>
+      <li><b>Support Vector Machines (SVMs)</b>: Training involves solving a convex quadratic programming problem.</li>
+      <li><b>Portfolio Optimization</b>: Quadratic objective to minimize risk (variance).</li>
+      <li><b>Control Theory</b>: Model predictive control often uses QP for trajectory optimization.</li>
+      <li><b>Feature Selection</b>: QP used to minimize error subject to sparsity constraints.</li>
+    </ul>
+  </div>
+
+  <h2>8. Summary</h2>
+  <ul>
+    <li>QP = Quadratic objective + linear constraints.</li>
+    <li>KKT conditions = optimality criteria.</li>
+    <li>Convex QPs guarantee global optimal solutions.</li>
+    <li>Applications widely found in ML: SVMs, optimization, control.</li>
+  </ul>
+
 </body>
 </html>
