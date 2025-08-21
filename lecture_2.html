@@ -2,55 +2,169 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Lecture 2 - EVD & SVD</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lecture 2: Eigenvalues, Eigenvectors & EVD</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
-    nav { margin-bottom: 20px; }
-    nav a { margin-right: 15px; text-decoration: none; color: #0073e6; }
-    pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 20px;
+      background: #f9f9f9;
+      color: #333;
+    }
+    h1, h2, h3 {
+      color: #004080;
+    }
+    .example, .application, .calculator {
+      background: #fff;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    input[type="number"] {
+      width: 60px;
+      padding: 5px;
+      margin: 3px;
+      text-align: center;
+    }
+    button {
+      padding: 8px 15px;
+      background: #004080;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0066cc;
+    }
+    #results {
+      margin-top: 10px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
-  <nav>
-    <a href="Lecture1.html">Lecture 1</a>
-    <a href="Lecture2.html">Lecture 2</a>
-    <a href="Lecture3.html">Lecture 3</a>
-  </nav>
 
-  <h1>Lecture 2: Eigenvalue Decomposition (EVD) & Singular Value Decomposition (SVD)</h1>
+  <h1>Lecture 2: Eigenvalues, Eigenvectors & Eigenvalue Decomposition (EVD)</h1>
 
-  <h2>1. Eigenvalue Decomposition (EVD)</h2>
-  <p>EVD is used in ML for feature extraction, PCA, and stability analysis of systems.</p>
+  <h2>1. Introduction</h2>
+  <p>
+    Eigenvalues and eigenvectors are fundamental concepts in linear algebra that describe how a linear transformation acts on vectors. 
+    If we have a matrix <b>A</b> and a vector <b>v</b>, then <b>v</b> is an eigenvector of <b>A</b> if multiplying <b>A</b> by <b>v</b> results in a scaled version of <b>v</b>:
+  </p>
+  <p style="text-align:center; font-size:18px;"><b>A·v = λ·v</b></p>
+  <p>
+    Here, λ is called the <b>eigenvalue</b>, and it tells us how much the eigenvector is stretched or shrunk. 
+    Eigenvectors give us special directions where transformations act as simple scalings.
+  </p>
 
-  <h3>Python Example: Eigenvalues & Eigenvectors</h3>
-  <pre><code class="language-python">
-import numpy as np
+  <h2>2. Eigenvalue Decomposition (EVD)</h2>
+  <p>
+    For a square matrix <b>A</b>, if it can be decomposed as:
+  </p>
+  <p style="text-align:center; font-size:18px;"><b>A = VΛV<sup>-1</sup></b></p>
+  <p>
+    - <b>V</b> is the matrix of eigenvectors (columns are eigenvectors).<br>
+    - <b>Λ</b> is the diagonal matrix of eigenvalues.<br>
+    - This decomposition is useful in machine learning, physics, and engineering.
+  </p>
 
-A = np.array([[4, 2], 
-              [1, 3]])
-eigenvalues, eigenvectors = np.linalg.eig(A)
+  <div class="example">
+    <h2>3. Example: 2×2 Matrix</h2>
+    <p>Consider the matrix:</p>
+    <pre>
+    A = [4   2]
+        [1   3]
+    </pre>
+    <h3>Step 1: Find the characteristic equation</h3>
+    <p>det(A - λI) = 0</p>
+    <pre>
+    |4-λ   2  |
+    | 1   3-λ| = (4-λ)(3-λ) - 2 = λ² - 7λ + 10 = 0
+    </pre>
 
-print("Eigenvalues:", eigenvalues)
-print("Eigenvectors:\n", eigenvectors)
-  </code></pre>
+    <h3>Step 2: Solve for eigenvalues</h3>
+    <pre>
+    λ² - 7λ + 10 = 0 → (λ-5)(λ-2) = 0
+    → Eigenvalues: λ₁ = 5, λ₂ = 2
+    </pre>
 
-  <h2>2. Singular Value Decomposition (SVD)</h2>
-  <p>SVD is widely used in recommender systems, image compression, and noise reduction.</p>
+    <h3>Step 3: Find eigenvectors</h3>
+    <ul>
+      <li>For λ₁ = 5: Solve (A - 5I)v = 0 → Eigenvector v₁ = [2, 1]</li>
+      <li>For λ₂ = 2: Solve (A - 2I)v = 0 → Eigenvector v₂ = [-1, 1]</li>
+    </ul>
 
-  <h3>Python Example: SVD</h3>
-  <pre><code class="language-python">
-import numpy as np
+    <h3>Step 4: Form EVD</h3>
+    <pre>
+    V = [[2  -1],
+         [1   1]]
 
-A = np.array([[1, 0, 0],
-              [0, 1, 0],
-              [0, 0, 0],
-              [0, 0, 0]])
+    Λ = [[5  0],
+         [0  2]]
 
-U, S, Vt = np.linalg.svd(A)
+    A = VΛV⁻¹
+    </pre>
+  </div>
 
-print("U:\n", U)
-print("Singular values:", S)
-print("Vt:\n", Vt)
-  </code></pre>
+  <div class="application">
+    <h2>4. Applications in Machine Learning</h2>
+    <ul>
+      <li><b>Principal Component Analysis (PCA):</b> Eigenvectors of covariance matrix represent principal directions of data; eigenvalues represent variance along those directions.</li>
+      <li><b>Dimensionality Reduction:</b> Keep top-k eigenvalues/eigenvectors to project data into lower dimensions.</li>
+      <li><b>Stability Analysis:</b> Eigenvalues tell whether systems (like recurrent networks) are stable or unstable.</li>
+    </ul>
+  </div>
+
+  <div class="calculator">
+    <h2>5. Try It Yourself: Eigenvalue & Eigenvector Calculator (2×2 Matrix)</h2>
+    <p>Enter values for a 2×2 matrix:</p>
+    <input type="number" id="a11" placeholder="a11">
+    <input type="number" id="a12" placeholder="a12"><br>
+    <input type="number" id="a21" placeholder="a21">
+    <input type="number" id="a22" placeholder="a22"><br><br>
+    <button onclick="computeEigen()">Compute Eigenvalues & Eigenvectors</button>
+    <div id="results"></div>
+  </div>
+
+  <script>
+    function computeEigen() {
+      let a11 = parseFloat(document.getElementById('a11').value);
+      let a12 = parseFloat(document.getElementById('a12').value);
+      let a21 = parseFloat(document.getElementById('a21').value);
+      let a22 = parseFloat(document.getElementById('a22').value);
+
+      // Characteristic polynomial: λ² - (trace)λ + det = 0
+      let trace = a11 + a22;
+      let det = a11 * a22 - a12 * a21;
+      let discriminant = trace*trace - 4*det;
+
+      if (discriminant < 0) {
+        document.getElementById('results').innerHTML = "Complex eigenvalues (not supported in this demo).";
+        return;
+      }
+
+      let lambda1 = (trace + Math.sqrt(discriminant)) / 2;
+      let lambda2 = (trace - Math.sqrt(discriminant)) / 2;
+
+      function eigenvector(a, b, lambda) {
+        let x = b;
+        let y = lambda - a;
+        if (x === 0 && y === 0) return [1,0];
+        return [x, y];
+      }
+
+      let v1 = eigenvector(a11, a12, lambda1);
+      let v2 = eigenvector(a11, a12, lambda2);
+
+      document.getElementById('results').innerHTML =
+        `<p>Eigenvalues: λ₁ = ${lambda1.toFixed(2)}, λ₂ = ${lambda2.toFixed(2)}</p>
+         <p>Eigenvector for λ₁: [${v1[0].toFixed(2)}, ${v1[1].toFixed(2)}]</p>
+         <p>Eigenvector for λ₂: [${v2[0].toFixed(2)}, ${v2[1].toFixed(2)}]</p>`;
+    }
+  </script>
+
 </body>
 </html>
