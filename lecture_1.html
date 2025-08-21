@@ -2,60 +2,230 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Lecture 1 - Linear Algebra & Calculus</title>
+  <title>Lecture 1: Introduction to Linear Algebra and Matrix Theory</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
-    nav { margin-bottom: 20px; }
-    nav a { margin-right: 15px; text-decoration: none; color: #0073e6; }
-    pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f9f9f9;
+      line-height: 1.6;
+    }
+    h1, h2, h3 {
+      color: #2c3e50;
+    }
+    pre {
+      background: #eee;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .calculator {
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0px 0px 8px rgba(0,0,0,0.1);
+      margin-top: 20px;
+    }
+    textarea {
+      width: 45%;
+      height: 120px;
+      margin: 5px;
+    }
+    button {
+      margin: 5px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      background: #3498db;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #2980b9;
+    }
+    #result {
+      margin-top: 10px;
+      padding: 10px;
+      background: #f4f4f4;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
-  <nav>
-    <a href="Lecture1.html">Lecture 1</a>
-    <a href="Lecture2.html">Lecture 2</a>
-    <a href="Lecture3.html">Lecture 3</a>
-  </nav>
 
-  <h1>Lecture 1: Mathematical Foundations – Linear Algebra & Calculus</h1>
+  <h1>Lecture 1: Introduction to Linear Algebra and Matrix Theory</h1>
 
-  <h2>1. Vectors & Matrices</h2>
-  <p>In Machine Learning, data is often represented as vectors and matrices. Example: 
-  Each row of a dataset = one observation (feature vector).</p>
+  <h2>1. Introduction</h2>
+  <p>
+    Linear Algebra is the foundation of many machine learning algorithms. It deals with 
+    <b>vectors</b>, <b>matrices</b>, and <b>linear transformations</b>. 
+    Understanding these concepts is essential because data in machine learning is usually represented 
+    as vectors and matrices, and most algorithms involve operations on them.
+  </p>
 
-  <h3>Python Example: Vector Operations</h3>
-  <pre><code class="language-python">
-import numpy as np
-# Feature vector: [age, income, score]
-x = np.array([25, 50000, 0.85])
-y = np.array([30, 60000, 0.9])
+  <h2>2. Vectors</h2>
+  <p>
+    A vector is an ordered list of numbers. It can represent a data point (features of a person, pixel values of an image, etc.).
+    Example:
+  </p>
+  <pre>
+  v = [3, 5, 7]   # a 3-dimensional vector
+  </pre>
+  <p>
+    In machine learning, a vector often represents a single observation in the dataset.
+    For example, [height, weight, age] of a person.
+  </p>
 
-# Dot product (similarity measure)
-dot = np.dot(x, y)
-print("Dot Product:", dot)
-  </code></pre>
+  <h2>3. Matrices</h2>
+  <p>
+    A matrix is a rectangular array of numbers arranged in rows and columns.
+    Example:
+  </p>
+  <pre>
+  A = [[1, 2, 3],
+       [4, 5, 6],
+       [7, 8, 9]]
+  </pre>
+  <p>
+    In machine learning, a dataset with <i>m</i> observations and <i>n</i> features 
+    is represented as an <i>m × n</i> matrix.
+  </p>
 
-  <h2>2. Calculus in ML</h2>
-  <p>Calculus is used for optimization (training models). Gradient Descent applies derivatives to update parameters.</p>
+  <h2>4. Matrix Operations</h2>
+  <ul>
+    <li><b>Addition:</b> Add corresponding elements.</li>
+    <li><b>Multiplication:</b> Combine rows and columns (used in neural networks).</li>
+    <li><b>Transpose:</b> Flip rows into columns.</li>
+    <li><b>Determinant:</b> Tells about invertibility of a square matrix.</li>
+    <li><b>Inverse:</b> Needed for solving linear equations.</li>
+  </ul>
 
-  <h3>Example: Gradient Descent for Linear Regression</h3>
-  <pre><code class="language-python">
-import numpy as np
+  <h2>5. Applications in Machine Learning</h2>
+  <ul>
+    <li><b>Data Representation:</b> Dataset stored as a matrix (rows = samples, columns = features).</li>
+    <li><b>Linear Regression:</b> The formula <code>y = Xβ</code> uses matrix multiplication.</li>
+    <li><b>Neural Networks:</b> Forward propagation involves multiplying weight matrices with input vectors.</li>
+    <li><b>Dimensionality Reduction:</b> PCA uses eigenvalues and eigenvectors of covariance matrices.</li>
+    <li><b>Recommendation Systems:</b> Use matrix factorization (Netflix, Amazon product recommendations).</li>
+  </ul>
 
-# Simple linear regression: y = mx + c
-X = np.array([1, 2, 3, 4], dtype=float)
-Y = np.array([2, 4, 6, 8], dtype=float)
+  <h2>6. Example</h2>
+  <p>Suppose we have two matrices:</p>
+  <pre>
+  A = [[1, 2],
+       [3, 4]]
 
-m, c = 0.0, 0.0
-lr = 0.01  # learning rate
+  B = [[5, 6],
+       [7, 8]]
+  </pre>
+  <p><b>Matrix Multiplication:</b></p>
+  <pre>
+  A × B = [[1*5 + 2*7, 1*6 + 2*8],
+           [3*5 + 4*7, 3*6 + 4*8]]
 
-for _ in range(1000):
-    Y_pred = m*X + c
-    error = Y - Y_pred
-    m -= lr * (-2 * np.sum(X * error))
-    c -= lr * (-2 * np.sum(error))
+        = [[19, 22],
+           [43, 50]]
+  </pre>
 
-print("Learned slope:", m, "Intercept:", c)
-  </code></pre>
+  <h2>7. Interactive Matrix Calculator</h2>
+  <div class="calculator">
+    <p>Enter matrices in JSON-like format, e.g. <code>[[1,2],[3,4]]</code></p>
+    <textarea id="matrixA" placeholder="Enter Matrix A"></textarea>
+    <textarea id="matrixB" placeholder="Enter Matrix B"></textarea>
+    <br>
+    <button onclick="addMatrices()">Add A + B</button>
+    <button onclick="multiplyMatrices()">Multiply A × B</button>
+    <button onclick="transposeMatrix()">Transpose A</button>
+    <button onclick="determinantMatrix()">Determinant of A</button>
+    <button onclick="inverseMatrix()">Inverse of A</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function parseMatrix(id) {
+      try {
+        return JSON.parse(document.getElementById(id).value);
+      } catch {
+        alert("Invalid matrix format!");
+        return null;
+      }
+    }
+
+    function displayResult(res) {
+      document.getElementById("result").innerText = JSON.stringify(res, null, 2);
+    }
+
+    function addMatrices() {
+      let A = parseMatrix("matrixA"), B = parseMatrix("matrixB");
+      if (!A || !B) return;
+      let result = A.map((row, i) => row.map((val, j) => val + B[i][j]));
+      displayResult(result);
+    }
+
+    function multiplyMatrices() {
+      let A = parseMatrix("matrixA"), B = parseMatrix("matrixB");
+      if (!A || !B) return;
+      let result = A.map(row => B[0].map((_, j) =>
+        row.reduce((sum, val, k) => sum + val * B[k][j], 0)
+      ));
+      displayResult(result);
+    }
+
+    function transposeMatrix() {
+      let A = parseMatrix("matrixA");
+      if (!A) return;
+      let result = A[0].map((_, i) => A.map(row => row[i]));
+      displayResult(result);
+    }
+
+    function determinantMatrix() {
+      let A = parseMatrix("matrixA");
+      if (!A || A.length !== A[0].length) {
+        alert("Matrix must be square!");
+        return;
+      }
+      function det(M) {
+        if (M.length === 1) return M[0][0];
+        if (M.length === 2) return M[0][0]*M[1][1] - M[0][1]*M[1][0];
+        return M[0].reduce((acc, val, j) =>
+          acc + (-1)**j * val * det(M.slice(1).map(row => row.filter((_, k) => k !== j)))
+        , 0);
+      }
+      displayResult(det(A));
+    }
+
+    function inverseMatrix() {
+      let A = parseMatrix("matrixA");
+      if (!A || A.length !== A[0].length) {
+        alert("Matrix must be square!");
+        return;
+      }
+      let n = A.length;
+      let I = Array.from({length: n}, (_, i) =>
+        Array.from({length: n}, (_, j) => (i===j ? 1 : 0)));
+      for (let i = 0; i < n; i++) {
+        let factor = A[i][i];
+        if (factor === 0) {
+          alert("Matrix not invertible!");
+          return;
+        }
+        for (let j = 0; j < n; j++) {
+          A[i][j] /= factor;
+          I[i][j] /= factor;
+        }
+        for (let k = 0; k < n; k++) {
+          if (k !== i) {
+            let f = A[k][i];
+            for (let j = 0; j < n; j++) {
+              A[k][j] -= f * A[i][j];
+              I[k][j] -= f * I[i][j];
+            }
+          }
+        }
+      }
+      displayResult(I);
+    }
+  </script>
+
 </body>
 </html>
