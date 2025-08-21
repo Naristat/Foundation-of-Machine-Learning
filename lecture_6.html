@@ -1,12 +1,269 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecture 6</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lecture 6 — Vector Calculus: Gradients, Jacobians, Hessians & ML Applications</title>
+  <style>
+    :root{--bg:#fbfdff;--card:#fff;--accent:#0b6cf0;--muted:#263238}
+    body{font-family:Inter, system-ui, -apple-system,'Segoe UI',Roboto,Arial; background:var(--bg); color:var(--muted); margin:0;padding:28px}
+    .wrap{max-width:1100px;margin:0 auto}
+    header{display:flex;align-items:center;gap:12px}
+    h1{margin:0;color:#0f1724}
+    .card{background:var(--card);border-radius:12px;padding:18px;margin-top:18px;box-shadow:0 8px 30px rgba(2,6,23,0.04)}
+    h2{color:#0f1724}
+    p{line-height:1.55}
+    pre{background:#f1f5f9;padding:10px;border-radius:6px;overflow:auto}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:18px}
+    label{display:block;margin-top:8px;font-weight:600}
+    input[type=text], input[type=number], textarea, select{width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef8}
+    button{margin-top:10px;padding:8px 12px;border-radius:8px;border:none;background:var(--accent);color:white;cursor:pointer}
+    .small{font-size:0.95rem}
+    .note{font-size:0.92rem;color:#475569}
+    table{width:100%;border-collapse:collapse;margin-top:8px}
+    td,th{padding:6px;border-bottom:1px dashed #eef2ff;text-align:left}
+    .result{background:#f8fafc;padding:10px;border-radius:8px;margin-top:10px;white-space:pre-wrap}
+    code{background:#eef4ff;padding:2px 6px;border-radius:6px}
+  </style>
 </head>
 <body>
-    <h1>Lecture 6</h1>
-    <p>Content for Lecture 6 will go here.</p>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Lecture 6 — Vector Calculus</h1>
+        <div class="note">Gradients, directional derivatives, Jacobian, Hessian, optimization & applications in machine learning</div>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>1. Why vector calculus matters in ML</h2>
+      <p>
+        Modern machine learning relies heavily on calculus of multivariable functions. Training models typically requires minimizing loss functions using gradients (first derivatives) and sometimes Hessians (second derivatives). Backpropagation in neural networks is repeated application of the chain rule (multivariable calculus).
+      </p>
+
+      <h2>2. Key concepts — short theory</h2>
+      <h3>Scalar field and gradient</h3>
+      <p>
+        A scalar field is a function \(f: \mathbb{R}^n \to \mathbb{R}\). The <b>gradient</b> of \(f\) is the vector of partial derivatives:
+      </p>
+      <p style="text-align:center;font-weight:700">∇f = [∂f/∂x₁, ∂f/∂x₂, …, ∂f/∂xₙ]</p>
+      <p>
+        The gradient points in the direction of steepest increase. In optimization we follow −∇f to descend.
+      </p>
+
+      <h3>Directional derivative</h3>
+      <p>
+        The directional derivative of f at x in direction u (unit vector) is:
+      </p>
+      <p style="text-align:center;font-weight:700">D_u f(x) = ∇f(x) ⋅ u</p>
+
+      <h3>Vector-valued functions & Jacobian</h3>
+      <p>
+        For g: ℝⁿ → ℝᵐ, the <b>Jacobian</b> J_g(x) is the m×n matrix of partial derivatives,
+        whose i-th row is ∇(g_i)(x). Jacobian generalizes the gradient and is used in coordinate transforms and backpropagation.
+      </p>
+
+      <h3>Hessian (matrix of second derivatives)</h3>
+      <p>
+        For scalar f, the Hessian H is an n×n symmetric matrix with entries H_{ij}=∂²f/∂x_i∂x_j. Hessian tells curvature; positive definite Hessian implies a local minimum.
+      </p>
+
+      <h2>3. Worked examples</h2>
+      <h3>Example A — Quadratic function (2D)</h3>
+      <pre>
+f(x,y) = 3x^2 + 4xy + 2y^2 + 5x + 1
+Gradient: ∂f/∂x = 6x + 4y + 5
+          ∂f/∂y = 4x + 4y
+Hessian: [[6, 4],
+          [4, 4]]  (constant)
+      </pre>
+      <p>Because Hessian is constant and (check eigenvalues), we can classify curvature.</p>
+
+      <h3>Example B — Logistic loss (single sample)</h3>
+      <pre>
+For y∈{0,1}, model p = σ(w^T x) where σ = sigmoid.
+Loss (negative log-likelihood): L(w) = -[ y log p + (1-y) log(1-p) ]
+Gradient: ∇_w L = (p - y) x
+Hessian: H = p(1-p) x x^T  (rank-1, PSD)
+      </pre>
+      <p>This shows why logistic loss is convex (H PSD) for linear models.</p>
+
+      <h2>4. Optimization connection</h2>
+      <p>
+        Gradient descent update: w ← w − η ∇L(w). Learning rate η and gradient magnitude determine steps. Newton's method uses Hessian for second-order updates: w ← w − H^{-1} ∇L(w) (fast convergence near optimum if Hessian invertible).
+      </p>
+
+      <h2>5. Interactive numeric tools</h2>
+      <div class="grid">
+        <div>
+          <h3>Numeric gradient & directional derivative (2 variables)</h3>
+          <p class="small">Enter a function f(x,y). Use JavaScript math syntax (Math.* allowed). Examples: <code>x*x + y*y</code>, <code>3*x*x + 4*x*y + 2*y*y + 5*x + 1</code>, <code>1/(1+Math.exp(-(a*x + b*y)))</code></p>
+          <label>Function f(x,y)</label>
+          <input id="f_expr" type="text" value="3*x*x + 4*x*y + 2*y*y + 5*x + 1">
+          <label>Point (x,y)</label>
+          <input id="gx" type="number" value="1" placeholder="x"> <input id="gy" type="number" value="0" placeholder="y">
+          <label>Directional vector u (optional, leave blank to skip directional derivative)</label>
+          <input id="ux" type="number" placeholder="ux"> <input id="uy" type="number" placeholder="uy">
+          <button onclick="computeGradient()">Compute Gradient (numeric)</button>
+          <div id="gout" class="result"></div>
+
+          <hr>
+
+          <h3>Jacobian for vector-valued function (2→2)</h3>
+          <p class="small">Enter two component functions separated by semicolon. Example: <code>x*x + y; x - y*y</code></p>
+          <label>g(x,y) = [ g1 ; g2 ]</label>
+          <input id="g_expr" type="text" value="x*x + y; x - y*y">
+          <label>Point (x,y)</label>
+          <input id="jx" type="number" value="1"> <input id="jy" type="number" value="2">
+          <button onclick="computeJacobian()">Compute Jacobian (numeric)</button>
+          <div id="jout" class="result"></div>
+
+          <hr>
+
+          <h3>Hessian (2 variables)</h3>
+          <label>Function f(x,y)</label>
+          <input id="h_expr" type="text" value="3*x*x + 4*x*y + 2*y*y + 5*x + 1">
+          <label>Point (x,y)</label>
+          <input id="hx" type="number" value="1"> <input id="hy" type="number" value="0">
+          <button onclick="computeHessian()">Compute Hessian (numeric)</button>
+          <div id="hout" class="result"></div>
+        </div>
+
+        <aside class="card">
+          <h3 style="margin-top:0">Gradient descent demo (scalar function)</h3>
+          <p class="small">Simple numeric GD on a 2D function. Enter function & start point; see iterations.</p>
+          <label>f(x,y)</label>
+          <input id="gd_expr" type="text" value="x*x + 2*y*y + 2*x*y - 6*x + 2">
+          <label>start x,y</label>
+          <input id="gd_x0" type="number" value="2"> <input id="gd_y0" type="number" value="2">
+          <label>learning rate η</label>
+          <input id="gd_lr" type="number" value="0.1" step="0.01">
+          <label>iterations</label>
+          <input id="gd_iters" type="number" value="20">
+          <button onclick="runGD()">Run GD</button>
+          <div id="gd_out" class="result"></div>
+          <p class="note" style="margin-top:6px">This uses numeric gradients (finite differences). Small η recommended for stability.</p>
+        </aside>
+      </div>
+
+      <script>
+        // numeric differentiation helpers (central difference)
+        function numGrad2(f, x, y, h=1e-6){
+          let fxh = f(x+h, y), fxnh = f(x-h, y);
+          let fyh = f(x, y+h), fynh = f(x, y-h);
+          let dfdx = (fxh - fxnh) / (2*h);
+          let dfdy = (fyh - fynh) / (2*h);
+          return [dfdx, dfdy];
+        }
+        function parseFn(expr){
+          // allow Math.*; create function f(x,y)
+          try{
+            return new Function('x','y','return (' + expr + ');');
+          } catch(e){ return null; }
+        }
+
+        function computeGradient(){
+          const expr = document.getElementById('f_expr').value;
+          const fx = parseFloat(document.getElementById('gx').value);
+          const fy = parseFloat(document.getElementById('gy').value);
+          const ux = document.getElementById('ux').value;
+          const uy = document.getElementById('uy').value;
+          const f = parseFn(expr);
+          const out = document.getElementById('gout');
+          if(!f){ out.innerText = 'Invalid function expression.'; return; }
+          try{
+            const grad = numGrad2(f, fx, fy);
+            let text = `∇f(${fx}, ${fy}) = [ ${grad[0].toFixed(6)}, ${grad[1].toFixed(6)} ]`;
+            if(ux !== '' && uy !== ''){
+              let uxv = parseFloat(ux), uyv = parseFloat(uy);
+              let norm = Math.hypot(uxv, uyv);
+              if(norm === 0) text += `\nDirectional derivative: direction vector is zero.`;
+              else {
+                let u = [uxv/norm, uyv/norm];
+                let dir = grad[0]*u[0] + grad[1]*u[1];
+                text += `\nDirectional derivative in unit direction u = [${u[0].toFixed(4)}, ${u[1].toFixed(4)}]: ${dir.toFixed(6)}`;
+              }
+            }
+            out.innerText = text;
+          } catch(e){ out.innerText = 'Error evaluating function at point.'; }
+        }
+
+        function computeJacobian(){
+          const exprs = document.getElementById('g_expr').value.split(';').map(s=>s.trim()).filter(Boolean);
+          const x = parseFloat(document.getElementById('jx').value);
+          const y = parseFloat(document.getElementById('jy').value);
+          const out = document.getElementById('jout');
+          let fns = exprs.map(e=>parseFn(e));
+          if(fns.some(f=>f===null)){ out.innerText='Invalid component function.'; return; }
+          try{
+            let rows = fns.map(f => numGrad2(f, x, y));
+            // Jacobian as matrix m x 2
+            let text = 'Jacobian J(x) = [ rows correspond to ∂g_i/∂(x,y) ]\n';
+            rows.forEach((r,i)=> text += `g${i+1}: [ ${r[0].toFixed(6)}, ${r[1].toFixed(6)} ]\n`);
+            out.innerText = text;
+          } catch(e){ out.innerText = 'Error computing Jacobian.'; }
+        }
+
+        function computeHessian(){
+          const expr = document.getElementById('h_expr').value;
+          const x = parseFloat(document.getElementById('hx').value);
+          const y = parseFloat(document.getElementById('hy').value);
+          const out = document.getElementById('hout');
+          const f = parseFn(expr);
+          if(!f){ out.innerText='Invalid function expression.'; return; }
+          // second derivatives via finite differences
+          try{
+            const h = 1e-4;
+            const fx = (a,b)=>f(a,b);
+            const f_xx = (fx(x+h,y) - 2*fx(x,y) + fx(x-h,y)) / (h*h);
+            const f_yy = (fx(x,y+h) - 2*fx(x,y) + fx(x,y-h)) / (h*h);
+            const f_xy = (fx(x+h,y+h) - fx(x+h,y-h) - fx(x-h,y+h) + fx(x-h,y-h)) / (4*h*h);
+            out.innerText = `Hessian at (${x},${y}):\n[ [ ${f_xx.toFixed(6)}, ${f_xy.toFixed(6)} ],\n  [ ${f_xy.toFixed(6)}, ${f_yy.toFixed(6)} ] ]`;
+          } catch(e){ out.innerText='Error computing Hessian.'; }
+        }
+
+        function runGD(){
+          const expr = document.getElementById('gd_expr').value;
+          let x = parseFloat(document.getElementById('gd_x0').value);
+          let y = parseFloat(document.getElementById('gd_y0').value);
+          const lr = parseFloat(document.getElementById('gd_lr').value);
+          const iters = parseInt(document.getElementById('gd_iters').value);
+          const f = parseFn(expr);
+          const out = document.getElementById('gd_out');
+          if(!f){ out.innerText='Invalid function.'; return; }
+          let text = `iter\tx\ty\tf(x,y)\n`;
+          for(let i=0;i<iters;i++){
+            let val = f(x,y);
+            text += `${i}\t${x.toFixed(6)}\t${y.toFixed(6)}\t${val.toFixed(6)}\n`;
+            // numeric gradient
+            let g = numGrad2(f, x, y, 1e-6);
+            x = x - lr * g[0];
+            y = y - lr * g[1];
+          }
+          // final value
+          let val = f(x,y);
+          text += `${iters}\t${x.toFixed(6)}\t${y.toFixed(6)}\t${val.toFixed(6)}\n`;
+          out.innerText = text;
+        }
+      </script>
+
+      <hr>
+      <h2>6. Summary & links</h2>
+      <ul>
+        <li>Gradient: direction of steepest ascent; used for first-order optimization (gradient descent).</li>
+        <li>Jacobian: multivariable generalization — crucial for mapping derivatives through vector-valued layers (backprop).</li>
+        <li>Hessian: curvature information — basis for second-order methods (Newton), condition-number analysis.</li>
+        <li>In ML: gradients + chain rule = backprop; Hessians appear in optimization & uncertainty estimation.</li>
+      </ul>
+
+      <p class="note">If you'd like, I can also produce:
+        <ul>
+          <li>a downloadable Jupyter notebook `Lecture6_VectorCalculus.ipynb` with symbolic (SymPy) + numeric examples,</li>
+          <li>visual plots of gradient fields and contour + GD trajectories, or</li>
+          <li>an expanded backpropagation walkthrough (vector calculus steps for a small neural net).</li>
+        </ul>
+      </p>
+    </section>
+  </div>
 </body>
 </html>
