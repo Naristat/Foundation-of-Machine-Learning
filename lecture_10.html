@@ -1,12 +1,238 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecture 10</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lecture 10 - Optimization Algorithms in Machine Learning</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 20px;
+      background-color: #f9f9fc;
+      color: #333;
+      line-height: 1.6;
+    }
+    h1, h2, h3 {
+      color: #003366;
+    }
+    .algo-box {
+      background: #ffffff;
+      border-left: 6px solid #003366;
+      margin: 20px 0;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
+    }
+    code {
+      background: #eee;
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-family: Consolas, monospace;
+    }
+    ul {
+      margin: 5px 0 15px 20px;
+    }
+    .example {
+      background: #f4faff;
+      border-left: 4px solid #0099cc;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+    }
+  </style>
 </head>
 <body>
-    <h1>Lecture 10</h1>
-    <p>Content for Lecture 10 will go here.</p>
+
+  <h1>Lecture 10: Optimization Algorithms in Machine Learning</h1>
+
+  <p>
+    Optimization is at the core of machine learning. Every learning algorithm (from linear regression to deep neural networks) 
+    involves minimizing or maximizing a cost/loss function. Here we explore the most important optimization techniques.
+  </p>
+
+  <h2>1. Gradient Descent (GD)</h2>
+  <div class="algo-box">
+    <p><b>Concept:</b> Moves step by step in the opposite direction of the gradient to minimize the loss function.</p>
+    <p><b>Update Rule:</b> 
+      <code>θ = θ - η ∇L(θ)</code> where <b>η</b> is learning rate.
+    </p>
+    <div class="example">
+      <b>Example:</b> Training Linear Regression by minimizing Mean Squared Error (MSE).  
+    </div>
+    <p><b>Importance:</b> Fundamental algorithm used in almost all machine learning models.</p>
+  </div>
+
+  <h2>2. Stochastic Gradient Descent (SGD)</h2>
+  <div class="algo-box">
+    <p><b>Concept:</b> Updates parameters using one random training sample at a time. Faster but noisier updates.</p>
+    <p><b>Update Rule:</b> <code>θ = θ - η ∇L(θ; xᵢ, yᵢ)</code></p>
+    <div class="example">
+      <b>Example:</b> Used in training deep neural networks where datasets are huge.  
+    </div>
+    <p><b>Importance:</b> Makes optimization feasible for large-scale data.</p>
+  </div>
+
+  <h2>3. Mini-Batch Gradient Descent</h2>
+  <div class="algo-box">
+    <p><b>Concept:</b> A compromise between GD and SGD. Updates are performed using small batches of training data.</p>
+    <div class="example">
+      <b>Example:</b> Commonly used in deep learning (batch size 32, 64, 128).  
+    </div>
+    <p><b>Importance:</b> Reduces noise of SGD and computational burden of full GD.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lecture 10: Optimization Algorithms in Machine Learning</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background: #f9f9f9; }
+    h1 { text-align: center; color: #2c3e50; }
+    h2 { color: #34495e; margin-top: 25px; }
+    p { line-height: 1.6; }
+    .algo { background: #ffffff; border-left: 5px solid #2980b9; padding: 15px; margin: 15px 0; border-radius: 10px; }
+    code { background: #ecf0f1; padding: 3px 6px; border-radius: 4px; }
+    ul { margin-left: 20px; }
+    footer { text-align: center; margin-top: 40px; padding: 10px; background: #34495e; color: white; }
+  </style>
+</head>
+<body>
+
+  <h1>Lecture 10: Optimization Algorithms in Machine Learning</h1>
+
+  <p>
+    Optimization techniques are the backbone of training machine learning models. 
+    These algorithms are used to minimize a loss function (error) by updating the model parameters iteratively.
+    Different algorithms vary in convergence speed, stability, and efficiency for different datasets.
+  </p>
+
+  <h2>1. Gradient Descent</h2>
+  <div class="algo">
+    <p>
+      Gradient Descent is the most basic optimization algorithm. It updates parameters in the direction opposite to the gradient of the loss function.  
+    </p>
+    <p><b>Update Rule:</b> <code>θ = θ - η ∇L(θ)</code></p>
+    <p><b>Application:</b> Used in linear regression, logistic regression, neural networks.</p>
+  </div>
+
+  <h2>2. Stochastic Gradient Descent (SGD)</h2>
+  <div class="algo">
+    <p>
+      Instead of using the entire dataset, SGD updates the parameters using one random sample at a time.
+      This makes it faster but noisier.
+    </p>
+    <p><b>Advantage:</b> Faster convergence on large datasets.</p>
+    <p><b>Application:</b> Deep learning frameworks like TensorFlow and PyTorch use SGD variants.</p>
+  </div>
+
+  <h2>3. Mini-Batch Gradient Descent</h2>
+  <div class="algo">
+    <p>
+      A compromise between Gradient Descent and SGD. It uses small batches of data for updates.
+    </p>
+    <p><b>Advantage:</b> Balances efficiency and convergence stability.</p>
+    <p><b>Application:</b> Deep learning training pipelines.</p>
+  </div>
+
+  <h2>4. Newton’s Method</h2>
+  <div class="algo">
+    <p>
+      Uses second-order derivatives (Hessian matrix) for faster convergence.
+    </p>
+    <p><b>Update Rule:</b> <code>θ = θ - H<sup>-1</sup> ∇L(θ)</code></p>
+    <p><b>Application:</b> Logistic regression, convex optimization problems.</p>
+  </div>
+
+  <h2>5. Momentum</h2>
+  <div class="algo">
+    <p>
+      Momentum accelerates SGD by adding a fraction of the previous update to the current one.
+    </p>
+    <p><b>Update Rule:</b> <code>v = βv + η∇L(θ); θ = θ - v</code></p>
+    <p><b>Application:</b> Neural networks (helps escape local minima).</p>
+  </div>
+
+  <h2>6. AdaGrad (Adaptive Gradient)</h2>
+  <div class="algo">
+    <p>
+      Adapts the learning rate for each parameter based on past gradients.
+    </p>
+    <p><b>Advantage:</b> Works well with sparse data.</p>
+    <p><b>Application:</b> NLP problems like word embeddings.</p>
+  </div>
+
+  <h2>7. Adam (Adaptive Moment Estimation)</h2>
+  <div class="algo">
+    <p>
+      Combines Momentum and RMSProp. It is the most popular optimization algorithm for deep learning.
+    </p>
+    <p><b>Update Rule:</b> Uses moving averages of gradients and squared gradients.</p>
+    <p><b>Application:</b> Training deep neural networks, CNNs, RNNs.</p>
+  </div>
+
+  <h2>Key Insights</h2>
+  <ul>
+    <li>Gradient Descent is simple but computationally expensive.</li>
+    <li>SGD and Mini-batch are widely used in practice.</li>
+    <li>Momentum and Adam improve convergence speed and performance.</li>
+    <li>AdaGrad and variants adapt to sparse features efficiently.</li>
+  </ul>
+
+  <footer>
+    &copy; Lecture 10 - Optimization Algorithms in ML | Interactive Learning
+  </footer>
+
 </body>
 </html>
+<!-- Gradient Descent Interactive Calculator -->
+<div class="calculator" style="margin-top:40px; padding:20px; border:2px solid #ddd; border-radius:10px;">
+  <h2>🧮 Gradient Descent Playground</h2>
+  <p>Try updating <code>x</code> step-by-step using Gradient Descent for <strong>f(x) = x²</strong>.</p>
+
+  <label>Initial x: <input type="number" id="xVal" value="5" step="0.1"></label><br><br>
+  <label>Learning rate (η): <input type="number" id="lr" value="0.1" step="0.01"></label><br><br>
+
+  <button onclick="nextStep()">Next Step</button>
+  <button onclick="resetCalc()">Reset</button>
+
+  <h3>Results</h3>
+  <div id="output"></div>
+</div>
+
+<script>
+  let step = 0;
+
+  function f(x) {
+    return x * x; // quadratic function
+  }
+
+  function grad(x) {
+    return 2 * x; // derivative of x^2
+  }
+
+  function nextStep() {
+    let x = parseFloat(document.getElementById("xVal").value);
+    let lr = parseFloat(document.getElementById("lr").value);
+
+    let g = grad(x);
+    let newX = x - lr * g;
+    let fx = f(newX);
+
+    step++;
+    document.getElementById("xVal").value = newX.toFixed(4);
+
+    let out = document.getElementById("output");
+    out.innerHTML += `
+      <p><b>Step ${step}</b>: 
+      Gradient = ${g.toFixed(4)}, 
+      New x = ${newX.toFixed(4)}, 
+      f(x) = ${fx.toFixed(4)}</p>`;
+  }
+
+  function resetCalc() {
+    step = 0;
+    document.getElementById("xVal").value = 5;
+    document.getElementById("lr").value = 0.1;
+    document.getElementById("output").innerHTML = "";
+  }
+</script>
