@@ -4,42 +4,71 @@
   <meta charset="UTF-8">
   <title>Fundamentals of Machine Learning - Lectures</title>
   <style>
+    /* General Styles */
     body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f9;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
-      padding: 20px;
+      padding: 0;
+      background: linear-gradient(135deg, #74ABE2, #5563DE);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
+
     h1 {
-      text-align: center;
-      color: #333;
+      margin-top: 30px;
+      font-size: 2.5rem;
+      letter-spacing: 1px;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
     }
+
+    /* Grid Container */
     .lectures {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 15px;
-      margin-top: 30px;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 20px;
+      margin: 40px;
+      width: 90%;
+      max-width: 1200px;
     }
+
+    /* Lecture Card */
     .lectures a {
-      display: block;
-      padding: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
       background: #fff;
-      text-align: center;
-      text-decoration: none;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      transition: background 0.3s;
       color: #333;
       font-weight: bold;
+      border-radius: 12px;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease, background 0.3s ease, color 0.3s ease;
     }
+
+    /* Hover Animation */
     .lectures a:hover {
-      background: #4CAF50;
+      transform: translateY(-8px) scale(1.05);
+      background: #ff7e5f;
       color: #fff;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+
+    /* Responsive Heading */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.8rem;
+        text-align: center;
+        margin: 20px;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Fundamentals of Machine Learning - Lectures</h1>
+  <h1>📘 Fundamentals of Machine Learning - Lectures</h1>
   <div class="lectures">
     <!-- Lecture Links -->
     <a href="lecture_0.html">Lecture 0</a>
