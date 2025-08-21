@@ -1,1 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Foundations of Machine Learning — Lecture 0 (Course Introduction & Syllabus)</title>
+  <style>
+    :root{--accent:#1f6feb;--muted:#556;--card:#fff}
+    body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:#f5f7fb; color:var(--muted); margin:0; padding:24px}
+    .container{max-width:900px;margin:0 auto}
+    header{display:flex;align-items:center;gap:16px}
+    h1{margin:0;font-size:1.6rem;color:#0f1724}
+    .meta{margin-top:6px;color:#475569;font-size:0.95rem}
+    .card{background:var(--card);border-radius:12px;padding:18px;margin-top:18px;box-shadow:0 6px 18px rgba(15,23,42,0.06)}
+    .section-title{font-size:1.05rem;color:#0f1724;margin-bottom:8px}
+    ul{line-height:1.6}
+    table{width:100%;border-collapse:collapse;margin-top:8px}
+    th,td{padding:8px 10px;text-align:left;border-bottom:1px solid #eef2ff;font-size:0.95rem}
+    th{background:#fbfdff;color:#0f1724}
+    footer{margin-top:18px;color:#6b7280;font-size:0.9rem}
+    .btn{display:inline-block;padding:8px 12px;border-radius:8px;text-decoration:none;background:var(--accent);color:white}
+    code{background:#f1f5f9;padding:2px 6px;border-radius:6px;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Foundations of Machine Learning — Lecture 0</h1>
+        <div class="meta">Course Introduction &amp; Full Syllabus | Semester: Fall | Credits: 3</div>
+      </div>
+      <div style="margin-left:auto;text-align:right">
+        <div style="font-size:0.85rem;color:#64748b">Instructor: Dr. S. Narendra</div>
+        <div style="font-size:0.8rem;color:#94a3b8">Email: <a href="mailto:instructor@example.com">instructor@example.com</a></div>
+      </div>
+    </header>
+
+    <section class="card" id="overview">
+      <div class="section-title">Course Overview</div>
+      <p>This course introduces core mathematical and algorithmic foundations of machine learning. It balances theory (probability, linear algebra, optimization) with practical implementation (Python, model evaluation). By the end of the course students will be able to design, analyze and implement basic supervised and unsupervised learning algorithms and understand when to apply them.</p>
+
+      <div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap">
+        <div style="min-width:220px">
+          <strong>Prerequisites</strong>
+          <ul>
+            <li>Introductory calculus and linear algebra</li>
+            <li>Basic probability/statistics</li>
+            <li>Familiarity with Python (numpy/pandas)</li>
+          </ul>
+        </div>
+        <div style="min-width:220px">
+          <strong>Learning Outcomes</strong>
+          <ul>
+            <li>Apply linear algebra and probability to ML problems</li>
+            <li>Implement algorithms: linear/logistic regression, SVM, decision trees, clustering</li>
+            <li>Perform model evaluation and mitigation (cross-validation, regularization)</li>
+            <li>Read and interpret ML research at an introductory level</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="syllabus">
+      <div class="section-title">Week-by-week Syllabus</div>
+      <table>
+        <thead>
+          <tr><th>Week</th><th>Topics</th><th>In-class / Lab</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>0</td><td>Course introduction, syllabus, tools (Python, Jupyter), evaluation</td><td>Install + quick Python demo</td></tr>
+          <tr><td>1</td><td>Linear algebra refresher (vectors, matrices, matrix operations)</td><td>NumPy matrix ops</td></tr>
+          <tr><td>2</td><td>Probability basics &amp; distributions</td><td>Probability exercises</td></tr>
+          <tr><td>3</td><td>Optimization &amp; convexity; gradient descent</td><td>Implement GD</td></tr>
+          <tr><td>4</td><td>Linear regression; least squares; normal equations</td><td>Linear regression from scratch</td></tr>
+          <tr><td>5</td><td>Logistic regression; binary classification; loss functions</td><td>Classification lab</td></tr>
+          <tr><td>6</td><td>Regularization; bias-variance tradeoff; model selection</td><td>Cross-validation lab</td></tr>
+          <tr><td>7</td><td>Support Vector Machines &amp; kernels</td><td>Kernel demo</td></tr>
+          <tr><td>8</td><td>Decision trees &amp; ensemble methods (bagging, boosting)</td><td>Random forest lab</td></tr>
+          <tr><td>9</td><td>Unsupervised learning: k-means, hierarchical clustering, PCA</td><td>PCA + clustering lab</td></tr>
+          <tr><td>10</td><td>Neural nets basics; backpropagation</td><td>Small NN from scratch</td></tr>
+          <tr><td>11</td><td>Model interpretability &amp; fairness basics</td><td>Case studies</td></tr>
+          <tr><td>12</td><td>Course wrap-up; student presentations; project demos</td><td>Final presentations</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card" id="assessment">
+      <div class="section-title">Assessment &amp; Grading</div>
+      <ul>
+        <li>Assignments / Labs: 35% (typically 8–10 small labs)</li>
+        <li>Midterm (theory + coding): 25%</li>
+        <li>Final Project / Presentation: 25%</li>
+        <li>Participation / Quizzes: 15%</li>
+      </ul>
+      <p><strong>Notes:</strong> Late policy — small penalty per day; academic honesty expected. Projects may be done in groups of up to 3.</p>
+    </section>
+
+    <section class="card" id="resources">
+      <div class="section-title">Textbooks &amp; Resources</div>
+      <ul>
+        <li><em>Pattern Recognition and Machine Learning</em> — C. Bishop (recommended chapters)</li>
+        <li><em>Introduction to Statistical Learning</em> — James, Witten, Hastie, Tibshirani (free PDF)</li>
+        <li>Scikit-learn documentation, NumPy &amp; pandas docs, selected research papers (provided on LMS)</li>
+      </ul>
+      <p>Jupyter notebooks, starter code and datasets will be available on the course GitHub / LMS.</p>
+    </section>
+
+    <section class="card" id="getting-started">
+      <div class="section-title">Getting started (Lecture 0 lab)</div>
+      <ol>
+        <li>Install Python 3.10+ and create a venv: <code>python -m venv ml-venv &amp;&amp; source ml-venv/bin/activate</code></li>
+        <li>Install core packages: <code>pip install numpy pandas matplotlib scikit-learn jupyterlab</code></li>
+        <li>Open JupyterLab and run the starter notebook <code>Lecture0_GettingStarted.ipynb</code></li>
+      </ol>
+      <a class="btn" href="#syllabus">Jump to Syllabus</a>
+    </section>
+
+    <footer>
+      <div>Want this as a standalone file? Save this page as <code>Lecture_0_Introduction.html</code> or copy the source into your project folder.</div>
+      <div style="margin-top:8px">If you want, I can also generate the starter Jupyter notebook and the Lecture0 lab code.</div>
+    </footer>
+  </div>
+</body>
+</html>
 
