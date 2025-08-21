@@ -1,64 +1,195 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Lecture 3 - Probability & Statistics</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lecture 3 — Singular Value Decomposition (SVD)</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
-    nav { margin-bottom: 20px; }
-    nav a { margin-right: 15px; text-decoration: none; color: #0073e6; }
-    pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
+    :root{--bg:#f4f7fb;--card:#ffffff;--brand:#6b21a8;--muted:#475569}
+    body{font-family:Inter,system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); color:var(--muted); margin:0;padding:28px}
+    .wrap{max-width:980px;margin:0 auto}
+    header{display:flex;align-items:center;gap:16px}
+    h1{margin:0;color:#0f1724;font-size:1.6rem}
+    .meta{color:#64748b;font-size:0.95rem}
+    .card{background:var(--card);border-radius:12px;padding:20px;margin-top:18px;box-shadow:0 8px 30px rgba(2,6,23,0.06)}
+    h2{color:#0f1724}
+    pre{background:#f1f5f9;padding:12px;border-radius:8px;overflow:auto}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .small{font-size:0.95rem}
+    .calculator{padding:14px;border-radius:8px;background:linear-gradient(180deg,#fff,#fbfbff);box-shadow:0 6px 18px rgba(15,23,42,0.04)}
+    label{display:block;margin:6px 0 4px;font-weight:600}
+    input[type=number]{width:78px;padding:8px;border-radius:8px;border:1px solid #e6eef8}
+    button{margin-top:10px;padding:10px 14px;border-radius:10px;border:none;background:var(--brand);color:#fff;cursor:pointer}
+    button.secondary{background:#0ea5a4}
+    table{width:100%;border-collapse:collapse;margin-top:8px}
+    td,th{padding:6px 8px;border-bottom:1px dashed #eef2ff}
+    .kpi{background:#eef2ff;padding:8px;border-radius:8px}
+    .note{font-size:0.9rem;color:#334155}
+    footer{margin-top:18px;color:#64748b;font-size:0.9rem}
   </style>
 </head>
 <body>
-  <nav>
-    <a href="Lecture1.html">Lecture 1</a>
-    <a href="Lecture2.html">Lecture 2</a>
-    <a href="Lecture3.html">Lecture 3</a>
-  </nav>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Lecture 3 — Singular Value Decomposition (SVD)</h1>
+        <div class="meta">Theory • 2×2 worked example • ML applications • Interactive calculator</div>
+      </div>
+    </header>
 
-  <h1>Lecture 3: Probability & Statistics for Machine Learning</h1>
+    <section class="card">
+      <h2>1. What is SVD?</h2>
+      <p class="small">Singular Value Decomposition (SVD) factorizes any real <b>m×n</b> matrix <code>A</code> into three matrices:</p>
+      <p style="text-align:center;font-weight:700">A = U Σ V<sup>T</sup></p>
+      <ul class="small">
+        <li><b>U</b> is an m×m orthogonal matrix (columns are left singular vectors).</li>
+        <li><b>Σ</b> is an m×n diagonal matrix with non-negative <b>singular values</b> (σ₁ ≥ σ₂ ≥ ... ≥ 0).</li>
+        <li><b>V</b> is an n×n orthogonal matrix (columns are right singular vectors).</li>
+      </ul>
+      <p class="note">Intuitively, SVD expresses A as a composition of: rotate (V<sup>T</sup>), scale (Σ), rotate (U). It works for any rectangular matrix and is numerically stable — unlike EVD which requires square matrices.</p>
 
-  <h2>1. Probability Basics</h2>
-  <p>Probabilities are used in Naive Bayes, HMMs, and Bayesian models.</p>
+      <h2>2. Why SVD matters in ML</h2>
+      <ul class="small">
+        <li><b>Dimensionality reduction:</b> Truncate small singular values to get best low-rank approximation (foundation of PCA).</li>
+        <li><b>Noise filtering:</b> Small singular values often encode noise — removing them denoises data.</li>
+        <li><b>Latent factor models:</b> Matrix factorization (recommendation systems) uses low-rank SVD-like decompositions.</li>
+        <li><b>Numerical stability:</b> SVD helps compute pseudo-inverses for ill-conditioned matrices (ridge regression, least-squares).</li>
+      </ul>
 
-  <h3>Python Example: Probability Distribution</h3>
-  <pre><code class="language-python">
-import numpy as np
+      <h2>3. How to compute (idea)</h2>
+      <p class="small">Compute eigen-decomposition of A<sup>T</sup>A (which is symmetric &amp; positive semidefinite). Its eigenvalues λᵢ ≥ 0. Then singular values σᵢ = sqrt(λᵢ). The columns of V are the eigenvectors of A<sup>T</sup>A. Finally, U = A V Σ<sup>-1</sup> (for non-zero σᵢ).</p>
 
-# Probability of coin flips
-flips = np.random.choice(['H', 'T'], size=1000)
-p_heads = np.mean(flips == 'H')
-print("P(Heads):", p_heads)
-  </code></pre>
+      <div style="display:flex;gap:12px;align-items:flex-start;margin-top:12px">
+        <div style="flex:1">
+          <h3>4. Worked 2×2 example (step-by-step)</h3>
+          <p>Take A = <code>[[3, 1],[1, 3]]</code>. We'll compute SVD.</p>
+          <ol class="small">
+            <li>Compute A<sup>T</sup>A = [[10,6],[6,10]].</li>
+            <li>Find eigenvalues of A<sup>T</sup>A: solve λ² - 20λ + 64 = 0 → λ₁ = 16, λ₂ = 4.</li>
+            <li>Singular values: σ₁ = 4, σ₂ = 2.</li>
+            <li>Compute normalized eigenvectors of A<sup>T</sup>A → columns of V: v₁ = [1/√2, 1/√2], v₂ = [1/√2, -1/√2].</li>
+            <li>Compute U = A V Σ<sup>-1</sup> → U columns are u₁ = (A v₁)/σ₁, u₂ = (A v₂)/σ₂.</li>
+            <li>Check: A = U Σ V<sup>T</sup>.</li>
+          </ol>
+          <pre>
+A = [[3,1],[1,3]]
+A^T A = [[10,6],[6,10]]
+Eigenvalues: 16, 4 → singular values 4, 2
+V = [[1/√2, 1/√2],[1/√2, -1/√2]]
+Σ = [[4,0],[0,2]]
+U = A V Σ^{-1}  (compute column-wise)
+          </pre>
+          <p class="note small">This yields the SVD where the first singular vector captures the direction [1,1] (largest variance) and the second captures [1,-1].</p>
+        </div>
 
-  <h2>2. Statistics in ML</h2>
-  <p>Mean, variance, and standard deviation help in feature scaling, normalization, and hypothesis testing.</p>
+        <aside class="card kpi" style="width:300px">
+          <h3 style="margin:0">Quick facts</h3>
+          <table>
+            <tr><th>Property</th><th>Value</th></tr>
+            <tr><td>Matrix type</td><td>Any m×n</td></tr>
+            <tr><td>Σ entries</td><td>σ₁ ≥ σ₂ ≥ ... ≥ 0</td></tr>
+            <tr><td>Best rank-k approx</td><td>Truncate Σ (Eckart–Young theorem)</td></tr>
+          </table>
+        </aside>
+      </div>
 
-  <h3>Python Example: Descriptive Statistics</h3>
-  <pre><code class="language-python">
-import numpy as np
+      <h2>5. Interactive SVD Calculator (2×2)</h2>
+      <div class="grid" style="margin-top:12px">
+        <div class="card calculator">
+          <p class="small">Enter numbers for a 2×2 matrix A. Calculator computes AᵀA, eigenvalues, singular values, V, U and Σ (rounded).</p>
+          <div>
+            <label>a11 a12</label>
+            <input id="a11" type="number" value="3"> <input id="a12" type="number" value="1"><br>
+            <label>a21 a22</label>
+            <input id="a21" type="number" value="1"> <input id="a22" type="number" value="3"><br>
+            <button onclick="computeSVD()">Compute SVD</button>
+            <button class="secondary" onclick="fillExample()">Load example</button>
+            <div id="out" style="margin-top:12px;font-size:0.95rem"></div>
+          </div>
+        </div>
 
-data = np.array([2, 4, 6, 8, 10])
-print("Mean:", np.mean(data))
-print("Variance:", np.var(data))
-print("Std Dev:", np.std(data))
-  </code></pre>
+        <div class="card" style="height:fit-content">
+          <h3 style="margin-top:0">Reminders</h3>
+          <p class="small">• A<sup>T</sup>A is symmetric → eigenvalues are real &ge; 0.<br>• Singular values are square roots of eigenvalues of A<sup>T</sup>A.<br>• If A is m×n and rank r, there are r positive singular values.</p>
+        </div>
+      </div>
 
-  <h2>3. Application: Gaussian Distribution</h2>
-  <p>Many ML models (like Gaussian Naive Bayes) assume features follow a normal distribution.</p>
+      <script>
+        function round(v){ return Math.round(v*100)/100; }
+        function computeSVD(){
+          // read inputs
+          let a11 = parseFloat(document.getElementById('a11').value);
+          let a12 = parseFloat(document.getElementById('a12').value);
+          let a21 = parseFloat(document.getElementById('a21').value);
+          let a22 = parseFloat(document.getElementById('a22').value);
+          // A^T A
+          let ata11 = a11*a11 + a21*a21;
+          let ata12 = a11*a12 + a21*a22;
+          let ata22 = a12*a12 + a22*a22;
+          // trace and det
+          let trace = ata11 + ata22;
+          let det = ata11*ata22 - ata12*ata12;
+          let disc = trace*trace - 4*det;
+          if(disc < -1e-9){ document.getElementById('out').innerHTML='<b>Complex eigenvalues — numerical issue.</b>'; return; }
+          if(disc < 0) disc = 0;
+          let lambda1 = (trace + Math.sqrt(disc))/2;
+          let lambda2 = (trace - Math.sqrt(disc))/2;
+          let sigma1 = Math.sqrt(lambda1);
+          let sigma2 = Math.sqrt(lambda2);
+          // eigenvectors for ATA (V): solve (ATA - lambda I) v = 0
+          function eigenvec(la){
+            // matrix [[ata11-la, ata12],[ata12, ata22-la]]
+            let x = ata12;
+            let y = la - ata11; // choose v = [x, y]
+            if(Math.abs(x) < 1e-8 && Math.abs(y) < 1e-8){ // try alternate
+              x = la - ata22; y = ata12;
+            }
+            let norm = Math.hypot(x,y);
+            if(norm===0) return [1,0];
+            return [x/norm, y/norm];
+          }
+          let v1 = eigenvec(lambda1);
+          let v2 = eigenvec(lambda2);
+          // Ensure orthogonality: if dot not ~0, orthogonalize
+          let dot = v1[0]*v2[0] + v1[1]*v2[1];
+          if(Math.abs(dot) > 1e-6){ // Gram-Schmidt
+            let proj = (v2[0]*v1[0] + v2[1]*v1[1]);
+            v2 = [v2[0]-proj*v1[0], v2[1]-proj*v1[1]];
+            let n = Math.hypot(v2[0],v2[1]);
+            if(n===0) v2 = [-v1[1], v1[0]]; else v2 = [v2[0]/n, v2[1]/n];
+          }
+          // V matrix
+          let V = [[round(v1[0]), round(v2[0])],[round(v1[1]), round(v2[1])]];
+          // Compute U = A V Σ^{-1}
+          function computeUcol(vcol, sigma){
+            if(sigma < 1e-9) return [0,0];
+            // Av
+            let av0 = a11*vcol[0] + a12*vcol[1];
+            let av1 = a21*vcol[0] + a22*vcol[1];
+            return [round(av0/sigma), round(av1/sigma)];
+          }
+          let u1 = computeUcol([v1[0],v1[1]], sigma1);
+          let u2 = computeUcol([v2[0],v2[1]], sigma2);
+          // Build Σ
+          let Sigma = [[round(sigma1),0],[0,round(sigma2)]];
+          // output
+          document.getElementById('out').innerHTML = `
+            <div><b>AᵀA =</b> [[${round(ata11)}, ${round(ata12)}],[${round(ata12)}, ${round(ata22)}]]</div>
+            <div><b>Eigenvalues (AᵀA):</b> ${round(lambda1)}, ${round(lambda2)}</div>
+            <div><b>Singular values σ:</b> ${round(sigma1)}, ${round(sigma2)}</div>
+            <div style="margin-top:8px"><b>V (right singular vectors - columns):</b><pre>${JSON.stringify(V,null,2)}</pre></div>
+            <div><b>Σ =</b><pre>${JSON.stringify(Sigma,null,2)}</pre></div>
+            <div><b>U (left singular vectors - columns):</b><pre>${JSON.stringify([u1,u2],null,2)}</pre></div>
+            <div class="note" style="margin-top:8px">Note: U columns shown in order (u1, u2). For zero singular values U columns are set to zero here for simplicity.</div>
+          `;
+        }
+        function fillExample(){ document.getElementById('a11').value=3; document.getElementById('a12').value=1; document.getElementById('a21').value=1; document.getElementById('a22').value=3; computeSVD(); }
+      </script>
 
-  <pre><code class="language-python">
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.stats import norm
-
-x = np.linspace(-5, 5, 100)
-y = norm.pdf(x, 0, 1)  # mean=0, std=1
-
-plt.plot(x, y)
-plt.title("Gaussian Distribution (Normal Curve)")
-plt.show()
-  </code></pre>
+      <footer>
+        <div>Want a downloadable Jupyter notebook for this lecture? I can generate a ready-to-run <code>Lecture3_SVD.ipynb</code> with NumPy examples and the same worked example.</div>
+      </footer>
+    </section>
+  </div>
 </body>
 </html>
