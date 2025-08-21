@@ -1,12 +1,214 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecture 4</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lecture 4 — Kernel Functions & Norms in Linear Algebra</title>
+  <style>
+    :root{--bg:#fbfdff;--card:#ffffff;--accent:#0b6cf0;--muted:#334155}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); color:var(--muted); margin:0;padding:28px}
+    .wrap{max-width:980px;margin:0 auto}
+    header{display:flex;align-items:center;gap:16px}
+    h1{margin:0;color:#0f1724;font-size:1.6rem}
+    .meta{color:#64748b;font-size:0.95rem}
+    .card{background:var(--card);border-radius:12px;padding:18px;margin-top:18px;box-shadow:0 8px 30px rgba(2,6,23,0.04)}
+    h2{color:#0f1724}
+    p{line-height:1.55}
+    pre{background:#f1f5f9;padding:12px;border-radius:8px;overflow:auto}
+    .cols{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    label{display:block;margin-top:8px;font-weight:600}
+    input[type=text], select, input[type=number]{width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef8}
+    button{margin-top:10px;padding:10px 14px;border-radius:10px;border:none;background:var(--accent);color:#fff;cursor:pointer}
+    .small{font-size:0.95rem}
+    .note{font-size:0.92rem;color:#475569}
+    table{width:100%;border-collapse:collapse;margin-top:8px}
+    td,th{padding:6px 8px;border-bottom:1px dashed #eef2ff}
+  </style>
 </head>
 <body>
-    <h1>Lecture 4</h1>
-    <p>Content for Lecture 4 will go here.</p>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Lecture 4 — Kernel Functions & Norms in Linear Algebra</h1>
+        <div class="meta">Theory • Properties • Examples • Interactive calculators (kernels & norms)</div>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>Part A — Kernel Functions</h2>
+      <p>
+        A <b>kernel function</b> k(x, y) computes an inner product between feature-space mappings of x and y without explicitly computing the mapping:
+      </p>
+      <p style="text-align:center;font-weight:700;">k(x, y) = &lt;φ(x), φ(y)&gt;</p>
+      <p class="small">
+        The key benefit (the <i>kernel trick</i>) is that many learning algorithms (SVM, kernel ridge, kernel PCA) only need inner products; a kernel lets us operate in a high (possibly infinite) dimensional feature space implicitly and efficiently.
+      </p>
+
+      <h3>Common kernel functions</h3>
+      <table>
+        <tr><th>Kernel</th><th>Formula</th><th>Notes</th></tr>
+        <tr><td>Linear</td><td>k(x,y)=x·y</td><td>Equivalent to no mapping; fast, good baseline.</td></tr>
+        <tr><td>Polynomial</td><td>k(x,y)=(α x·y + c)<sup>d</sup></td><td>Allows interactions up to degree d.</td></tr>
+        <tr><td>RBF / Gaussian</td><td>k(x,y)=exp(-||x-y||² / (2σ²))</td><td>Infinite-dimensional; locally sensitive; popular.</td></tr>
+        <tr><td>Sigmoid</td><td>k(x,y)=tanh(α x·y + c)</td><td>Linked to neural nets; not always positive-definite.</td></tr>
+      </table>
+
+      <h3>Properties required for valid kernels</h3>
+      <ul class="small">
+        <li><b>Symmetry:</b> k(x,y)=k(y,x).</li>
+        <li><b>Positive semidefiniteness:</b> For any finite set {x₁,...,x_n}, the kernel matrix K with Kᵢⱼ=k(xᵢ,xⱼ) must be positive semidefinite (all eigenvalues ≥0). This is Mercer's condition.</li>
+        <li><b>Closure properties:</b> Sums, products, and limits of valid kernels are valid kernels.</li>
+      </ul>
+
+      <h3>Example: Polynomial kernel (simple)</h3>
+      <p>Let x=[x₁,x₂], y=[y₁,y₂], choose d=2, c=1:</p>
+      <pre>k(x,y) = (x·y + 1)² = (x₁y₁ + x₂y₂ + 1)²</pre>
+      <p>This equals the dot product in a 6-dimensional feature space consisting of squared and cross terms — but we avoid computing φ(x) explicitly.</p>
+
+      <h3>Machine learning usage</h3>
+      <ul class="small">
+        <li><b>SVM:</b> Replace x·y by k(x,y) in the dual formulation to learn nonlinear boundaries.</li>
+        <li><b>Kernel PCA:</b> Compute principal components from the kernel matrix to perform nonlinear dimensionality reduction.</li>
+        <li><b>Kernel ridge regression:</b> Solve ridge regression in feature space via kernel matrices.</li>
+      </ul>
+
+      <hr>
+
+      <h2>Part B — Norms in Linear Algebra</h2>
+      <p>
+        A <b>norm</b> is a function that assigns a non-negative length or size to vectors (and matrices). Norms satisfy: positivity, scalability, and triangle inequality.
+      </p>
+
+      <h3>Vector norms</h3>
+      <ul class="small">
+        <li><b>L2 norm (Euclidean):</b> ||x||₂ = sqrt(Σ xᵢ²) — measures Euclidean length.</li>
+        <li><b>L1 norm (Manhattan):</b> ||x||₁ = Σ |xᵢ| — encourages sparsity in ML (Lasso).</li>
+        <li><b>Infinity norm:</b> ||x||_∞ = maxᵢ |xᵢ| — maximum absolute component.</li>
+      </ul>
+
+      <h3>Matrix norms</h3>
+      <ul class="small">
+        <li><b>Frobenius norm:</b> ||A||_F = sqrt(Σᵢⱼ aᵢⱼ²) — like Euclidean norm for matrices.</li>
+        <li><b>Operator / spectral norm:</b> ||A||₂ = largest singular value of A.</li>
+        <li><b>Induced L1 / L∞ norms:</b> maximum absolute column/row sums respectively.</li>
+      </ul>
+
+      <h3>Why norms matter in ML</h3>
+      <ul class="small">
+        <li><b>Regularization:</b> Penalize ||w||₂² (ridge) or ||w||₁ (lasso) to control complexity and prevent overfitting.</li>
+        <li><b>Stability & conditioning:</b> Norms (and condition number = σ_max/σ_min) tell how sensitive linear systems are to perturbations.</li>
+        <li><b>Distance metrics:</b> Many kernels and similarity measures use norms and distances (e.g., RBF uses ||x-y||₂²).</li>
+      </ul>
+
+      <div class="cols" style="margin-top:14px">
+        <div>
+          <h3>Worked examples</h3>
+
+          <h4>Vector norms</h4>
+          <p>For x=[3,4], ||x||₂ = 5 because sqrt(3²+4²)=5. ||x||₁ = 7. ||x||_∞ = 4.</p>
+
+          <h4>Matrix norms</h4>
+          <p>For A = [[1,2],[3,4]]:</p>
+          <pre>||A||_F = sqrt(1+4+9+16) = sqrt(30) ≈ 5.477</pre>
+          <p>The spectral norm is the largest singular value (compute via SVD).</p>
+
+          <h4>Norms and regularization</h4>
+          <p>Ridge regression minimizes ||y - Xw||₂² + λ||w||₂²; the λ||w||₂² term shrinks weights, reducing variance.</p>
+        </div>
+
+        <aside class="card" style="height:fit-content">
+          <h3 style="margin-top:0">Quick reference</h3>
+          <table>
+            <tr><th>Notation</th><th>Meaning</th></tr>
+            <tr><td>||x||₂</td><td>Euclidean norm</td></tr>
+            <tr><td>||A||_F</td><td>Frobenius norm</td></tr>
+            <tr><td>cond(A)</td><td>Condition number (σ_max/σ_min)</td></tr>
+          </table>
+        </aside>
+      </div>
+
+      <hr>
+
+      <h2>Interactive tools</h2>
+      <div class="cols">
+        <div class="card">
+          <h3>Kernel evaluator</h3>
+          <p class="small">Enter two vectors (space-separated) and choose kernel.</p>
+          <label>Vector x</label>
+          <input id="kx" type="text" value="1 2">
+          <label>Vector y</label>
+          <input id="ky" type="text" value="2 3">
+          <label>Kernel</label>
+          <select id="kernelType">
+            <option value="linear">Linear</option>
+            <option value="poly">Polynomial (d=2)</option>
+            <option value="rbf">RBF (σ=1)</option>
+            <option value="sigmoid">Sigmoid</option>
+          </select>
+          <button onclick="evalKernel()">Evaluate k(x,y)</button>
+          <div id="kout" class="note"></div>
+        </div>
+
+        <div class="card">
+          <h3>Norm calculator</h3>
+          <p class="small">Enter a vector or small matrix (rows semicolon-separated).</p>
+          <label>Vector (e.g. 3 4)</label>
+          <input id="vx" type="text" value="3 4">
+          <button onclick="computeNorms()">Compute ||·||₁, ||·||₂, ||·||_∞</button>
+          <div id="nout" class="note"></div>
+
+          <label style="margin-top:8px">Matrix (e.g. 1 2; 3 4)</label>
+          <input id="mx" type="text" value="1 2; 3 4">
+          <button onclick="computeMatrixNorms()">Matrix norms (Frobenius, spectral approx)</button>
+          <div id="mnout" class="note"></div>
+        </div>
+      </div>
+
+      <script>
+        function toVector(s){ return s.trim().split(/\s+/).map(Number); }
+        function toMatrix(s){ return s.split(';').map(r => r.trim().split(/\s+/).map(Number)); }
+        function dot(a,b){ return a.reduce((acc,v,i)=>acc+v*b[i],0); }
+        function l2(a){ return Math.sqrt(a.reduce((s,v)=>s+v*v,0)); }
+        function l1(a){ return a.reduce((s,v)=>s+Math.abs(v),0); }
+        function linf(a){ return Math.max(...a.map(Math.abs)); }
+
+        function evalKernel(){
+          let x = toVector(document.getElementById('kx').value);
+          let y = toVector(document.getElementById('ky').value);
+          if(x.length !== y.length){ document.getElementById('kout').innerText='Vectors must be same length.'; return; }
+          let type = document.getElementById('kernelType').value;
+          let val;
+          if(type==='linear'){ val = dot(x,y); }
+          else if(type==='poly'){ let c=1,d=2; val = Math.pow(dot(x,y)*1 + c, d); }
+          else if(type==='rbf'){ let sigma=1; let diff = x.map((v,i)=>v-y[i]); val = Math.exp(-dot(diff,diff)/(2*sigma*sigma)); }
+          else if(type==='sigmoid'){ let a=0.5,c=0; val = Math.tanh(a*dot(x,y) + c); }
+          document.getElementById('kout').innerText = 'k(x,y) = ' + Math.round(val*1e6)/1e6;
+        }
+
+        function computeNorms(){
+          let v = toVector(document.getElementById('vx').value);
+          document.getElementById('nout').innerText = `||v||₁ = ${l1(v)}, ||v||₂ = ${l2(v)}, ||v||_∞ = ${linf(v)}`;
+        }
+
+        function computeMatrixNorms(){
+          let M = toMatrix(document.getElementById('mx').value);
+          // Frobenius
+          let fro = 0; M.forEach(r=>r.forEach(x=>fro+=x*x)); fro = Math.sqrt(fro);
+          // spectral approx: compute singular values for 2x2 via ATA eigenvalues
+          if(M.length===2 && M[0].length===2){
+            let a=M[0][0], b=M[0][1], c=M[1][0], d=M[1][1];
+            // ATA
+            let ata11 = a*a + c*c; let ata12 = a*b + c*d; let ata22 = b*b + d*d;
+            let tr = ata11 + ata22; let det = ata11*ata22 - ata12*ata12; let disc = tr*tr - 4*det; if(disc<0) disc=0;
+            let l1 = (tr + Math.sqrt(disc))/2; let l2 = (tr - Math.sqrt(disc))/2; let smax = Math.sqrt(Math.max(l1,l2));
+            document.getElementById('mnout').innerText = `||A||_F = ${Math.round(fro*1000)/1000}, spectral ||A||₂ ≈ ${Math.round(smax*1000)/1000}`;
+          } else {
+            document.getElementById('mnout').innerText = `||A||_F = ${Math.round(fro*1000)/1000}. (Spectral norm approx for 2×2 only)`;
+          }
+        }
+      </script>
+
+    </section>
+  </div>
 </body>
 </html>
