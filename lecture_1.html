@@ -1,117 +1,269 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lecture 1: Mathematical Foundation for ML</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Mathematical Foundations for ML — Lectures 1-3</title>
   <style>
-    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; background: #f9f9f9; max-width: 900px; }
-    h1, h2 { color: #2c3e50; }
-    h3 { color: #34495e; }
-    .example { background: #ecf0f1; padding: 10px; border-left: 4px solid #3498db; margin: 15px 0; }
-    code { background: #eee; padding: 2px 6px; border-radius: 4px; }
-    .nav { margin-top: 30px; }
-    .nav a { margin-right: 15px; text-decoration: none; color: #3498db; }
-    .nav a:hover { text-decoration: underline; }
+    body{font-family:Inter, Roboto, Arial, sans-serif; margin:18px; color:#0f172a; line-height:1.55; background:#f7fafc}
+    .container{max-width:1100px;margin:0 auto}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+    h1{margin:0;font-size:22px;color:#0b63d6}
+    nav a{margin-left:12px;color:#2563eb;text-decoration:none;font-weight:600}
+    section.card{background:white;padding:18px;border-radius:10px;box-shadow:0 6px 18px rgba(12,18,40,0.05);margin-bottom:18px}
+    h2{margin-top:0}
+    .example{background:#f1f8ff;border-left:4px solid #60a5fa;padding:12px;border-radius:6px;margin:10px 0}
+    pre{background:#0b1220;color:#e6f0ff;padding:12px;border-radius:8px;overflow:auto;font-size:13px}
+    code.inline{background:#eef2ff;padding:2px 6px;border-radius:6px;font-family:monospace}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:14px}
+    @media (max-width:1000px){.grid{grid-template-columns:1fr}}
+    footer{color:#6b7280;text-align:center;margin-top:18px;padding:14px}
+    .muted{color:#6b7280;font-size:0.95rem}
   </style>
+
+  <!-- MathJax -->
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
 </head>
 <body>
+  <div class="container">
+    <header>
+      <h1>Mathematical Foundations for Machine Learning — Lectures 1–3</h1>
+      <nav>
+        <a href="#lec1">Lecture 1</a>
+        <a href="#lec2">Lecture 2</a>
+        <a href="#lec3">Lecture 3</a>
+      </nav>
+    </header>
 
-  <h1>Lecture 1: Mathematical Foundation for Machine Learning</h1>
+    <!-- LECTURE 1 -->
+    <section id="lec1" class="card" aria-labelledby="l1">
+      <h2 id="l1">Lecture 1 — Linear Algebra (Vectors, Matrices, EVD, SVD)</h2>
+      <p class="muted">Core linear algebra concepts used in ML, plus code examples: matrix ops, PCA via SVD.</p>
 
-  <h2>1. Linear Algebra Basics</h2>
-  <p>Matrices and vectors are fundamental in machine learning. Almost every dataset and model can be represented using vectors and matrices.</p>
+      <h3>Key Concepts (short)</h3>
+      <ul>
+        <li>Vector: \(x\in\mathbb R^n\). Dot product \(x\cdot y = x^\top y\).</li>
+        <li>Matrix: \(X\in\mathbb R^{m\times n}\). Matrix multiply \(Y = XW\).</li>
+        <li>Rank, determinant, invertibility: check for linear dependence and solvability.</li>
+        <li>EVD (square): \(A = V\Lambda V^{-1}\) (for diagonalizable A). For symmetric \(A\), \(A = Q\Lambda Q^\top\).</li>
+        <li>SVD (any matrix): \(A = U\Sigma V^\top\). Best rank-k approx: \(A_k = U_k\Sigma_k V_k^\top\).</li>
+      </ul>
 
-  <h3>1.1 Matrix Definition</h3>
-  <p>A matrix is a rectangular array of numbers:</p>
-  <div class="example">
-    \( A = \begin{bmatrix} a_{11} & a_{12} & \dots & a_{1n} \\ a_{21} & a_{22} & \dots & a_{2n} \\ \vdots & \vdots & \ddots & \vdots \\ a_{m1} & a_{m2} & \dots & a_{mn} \end{bmatrix} \)
+      <div class="example">
+        <strong>ML applications:</strong> PCA (feature reduction), LSA (NLP), recommender systems (matrix factorization), image compression.
+      </div>
+
+      <h3>Code — Matrix ops & PCA (SVD)</h3>
+      <p class="muted">Run these in Python (numpy, scikit-learn optional).</p>
+
+      <pre><code># Lecture1: Matrix operations, SVD-based PCA (Python)
+import numpy as np
+from sklearn.datasets import load_iris
+from sklearn.preprocessing import StandardScaler
+
+# Sample dataset
+X = load_iris().data          # shape (150, 4)
+Xc = StandardScaler().fit_transform(X)   # center + scale
+
+# SVD
+U, S, VT = np.linalg.svd(Xc, full_matrices=False)  # Xc = U @ diag(S) @ VT
+# Principal components (right singular vectors)
+PCs = VT.T                  # shape (4,4) columns are principal directions
+# Project onto top-2 components:
+k = 2
+Z = Xc @ PCs[:, :k]         # shape (150,2)
+
+print("Singular values:", S[:4])
+print("Projected shape:", Z.shape)
+
+# Compare to sklearn PCA if wanted:
+from sklearn.decomposition import PCA
+pca = PCA(n_components=2).fit(Xc)
+print("Sklearn top singulars (sqrt of eigenvals):", np.sqrt(pca.explained_variance_* (Xc.shape[0]-1)))</code></pre>
+
+      <h3>Code — Low-rank image compression (SVD)</h3>
+      <pre><code># compress a grayscale image using SVD (numpy)
+import imageio, numpy as np
+img = imageio.imread('your_gray_image.png')  # use a small grayscale PNG
+A = img.astype(float)
+U,S,VT = np.linalg.svd(A, full_matrices=False)
+k = 30   # keep top-k singular values
+A_k = (U[:,:k] * S[:k]) @ VT[:k,:]  # efficient broadcasting
+# Save A_k as compressed image after clipping to [0,255]
+import imageio
+imageio.imwrite('reconstructed.png', np.clip(A_k,0,255).astype(np.uint8))</code></pre>
+
+      <p class="muted">Notes: use `np.linalg.svd` for stability. For very large sparse matrices use truncated SVD (sklearn TruncatedSVD).</p>
+    </section>
+
+    <!-- LECTURE 2 -->
+    <section id="lec2" class="card" aria-labelledby="l2">
+      <h2 id="l2">Lecture 2 — Calculus & Optimization (Derivatives, Gradients, Backprop)</h2>
+      <p class="muted">How calculus enters ML: gradient-based optimization, chain rule for neural nets, second-order info for curvature.</p>
+
+      <h3>Key Concepts (short)</h3>
+      <ul>
+        <li>Derivative: \(f'(x)\) slope. Partial derivatives \( \partial f / \partial x_i\).</li>
+        <li>Gradient: \( \nabla f = [\partial f/\partial x_1,\dots,\partial f/\partial x_n]^\top\).</li>
+        <li>Chain rule: for composition \(f(g(x))\), \(df/dx = (df/dg)\cdot (dg/dx)\).</li>
+        <li>Hessian: matrix of second derivatives; used in Newton's method for faster convergence.</li>
+        <li>Optimization: Gradient descent: \(w \leftarrow w - \eta \nabla_w L\).</li>
+      </ul>
+
+      <div class="example">
+        <strong>ML applications:</strong> training linear/logistic regression, neural networks (backprop), optimizers (SGD, Adam).
+      </div>
+
+      <h3>Code — Gradient descent for linear regression</h3>
+      <pre><code># Lecture2: Gradient descent for linear regression (MSE)
+import numpy as np
+from sklearn.datasets import make_regression
+X, y = make_regression(n_samples=500, n_features=5, noise=10.0, random_state=1)
+X = np.c_[np.ones(len(X)), X]  # add bias
+w = np.zeros(X.shape[1])
+lr = 0.01
+for epoch in range(1000):
+    y_pred = X @ w
+    grad = (2/len(X)) * (X.T @ (y_pred - y))   # gradient of MSE
+    w -= lr * grad
+    if epoch % 200 == 0:
+        loss = ((y - y_pred)**2).mean()
+        print(f"epoch {epoch}, loss {loss:.4f}")
+print("learned weights:", w)</code></pre>
+
+      <h3>Code — Tiny neural network (manual backprop)</h3>
+      <pre><code># Lecture2: Small 2-layer NN (one hidden layer) for binary classification (sigmoid)
+import numpy as np
+from sklearn.datasets import make_classification
+X, y = make_classification(n_samples=300, n_features=4, n_informative=3, random_state=2)
+y = y.reshape(-1,1)
+# network: input(4) -> hidden(6, tanh) -> output(1, sigmoid)
+def sigmoid(z): return 1/(1+np.exp(-z))
+def dsig(z): return sigmoid(z)*(1-sigmoid(z))
+def dtanh(z): return 1 - np.tanh(z)**2
+
+np.random.seed(0)
+W1 = np.random.randn(4,6)*0.1
+b1 = np.zeros((1,6))
+W2 = np.random.randn(6,1)*0.1
+b2 = np.zeros((1,1))
+lr = 0.05
+
+for epoch in range(8000):
+    # forward
+    z1 = X @ W1 + b1
+    a1 = np.tanh(z1)
+    z2 = a1 @ W2 + b2
+    a2 = sigmoid(z2)
+    # loss (binary cross-entropy)
+    loss = -np.mean(y * np.log(a2+1e-9) + (1-y)*np.log(1-a2+1e-9))
+    # backward
+    dz2 = a2 - y                         # dL/dz2
+    dW2 = a1.T @ dz2 / len(X)
+    db2 = dz2.mean(axis=0, keepdims=True)
+    da1 = dz2 @ W2.T
+    dz1 = da1 * dtanh(z1)
+    dW1 = X.T @ dz1 / len(X)
+    db1 = dz1.mean(axis=0, keepdims=True)
+    # update
+    W1 -= lr * dW1
+    b1 -= lr * db1
+    W2 -= lr * dW2
+    b2 -= lr * db2
+    if epoch % 2000 == 0:
+        print(f"epoch {epoch}, loss {loss:.4f}")
+# final accuracy
+pred = (a2 > 0.5).astype(int)
+print("train acc:", (pred == y).mean())</code></pre>
+
+      <p class="muted">Notes: For production use frameworks (PyTorch / TensorFlow) handle auto-diff and optimized optimizers. This manual example clarifies backprop mechanics.</p>
+    </section>
+
+    <!-- LECTURE 3 -->
+    <section id="lec3" class="card" aria-labelledby="l3">
+      <h2 id="l3">Lecture 3 — Probability & Statistics for Machine Learning</h2>
+      <p class="muted">Probability to handle uncertainty, statistics to infer and validate models. Includes code: MLE, Bayesian update, hypothesis testing, Naive Bayes classifier.</p>
+
+      <h3>Key Concepts (short)</h3>
+      <ul>
+        <li>Random variable \(X\), PMF / PDF. Expectation \(\mathbb{E}[X]\), variance \(\mathrm{Var}(X)\).</li>
+        <li>Conditional probability \(P(A|B)\), Bayes' theorem: \(P(A|B)=\frac{P(B|A)P(A)}{P(B)}\).</li>
+        <li>Maximum Likelihood Estimation (MLE) — choose parameters that maximize data likelihood.</li>
+        <li>Confidence intervals, p-values, hypothesis tests (t-test, chi-square).</li>
+        <li>Probabilistic classifiers: Naive Bayes, Bayesian inference.</li>
+      </ul>
+
+      <div class="example">
+        <strong>ML applications:</strong> calibration & uncertainty, Bayesian models, Naive Bayes text classification, A/B testing for models, evaluation using p-values & CIs.
+      </div>
+
+      <h3>Code — MLE: estimate Gaussian mean & variance</h3>
+      <pre><code># Lecture3: MLE for Gaussian (closed-form)
+import numpy as np
+np.random.seed(0)
+data = np.random.normal(loc=5.0, scale=2.0, size=500)  # synthetic samples
+# MLE for Gaussian: mean = sample mean, variance = sample variance (biased MLE uses 1/n)
+mu_hat = data.mean()
+sigma2_hat = ((data - mu_hat)**2).mean()   # MLE uses 1/n
+print("MLE mean:", mu_hat, "MLE variance:", sigma2_hat)</code></pre>
+
+      <h3>Code — Bayesian update (coin flips)</h3>
+      <pre><code># Lecture3: Beta-Bernoulli conjugate update (coin flips)
+import numpy as np
+from scipy.stats import beta, bernoulli
+# Prior Beta(alpha,beta)
+alpha, beta_param = 2, 2      # weak prior centered at 0.5
+# Observations: 1=heads, 0=tails
+obs = bernoulli.rvs(0.7, size=50, random_state=1)
+# Posterior parameters:
+alpha_post = alpha + obs.sum()
+beta_post = beta_param + (len(obs) - obs.sum())
+print("Posterior alpha,beta:", alpha_post, beta_post)
+# posterior mean:
+print("Posterior mean (expected p):", alpha_post/(alpha_post+beta_post))</code></pre>
+
+      <h3>Code — Hypothesis testing (two-sample t-test)</h3>
+      <pre><code># Lecture3: Two-sample t-test (scipy)
+import numpy as np
+from scipy import stats
+np.random.seed(0)
+a = np.random.normal(0, 1, size=50)
+b = np.random.normal(0.4, 1, size=50)
+tstat, pval = stats.ttest_ind(a, b, equal_var=False)   # Welch's t-test
+print("t-statistic:", tstat, "p-value:", pval)</code></pre>
+
+      <h3>Code — Naive Bayes classifier (scikit-learn)</h3>
+      <pre><code># Lecture3: Naive Bayes on 20 newsgroups (text) or simple numeric example
+from sklearn.datasets import load_iris
+from sklearn.naive_bayes import GaussianNB
+from sklearn.model_selection import train_test_split
+X,y = load_iris(return_X_y=True)
+Xtr,Xte,ytr,yte = train_test_split(X,y,test_size=0.3,random_state=0)
+clf = GaussianNB().fit(Xtr,ytr)
+print("test accuracy:", clf.score(Xte,yte))</code></pre>
+
+      <h3>Code — Confidence interval for mean (normal approx)</h3>
+      <pre><code># Lecture3: 95% CI for mean when sigma unknown (t-distribution)
+import numpy as np
+from scipy import stats
+data = np.random.normal(10, 3, size=80)
+mu = data.mean()
+se = data.std(ddof=1)/np.sqrt(len(data))
+ci = stats.t.interval(0.95, df=len(data)-1, loc=mu, scale=se)
+print("mean:", mu, "95% CI:", ci)</code></pre>
+
+      <p class="muted">Notes: depending on the domain, pick correct test (parametric vs non-parametric). Use bootstrapping when assumptions fail.</p>
+    </section>
+
+    <footer>
+      <div class="muted">This page provides lecture summaries + runnable Python code examples (NumPy, SciPy, scikit-learn). Replace placeholder filenames (images) and run snippets in a Python environment (Jupyter / Colab).</div>
+      <div style="margin-top:8px">© <span id="year"></span> — Prepared for teaching</div>
+    </footer>
   </div>
-  <p><strong>ML Application:</strong> Dataset representation \( X \in \mathbb{R}^{m \times n} \), each row is a data point, each column a feature.</p>
 
-  <h3>1.2 Common Operations</h3>
-  <ul>
-    <li><strong>Addition:</strong> \( C = A + B \)</li>
-    <li><strong>Scalar Multiplication:</strong> \( B = kA \)</li>
-    <li><strong>Matrix Multiplication:</strong> \( C = AB \)</li>
-    <li><strong>Transpose:</strong> \( A^T \)</li>
-    <li><strong>Inverse:</strong> \( A^{-1} \)</li>
-  </ul>
-  <div class="example">
-    Example: <br>
-    \( A = \begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}, 
-       B = \begin{bmatrix} 5 & 6 \\ 7 & 8 \end{bmatrix} \) <br>
-    \( A + B = \begin{bmatrix} 6 & 8 \\ 10 & 12 \end{bmatrix}, \quad
-       AB = \begin{bmatrix} 19 & 22 \\ 43 & 50 \end{bmatrix} \)
-  </div>
-  <p><strong>ML Application:</strong> Neural network forward propagation uses matrix multiplication to compute weighted sums.</p>
-
-  <h2>2. Vector Spaces in Machine Learning</h2>
-  <ul>
-    <li>Data points: \( x \in \mathbb{R}^n \)</li>
-    <li>Weights: \( w \in \mathbb{R}^n \)</li>
-    <li>Dot product: \( w^T x \)</li>
-    <li>Norms: \( \|x\|_2 = \sqrt{\sum_i x_i^2} \)</li>
-  </ul>
-  <p><strong>ML Applications:</strong> Cosine similarity in NLP, L2 regularization in regression, distance metrics in clustering.</p>
-
-  <h2>3. Probability Basics</h2>
-  <ul>
-    <li>Random variable \( X \) – represents outcomes</li>
-    <li>Probability distribution \( P(X) \)</li>
-    <li>Conditional probability \( P(Y|X) \)</li>
-    <li>Expectation \( \mathbb{E}[X] \)</li>
-    <li>Variance \( \text{Var}(X) \)</li>
-  </ul>
-  <p><strong>ML Applications:</strong> Naive Bayes, expected loss minimization, bias-variance tradeoff, uncertainty estimation.</p>
-
-  <h2>4. Eigenvalues and Eigenvectors</h2>
-  <p>\( Av = \lambda v \)</p>
-  <p><strong>ML Applications:</strong> PCA for dimensionality reduction, data compression, noise reduction, feature extraction.</p>
-
-  <h2>5. Calculus in Machine Learning</h2>
-  <p>Calculus is essential in optimization, computing gradients, and training models.</p>
-
-  <h3>5.1 Derivatives</h3>
-  <p>Derivative measures how a function changes with respect to a variable:</p>
-  <div class="example">
-    \( f(x) = x^2 \quad \Rightarrow \quad f'(x) = 2x \)
-  </div>
-  <p><strong>ML Application:</strong> Gradient of loss functions guides the optimization in linear regression, logistic regression, and neural networks.</p>
-
-  <h3>5.2 Partial Derivatives</h3>
-  <p>For functions of multiple variables, partial derivatives measure change w.r.t. one variable:</p>
-  <div class="example">
-    \( f(x, y) = x^2 + y^2 \quad \Rightarrow \quad \frac{\partial f}{\partial x} = 2x, \quad \frac{\partial f}{\partial y} = 2y \)
-  </div>
-  <p><strong>ML Application:</strong> Used in gradient descent for multi-parameter models, e.g., weights in neural networks.</p>
-
-  <h3>5.3 Gradients</h3>
-  <p>The gradient is a vector of partial derivatives:</p>
-  <div class="example">
-    \( \nabla f(x, y) = \begin{bmatrix} \frac{\partial f}{\partial x} \\[2mm] \frac{\partial f}{\partial y} \end{bmatrix} = \begin{bmatrix} 2x \\ 2y \end{bmatrix} \)
-  </div>
-  <p><strong>ML Application:</strong> Gradient vector shows the direction of steepest ascent; negative gradient is used in gradient descent to minimize loss.</p>
-
-  <h3>5.4 Chain Rule</h3>
-  <p>Used to compute derivatives of composite functions:</p>
-  <div class="example">
-    \( f(g(x)) \quad \Rightarrow \quad \frac{df}{dx} = \frac{df}{dg} \cdot \frac{dg}{dx} \)
-  </div>
-  <p><strong>ML Application:</strong> Backpropagation in neural networks relies on the chain rule to propagate gradients through layers.</p>
-
-  <h2>6. Applications in Machine Learning</h2>
-  <ul>
-    <li>Linear regression: derivative of MSE loss w.r.t. weights</li>
-    <li>Logistic regression: derivative of log-loss for probability prediction</li>
-    <li>Neural networks: backpropagation and weight updates using gradients</li>
-    <li>Optimization: gradient descent, stochastic gradient descent, Adam optimizer</li>
-    <li>PCA: eigen decomposition combined with derivatives to find principal components</li>
-  </ul>
-
-  <div class="nav">
-    <a href="lecture_2.html">Next Lecture →</a>
-  </div>
-
+  <script>document.getElementById('year').textContent=(new Date()).getFullYear();</script>
 </body>
 </html>
