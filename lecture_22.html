@@ -1,12 +1,401 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecture 22</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lecture 22 — Feature Reduction Methods</title>
+  <style>
+    :root{
+      --bg:#fbfdff; --card:#ffffff; --muted:#6b7280; --accent:#7c3aed; --accent-2:#059669;
+      --title:#0b2447;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      background: linear-gradient(180deg,#f7fbff 0%, #ffffff 100%); color:#0f172a;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    }
+    .wrap{max-width:1100px;margin:28px auto;padding:20px;}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;}
+    header h1{margin:0;font-size:1.4rem;color:var(--title)}
+    nav a{color:var(--accent);text-decoration:none;margin-left:12px;font-size:0.95rem}
+    main{display:grid;grid-template-columns:1fr 380px;gap:20px}
+    @media (max-width:980px){ main{grid-template-columns:1fr} .aside{order:2} }
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 20px rgba(15,23,42,0.06);border:1px solid rgba(15,23,42,0.04)}
+    h2{margin:0 0 10px 0;color:var(--accent)}
+    p{color:#374151;margin:0 0 10px 0}
+    ul{margin:8px 0 14px 20px;color:#374151}
+    .models{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+    @media(max-width:760px){ .models{grid-template-columns:1fr} }
+    .model{padding:12px;border-radius:8px;border:1px solid rgba(9,30,66,0.04);background:#fff}
+    pre{background:#0b1220;color:#e6eefc;padding:12px;border-radius:8px;overflow:auto;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;font-size:0.87rem}
+    .example{border-left:4px solid var(--accent);padding:12px;background:linear-gradient(90deg,#f8fbff,#ffffff);border-radius:8px;margin:12px 0}
+    label{display:block;margin:10px 0 6px;font-weight:600;color:#0f172a;font-size:0.92rem}
+    input[type="number"], select, textarea{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(15,23,42,0.08);font-size:0.95rem}
+    button{display:inline-block;padding:10px 14px;border-radius:8px;border:0;background:var(--accent);color:white;font-weight:600;cursor:pointer;margin-top:10px}
+    .btn-muted{background:#6b7280}
+    .muted{color:var(--muted);font-size:0.92rem}
+    .result{margin-top:12px;padding:12px;border-radius:8px;background:#0f172a;color:#fff}
+    canvas{width:100%;border-radius:8px;background:#fff;border:1px solid #eef2f7}
+    table{width:100%;border-collapse:collapse;margin-top:8px}
+    th,td{padding:6px;border-bottom:1px solid #eef2f7;text-align:left;font-size:0.95rem}
+    .small{font-size:0.9rem;color:var(--muted)}
+    .legend{display:flex;gap:8px;align-items:center;margin-top:8px}
+    .dot{width:12px;height:12px;border-radius:50%;}
+  </style>
 </head>
 <body>
-    <h1>Lecture 22</h1>
-    <p>Content for Lecture 22 will go here.</p>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Lecture 22 — Feature Reduction Methods</h1>
+        <div class="small muted">PCA, LDA, t-SNE, UMAP, Feature Selection, Autoencoders — theory, examples & demo</div>
+      </div>
+      <nav>
+        <a href="#why">Why</a>
+        <a href="#models">Methods</a>
+        <a href="#demo">PCA Demo</a>
+      </nav>
+    </header>
+
+    <main>
+      <!-- Main content -->
+      <section class="card">
+        <h2 id="why">1. Why reduce features?</h2>
+        <p>
+          Feature reduction (dimensionality reduction) improves model performance, speeds up computation, helps visualization, and mitigates the curse of dimensionality.
+          Two broad families:
+        </p>
+        <ul>
+          <li><strong>Feature extraction</strong> — create new features (PCA, autoencoders, t-SNE, UMAP)</li>
+          <li><strong>Feature selection</strong> — pick a subset of existing features (filter/wrapper/embedded)</li>
+        </ul>
+
+        <h2 id="models">2. Six important methods</h2>
+        <div class="models">
+          <div class="model">
+            <h4>1) Principal Component Analysis (PCA)</h4>
+            <p>PCA finds orthogonal directions (principal components) that capture maximal variance. It is linear and great for visualization and noise reduction.</p>
+            <p class="small"><strong>Use:</strong> exploratory analysis, preprocessing before supervised learning, denoising.</p>
+          </div>
+
+          <div class="model">
+            <h4>2) Linear Discriminant Analysis (LDA)</h4>
+            <p>LDA finds projections that maximize class separability (ratio of between-class variance to within-class variance). It is supervised (uses labels).</p>
+            <p class="small"><strong>Use:</strong> dimensionality reduction when you have labeled classes and want discrimination.</p>
+          </div>
+
+          <div class="model">
+            <h4>3) t-SNE (t-Stochastic Neighbor Embedding)</h4>
+            <p>Nonlinear method that preserves local neighborhoods — excellent for 2D/3D visualization of high-dimensional data. Not for general-purpose feature extraction for downstream models (stochastic, non-parametric).</p>
+            <p class="small"><strong>Use:</strong> embedding for visualization, cluster inspection.</p>
+          </div>
+
+          <div class="model">
+            <h4>4) UMAP (Uniform Manifold Approximation & Projection)</h4>
+            <p>Nonlinear, often faster than t-SNE and preserves global structure better. Also good for visualization and as an embedding for downstream tasks.</p>
+            <p class="small"><strong>Use:</strong> visualization, pre-processing for clustering or retrieval.</p>
+          </div>
+
+          <div class="model">
+            <h4>5) Feature Selection (Filter / Wrapper / Embedded)</h4>
+            <p>Filter: score each feature (ANOVA, mutual information). Wrapper: search subsets (recursive feature elimination). Embedded: selection during model training (Lasso, tree feature importances).</p>
+            <p class="small"><strong>Use:</strong> reduce irrelevant/noisy features; improve interpretability.</p>
+          </div>
+
+          <div class="model">
+            <h4>6) Autoencoders (Neural)</h4>
+            <p>Neural networks that learn compressed representations via encoder/decoder. Can capture nonlinear structure and be trained end-to-end.</p>
+            <p class="small"><strong>Use:</strong> nonlinear compression, anomaly detection, pretraining.</p>
+          </div>
+        </div>
+
+        <h2 class="section-title">3. Examples & Practical Notes</h2>
+        <div class="example">
+          <strong>Example 1 (PCA):</strong> Gene expression dataset with thousands of genes -> PCA often reveals biological axes (e.g., disease vs control) in first few components.
+        </div>
+        <div class="example">
+          <strong>Example 2 (LDA):</strong> Handwritten digits classification: LDA can produce features which maximize digit separability for classifiers.
+        </div>
+        <div class="example">
+          <strong>Example 3 (t-SNE / UMAP):</strong> Visualizing high-dimensional embeddings from a neural model to inspect clusters (e.g., topics in NLP or image classes).
+        </div>
+
+        <h2 class="section-title">4. When to use which?</h2>
+        <ul>
+          <li>Want fast linear reduction → PCA.</li>
+          <li>Need supervised discriminative projection → LDA (labels required).</li>
+          <li>Visual exploration of complex manifolds → t-SNE or UMAP.</li>
+          <li>Large-scale approximate embeddings → UMAP or parametric UMAP / autoencoders.</li>
+          <li>Need interpretability & feature subset → feature selection (filter/wrapper/embedded).</li>
+        </ul>
+
+        <h2 class="section-title">5. Short code snippets (Python)</h2>
+        <pre><code># PCA with scikit-learn
+from sklearn.decomposition import PCA
+pca = PCA(n_components=2)
+X2 = pca.fit_transform(X)
+
+# LDA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+lda = LinearDiscriminantAnalysis(n_components=2)
+X_lda = lda.fit_transform(X, y)
+
+# t-SNE
+from sklearn.manifold import TSNE
+X_tsne = TSNE(n_components=2, perplexity=30, random_state=0).fit_transform(X)
+
+# UMAP (pip install umap-learn)
+import umap
+X_umap = umap.UMAP(n_components=2).fit_transform(X)
+</code></pre>
+
+        <p class="muted">Important: always center data for PCA (subtract mean). Scale features when different units are involved.</p>
+
+        <h2 id="demo" class="section-title">6. Interactive 2D PCA projector (toy)</h2>
+        <p class="small">This simple demo computes PCA for 2-feature data analytically (covariance 2×2 eigen-decomposition) and projects points onto the first principal component. Good for intuition and classroom demos.</p>
+
+        <label for="points">Enter points (one per line) as: <code>x,y,label</code> — label optional. Example:</label>
+        <textarea id="points" rows="6" placeholder="1.2,3.4,A
+2.1,2.9,A
+4.5,1.2,B
+..."></textarea>
+
+        <button onclick="loadAndProject()">Project & Draw</button>
+        <button class="btn-muted" onclick="resetDemo()">Reset</button>
+
+        <div style="margin-top:12px">
+          <canvas id="plot" width="640" height="360"></canvas>
+          <div class="legend">
+            <div style="display:flex;gap:6px;align-items:center"><div class="dot" style="background:#ef4444"></div>Label A</div>
+            <div style="display:flex;gap:6px;align-items:center"><div class="dot" style="background:#2563eb"></div>Label B</div>
+            <div style="display:flex;gap:6px;align-items:center"><div class="dot" style="background:#10b981"></div>Proj (PC1)</div>
+          </div>
+        </div>
+
+        <div id="pcaInfo" class="small muted" style="margin-top:10px"></div>
+        <p class="small" style="margin-top:8px">Notes: this demo is 2D-only (analytical eigen-decomposition). For higher dimensions use libraries (NumPy / scikit-learn).</p>
+
+      </section>
+
+      <!-- Aside -->
+      <aside class="card aside">
+        <h3 class="section-title">Quick reference</h3>
+        <ul>
+          <li><strong>PCA</strong> — linear, unsupervised, maximize variance.</li>
+          <li><strong>LDA</strong> — linear, supervised, maximize class separation.</li>
+          <li><strong>t-SNE</strong> — nonlinear, stochastic, local structure for visualization.</li>
+          <li><strong>UMAP</strong> — nonlinear, often faster, preserves global & local.</li>
+          <li><strong>Feature selection</strong> — pick columns; increases interpretability.</li>
+          <li><strong>Autoencoders</strong> — nonlinear learned encoder/decoder.</li>
+        </ul>
+
+        <h3 class="section-title">When not to reduce</h3>
+        <p class="small">If the model (e.g., tree ensembles) handles high-dimensional sparse data well, or you need feature-level interpretability, be cautious about aggressive reduction.</p>
+      </aside>
+    </main>
+
+    <footer style="margin-top:18px" class="card">
+      <h3 style="margin:0 0 8px 0">Next steps</h3>
+      <ul>
+        <li>Try PCA on real datasets (Iris, MNIST) and visualize the first 2–3 PCs.</li>
+        <li>Compare t-SNE vs UMAP visualizations for the same embeddings.</li>
+        <li>Experiment with autoencoders for nonlinear compression (use small networks first).</li>
+      </ul>
+    </footer>
+  </div>
+
+  <script>
+    // PCA 2D demo functions (analytic eigen-decomposition for 2x2 covariance)
+    function parsePoints(text) {
+      const lines = text.trim().split('\n').map(l => l.trim()).filter(Boolean);
+      const pts = [];
+      for (let line of lines) {
+        const parts = line.split(',').map(s => s.trim());
+        if (parts.length < 2) continue;
+        const x = parseFloat(parts[0]);
+        const y = parseFloat(parts[1]);
+        const label = parts[2] ? parts[2] : null;
+        if (!isNaN(x) && !isNaN(y)) pts.push({x, y, label});
+      }
+      return pts;
+    }
+
+    function mean2D(pts) {
+      let sx = 0, sy = 0;
+      pts.forEach(p => { sx += p.x; sy += p.y; });
+      return {mx: sx / pts.length, my: sy / pts.length};
+    }
+
+    function cov2D(pts, mx, my) {
+      let sxx = 0, sxy = 0, syy = 0;
+      pts.forEach(p => {
+        const dx = p.x - mx;
+        const dy = p.y - my;
+        sxx += dx * dx;
+        sxy += dx * dy;
+        syy += dy * dy;
+      });
+      const n = pts.length;
+      return {a: sxx / (n - 1), b: sxy / (n - 1), c: syy / (n - 1)}; // covariance matrix [[a,b],[b,c]]
+    }
+
+    function eigen2x2(a, b, c) {
+      // covariance matrix [[a, b], [b, c]]
+      const tr = a + c;
+      const det = a * c - b * b;
+      const term = Math.sqrt(Math.max(0, ((a - c) / 2) ** 2 + b * b));
+      const lam1 = tr / 2 + term;
+      const lam2 = tr / 2 - term;
+      // eigenvector for lam1: [b, lam1 - a] (if b not zero), else [1,0] or [0,1]
+      let v1;
+      if (Math.abs(b) > 1e-12) {
+        v1 = [b, lam1 - a];
+      } else {
+        if (Math.abs(a - lam1) < Math.abs(c - lam1)) v1 = [1, 0];
+        else v1 = [0, 1];
+      }
+      // normalize v1
+      const norm = Math.hypot(v1[0], v1[1]);
+      v1 = [v1[0] / norm, v1[1] / norm];
+      return {lam1, lam2, v1};
+    }
+
+    function projectOntoPC1(pts, mx, my, pc) {
+      // project each mean-centered point onto vector pc (unit)
+      return pts.map(p => {
+        const dx = p.x - mx;
+        const dy = p.y - my;
+        const proj = dx * pc[0] + dy * pc[1];
+        return {...p, proj};
+      });
+    }
+
+    // drawing
+    const canvas = document.getElementById('plot');
+    const ctx = canvas.getContext('2d');
+
+    function drawAxes() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      // white background
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      // border
+      ctx.strokeStyle = '#eef2f7';
+      ctx.strokeRect(0.5,0.5,canvas.width-1,canvas.height-1);
+    }
+
+    function drawPoints(pts, mx, my, pc, projected) {
+      // compute scale to fit points
+      const margin = 30;
+      const xs = pts.map(p => p.x);
+      const ys = pts.map(p => p.y);
+      const minx = Math.min(...xs);
+      const maxx = Math.max(...xs);
+      const miny = Math.min(...ys);
+      const maxy = Math.max(...ys);
+      const w = canvas.width - margin*2;
+      const h = canvas.height - margin*2;
+
+      const scaleX = (maxx - minx) === 0 ? 1 : w / (maxx - minx);
+      const scaleY = (maxy - miny) === 0 ? 1 : h / (maxy - miny);
+
+      function toCanvasX(x){ return margin + (x - minx) * scaleX; }
+      function toCanvasY(y){ return canvas.height - (margin + (y - miny) * scaleY); }
+
+      // draw original points
+      pts.forEach(p=>{
+        ctx.beginPath();
+        ctx.fillStyle = p.label === 'A' ? '#ef4444' : (p.label === 'B' ? '#2563eb' : '#6b7280');
+        ctx.arc(toCanvasX(p.x), toCanvasY(p.y), 5, 0, Math.PI*2);
+        ctx.fill();
+      });
+
+      // draw center
+      ctx.beginPath();
+      ctx.fillStyle = '#000';
+      ctx.arc(toCanvasX(mx), toCanvasY(my), 4, 0, Math.PI*2);
+      ctx.fill();
+
+      // draw PC1 line through center (extend both directions)
+      ctx.beginPath();
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 2;
+      const L = Math.max(w,h) * 1.2;
+      const x1 = mx - pc[0] * L;
+      const y1 = my - pc[1] * L;
+      const x2 = mx + pc[0] * L;
+      const y2 = my + pc[1] * L;
+      ctx.moveTo(toCanvasX(x1), toCanvasY(y1));
+      ctx.lineTo(toCanvasX(x2), toCanvasY(y2));
+      ctx.stroke();
+
+      // draw projected points on line (small circles)
+      projected.forEach(p=>{
+        // reconstruct projected coordinates in original space: (mx,my) + proj*pc
+        const rx = mx + p.proj * pc[0];
+        const ry = my + p.proj * pc[1];
+        ctx.beginPath();
+        ctx.fillStyle = '#10b981';
+        ctx.arc(toCanvasX(rx), toCanvasY(ry), 4, 0, Math.PI*2);
+        ctx.fill();
+        // draw faint line from original point to projection
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(16,185,129,0.25)';
+        ctx.moveTo(toCanvasX(p.x), toCanvasY(p.y));
+        ctx.lineTo(toCanvasX(rx), toCanvasY(ry));
+        ctx.stroke();
+      });
+    }
+
+    function loadAndProject() {
+      const raw = document.getElementById('points').value;
+      const pts = parsePoints(raw);
+      if (pts.length < 2) {
+        alert('Enter at least 2 valid points (x,y,label).');
+        return;
+      }
+      const {mx, my} = mean2D(pts);
+      const cov = cov2D(pts, mx, my);
+      const eig = eigen2x2(cov.a, cov.b, cov.c);
+      const pc = eig.v1; // first principal direction (unit)
+
+      const projected = projectOntoPC1(pts, mx, my, pc);
+
+      drawAxes();
+      drawPoints(pts, mx, my, pc, projected);
+
+      // show info
+      const info = document.getElementById('pcaInfo');
+      const varExplained = (eig.lam1 + eig.lam2) > 0 ? (eig.lam1 / (eig.lam1 + eig.lam2)) * 100 : 0;
+      info.innerHTML = `Covariance matrix: [${cov.a.toFixed(3)}, ${cov.b.toFixed(3)}; ${cov.b.toFixed(3)}, ${cov.c.toFixed(3)}] <br>
+        PC1 eigenvalue: ${eig.lam1.toFixed(4)}, PC2 eigenvalue: ${eig.lam2.toFixed(4)} <br>
+        Variance explained by PC1: ${varExplained.toFixed(2)}% <br>
+        PC1 (unit vector): [${pc[0].toFixed(3)}, ${pc[1].toFixed(3)}]`;
+    }
+
+    function resetDemo() {
+      document.getElementById('points').value = "1.2,3.4,A\n2.1,2.9,A\n4.5,1.2,B\n3.9,1.5,B\n2.8,3.1,A\n";
+      document.getElementById('pcaInfo').innerText = '';
+      drawAxes();
+      // initial sample draw
+      const pts = parsePoints(document.getElementById('points').value);
+      if (pts.length >= 2) {
+        const {mx,my} = mean2D(pts);
+        const cov = cov2D(pts,mx,my);
+        const eig = eigen2x2(cov.a,cov.b,cov.c);
+        const projected = projectOntoPC1(pts, mx, my, eig.v1);
+        drawPoints(pts, mx, my, eig.v1, projected);
+        const varExplained = (eig.lam1 + eig.lam2) > 0 ? (eig.lam1 / (eig.lam1 + eig.lam2)) * 100 : 0;
+        document.getElementById('pcaInfo').innerHTML = `Covariance matrix: [${cov.a.toFixed(3)}, ${cov.b.toFixed(3)}; ${cov.b.toFixed(3)}, ${cov.c.toFixed(3)}] <br>
+          PC1 eigenvalue: ${eig.lam1.toFixed(4)}, PC2 eigenvalue: ${eig.lam2.toFixed(4)} <br>
+          Variance explained by PC1: ${varExplained.toFixed(2)}% <br>
+          PC1 (unit vector): [${eig.v1[0].toFixed(3)}, ${eig.v1[1].toFixed(3)}]`;
+      }
+    }
+
+    // initialize with sample points
+    resetDemo();
+  </script>
 </body>
 </html>
