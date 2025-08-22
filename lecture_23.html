@@ -1,12 +1,339 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecture 23</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lecture 23 — Bayesian Learning</title>
+  <style>
+    :root{
+      --bg:#fbfdff; --card:#ffffff; --muted:#6b7280; --accent:#7b3aed; --accent-2:#059669;
+      --title:#0b2447;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      background: linear-gradient(180deg,#f7fbff 0%, #ffffff 100%); color:#0f172a;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    }
+    .wrap{max-width:1100px;margin:28px auto;padding:20px;}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;}
+    header h1{margin:0;font-size:1.4rem;color:var(--title)}
+    nav a{color:var(--accent);text-decoration:none;margin-left:12px;font-size:0.95rem}
+    main{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    @media (max-width:980px){ main{grid-template-columns:1fr} .aside{order:2} }
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 20px rgba(15,23,42,0.06);border:1px solid rgba(15,23,42,0.04)}
+    h2{margin:0 0 10px 0;color:var(--accent)}
+    p{color:#374151;margin:0 0 10px 0}
+    ul{margin:8px 0 14px 20px;color:#374151}
+    .models{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+    @media(max-width:760px){ .models{grid-template-columns:1fr} }
+    .model{padding:12px;border-radius:8px;border:1px solid rgba(9,30,66,0.04);background:#fff}
+    pre{background:#0b1220;color:#e6eefc;padding:12px;border-radius:8px;overflow:auto;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;font-size:0.87rem}
+    .example{border-left:4px solid var(--accent);padding:12px;background:linear-gradient(90deg,#f8fbff,#ffffff);border-radius:8px;margin:12px 0}
+    label{display:block;margin:10px 0 6px;font-weight:600;color:#0f172a;font-size:0.92rem}
+    input[type="text"], textarea, select { width:100%; padding:8px; border-radius:8px; border:1px solid rgba(15,23,42,0.08); font-size:0.95rem }
+    button{display:inline-block;padding:10px 14px;border-radius:8px;border:0;background:var(--accent);color:white;font-weight:600;cursor:pointer;margin-top:10px}
+    .muted{color:var(--muted);font-size:0.92rem}
+    .result{margin-top:12px;padding:12px;border-radius:8px;background:#0f172a;color:#fff}
+    table{width:100%;border-collapse:collapse;margin-top:8px}
+    th,td{padding:6px;border-bottom:1px solid #eef2f7;text-align:left;font-size:0.95rem}
+    .small{font-size:0.9rem;color:var(--muted)}
+  </style>
 </head>
 <body>
-    <h1>Lecture 23</h1>
-    <p>Content for Lecture 23 will go here.</p>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Lecture 23 — Bayesian Learning</h1>
+        <div class="small muted">Principles • Naïve Bayes variants • Bayesian networks • Bayesian regression • MAP vs MLE • Practical demo</div>
+      </div>
+      <nav>
+        <a href="#overview">Overview</a>
+        <a href="#models">Models</a>
+        <a href="#demo">Naïve Bayes Demo</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2 id="overview">1. Bayesian Learning — Big Picture</h2>
+        <p>
+          Bayesian learning treats model parameters as random variables and uses probability to represent uncertainty.
+          Learning updates a prior belief about parameters θ to a posterior using observed data D via Bayes' rule:
+        </p>
+        <pre><code>p(θ | D) = p(D | θ) p(θ) / p(D)</code></pre>
+        <p class="small">
+          - <strong>p(θ)</strong>: prior (what you believed before seeing data).<br>
+          - <strong>p(D|θ)</strong>: likelihood (how probable the observed data is under θ).<br>
+          - <strong>p(θ|D)</strong>: posterior (updated belief).<br>
+          - <strong>p(D)</strong>: evidence (normalizing constant).
+        </p>
+
+        <div class="example">
+          <strong>Example (coin toss):</strong> prior Beta(α,β) over coin bias θ. Observing heads/tails updates α,β; posterior is Beta(α+heads, β+tails).
+        </div>
+
+        <h2 id="models">2. Six Topics / Models Covered</h2>
+        <div class="models">
+          <div class="model">
+            <h4>1) Naïve Bayes (general)</h4>
+            <p>Assumes features are conditionally independent given class: <code>p(y|x) ∝ p(y) ∏ p(xᵢ|y)</code>. Fast, works well for text.</p>
+          </div>
+
+          <div class="model">
+            <h4>2) Multinomial Naïve Bayes</h4>
+            <p>Used for count data (bag-of-words). Likelihood from word counts per class (Laplace smoothing often applied).</p>
+          </div>
+
+          <div class="model">
+            <h4>3) Bernoulli Naïve Bayes</h4>
+            <p>Binary features (word present/absent). Useful when only occurrence matters.</p>
+          </div>
+
+          <div class="model">
+            <h4>4) Gaussian Naïve Bayes</h4>
+            <p>Continuous features modeled as Gaussians per class: <code>p(xᵢ|y=c) = N(μ_{c,i}, σ_{c,i}²)</code>.</p>
+          </div>
+
+          <div class="model">
+            <h4>5) Bayesian Networks (Directed Acyclic Graphs)</h4>
+            <p>Represent conditional independence with a DAG. Joint factorizes as <code>∏ p(Xᵢ | Parents(Xᵢ))</code>. Support structured reasoning and causal models (with care).</p>
+          </div>
+
+          <div class="model">
+            <h4>6) Bayesian Linear Regression & MAP</h4>
+            <p>Place priors on weights (e.g., Gaussian). Posterior over weights is Gaussian (conjugacy). MAP estimate blends prior and likelihood — equivalent to regularized regression (Ridge).</p>
+          </div>
+        </div>
+
+        <h2 id="mle-map">3. MLE vs MAP vs Full Bayesian</h2>
+        <ul>
+          <li><strong>MLE (Maximum Likelihood):</strong> choose θ that maximizes p(D|θ). No prior used.</li>
+          <li><strong>MAP (Maximum A Posteriori):</strong> choose θ that maximizes p(θ|D) ∝ p(D|θ)p(θ). Prior acts as regularizer.</li>
+          <li><strong>Full Bayesian:</strong> keep the entire posterior distribution p(θ|D) — enables uncertainty quantification and predictive distribution by integrating over θ.</li>
+        </ul>
+
+        <div class="example">
+          <strong>Example:</strong> Gaussian likelihood + Gaussian prior → closed-form posterior (conjugacy). MAP with Gaussian prior = ridge regression.
+        </div>
+
+        <h2 id="bayesnets">4. Bayesian Networks (BNs)</h2>
+        <p>
+          BNs encode conditional independencies with a DAG. They are powerful for modeling structured domains (medical diagnosis, fault trees).
+          Inference can be done via variable elimination, belief propagation, or sampling (MCMC).
+        </p>
+
+        <h2 id="applications">5. Applications</h2>
+        <ul>
+          <li>Spam detection (Naïve Bayes) — simple and effective for text.</li>
+          <li>Medical diagnosis (Bayesian networks capture symptom-disease relations).</li>
+          <li>Probabilistic calibration and uncertainty-aware predictions (Bayesian regression).</li>
+          <li>Hyperparameter tuning via Bayesian optimization.</li>
+        </ul>
+
+        <h2 id="code">6. Short Python Examples (sketch)</h2>
+        <pre><code># Gaussian Naive Bayes (scikit-learn)
+from sklearn.naive_bayes import GaussianNB
+model = GaussianNB()
+model.fit(X_train, y_train)
+pred = model.predict(X_test)
+
+# Multinomial Naive Bayes for text
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+X = CountVectorizer().fit_transform(documents)
+clf = MultinomialNB(alpha=1.0)  # Laplace smoothing
+clf.fit(X_train, y_train)
+        </code></pre>
+
+        <p class="small muted">Next — interactive Naïve Bayes posterior calculator: enter classes, priors, and likelihoods (categorical) and compute posteriors.</p>
+      </section>
+
+      <!-- Aside: Interactive Naive Bayes calculator -->
+      <aside class="card aside">
+        <h2 id="demo" class="section-title">Naïve Bayes Posterior Calculator</h2>
+        <p class="small">This demo computes posterior probabilities using the Naïve Bayes formula for categorical features:</p>
+        <pre><code>p(y|x) ∝ p(y) ∏ p(x_i | y)</code></pre>
+
+        <label>Class names (comma-separated)</label>
+        <input id="classes" type="text" placeholder="e.g., spam,not_spam">
+
+        <label>Class priors (comma-separated, must sum to &le; 1 or left unnormalized)</label>
+        <input id="priors" type="text" placeholder="e.g., 0.4,0.6">
+
+        <label>Number of features</label>
+        <select id="nfeat">
+          <option value="1">1</option>
+          <option value="2" selected>2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+
+        <div id="likelihoodsArea" style="margin-top:8px"></div>
+
+        <button onclick="buildLikelihoodInputs()">Build likelihood inputs</button>
+        <button onclick="computeNaiveBayes()">Compute Posteriors</button>
+
+        <div id="nbResult" class="result" style="display:none"></div>
+
+        <p class="small muted" style="margin-top:8px">Notes: this is a simple categorical likelihood demo — for continuous features use Gaussian likelihoods and plug μ,σ into the formula (or use GaussianNB).</p>
+      </aside>
+
+    </main>
+
+    <footer style="margin-top:18px" class="card">
+      <h3 style="margin:0 0 8px 0">Resources & Next Steps</h3>
+      <ul>
+        <li>Practice Naïve Bayes on text classification (spam, sentiment).</li>
+        <li>Build small Bayesian networks for a diagnostic domain and try inference.</li>
+        <li>Explore Bayesian linear models and see how priors affect predictions.</li>
+      </ul>
+    </footer>
+  </div>
+
+  <script>
+    // --- Utilities for Naive Bayes demo ---
+    function $(id){ return document.getElementById(id); }
+
+    function buildLikelihoodInputs(){
+      const classesRaw = $('classes').value.trim();
+      const priorsRaw = $('priors').value.trim();
+      const nfeat = parseInt($('nfeat').value, 10);
+
+      if(!classesRaw){
+        alert('Enter at least one class name.');
+        return;
+      }
+      const classes = classesRaw.split(',').map(s=>s.trim()).filter(Boolean);
+      if(classes.length === 0){ alert('Provide class names'); return; }
+
+      // set up likelihood input table for each feature and each class
+      const container = $('likelihoodsArea');
+      container.innerHTML = '';
+      container.insertAdjacentHTML('beforeend', `<div class="small muted">Provide p(feature_value | class) for each feature value. For simplicity, we assume each feature is categorical with values you will provide per feature.</div>`);
+
+      for(let f=0; f<nfeat; f++){
+        const fid = 'feat_' + f;
+        container.insertAdjacentHTML('beforeend', `<label style="margin-top:10px;font-weight:700">Feature ${f+1} — possible values (comma-separated)</label>
+          <input type="text" id="${fid}_vals" placeholder="e.g. yes,no or red,green,blue">`);
+        // for each class, an input for likelihoods aligning with the same values
+        classes.forEach(cls=>{
+          container.insertAdjacentHTML('beforeend', `<label style="margin-top:6px">${cls} — p(values | ${cls}) (comma-separated, same order as values)</label>
+            <input type="text" id="${fid}_lk_${cls}" placeholder="e.g. 0.6,0.4">`);
+        });
+      }
+
+      // show computed priors normalized (if provided)
+      if(priorsRaw){
+        const priors = priorsRaw.split(',').map(s=>parseFloat(s.trim())).filter(v=>!isNaN(v));
+        if(priors.length === classes.length){
+          const sum = priors.reduce((a,b)=>a+b,0);
+          container.insertAdjacentHTML('beforeend', `<div class="small muted" style="margin-top:8px">Normalized priors: ${priors.map(p=> (p/sum).toFixed(3)).join(', ')}</div>`);
+        }
+      }
+    }
+
+    function computeNaiveBayes(){
+      const classesRaw = $('classes').value.trim();
+      const priorsRaw = $('priors').value.trim();
+      const nfeat = parseInt($('nfeat').value, 10);
+      if(!classesRaw){ alert('Enter class names'); return; }
+      const classes = classesRaw.split(',').map(s=>s.trim()).filter(Boolean);
+      if(classes.length === 0){ alert('Provide class names'); return; }
+
+      // parse priors (if none provided, use uniform)
+      let priors = classes.map(()=>1.0);
+      if(priorsRaw){
+        const pvals = priorsRaw.split(',').map(s=>parseFloat(s.trim())).filter(v=>!isNaN(v));
+        if(pvals.length === classes.length){
+          const sum = pvals.reduce((a,b)=>a+b,0) || 1;
+          priors = pvals.map(x => x / sum);
+        } else {
+          alert('Priors length mismatch — using uniform priors.');
+        }
+      } else {
+        const u = 1/classes.length;
+        priors = classes.map(()=>u);
+      }
+
+      // For each feature, get values and likelihoods per class
+      const features = [];
+      for(let f=0; f<nfeat; f++){
+        const fid = 'feat_' + f;
+        const valsInput = $(fid + '_vals').value.trim();
+        if(!valsInput){ alert(`Enter possible values for feature ${f+1}`); return; }
+        const values = valsInput.split(',').map(s=>s.trim()).filter(Boolean);
+        if(values.length === 0){ alert(`Provide at least one value for feature ${f+1}`); return; }
+        const classLikelihoods = {};
+        for(const cls of classes){
+          const lkRaw = $(fid + '_lk_' + cls).value.trim();
+          if(!lkRaw){ alert(`Enter likelihoods for feature ${f+1}, class ${cls}`); return; }
+          const lk = lkRaw.split(',').map(s=>parseFloat(s.trim())).filter(v=>!isNaN(v));
+          if(lk.length !== values.length){ alert(`Likelihood count mismatch for feature ${f+1}, class ${cls}. Expected ${values.length} numbers.`); return; }
+          // normalize if doesn't sum to 1
+          let sum = lk.reduce((a,b)=>a+b,0);
+          if(sum <= 0) { alert(`Likelihoods must be positive for feature ${f+1}, class ${cls}`); return; }
+          const lkNorm = lk.map(x => x / sum);
+          classLikelihoods[cls] = lkNorm;
+        }
+        features.push({values, classLikelihoods});
+      }
+
+      // Ask user for observed feature values (one per feature)
+      const observed = [];
+      for(let f=0; f<nfeat; f++){
+        const vals = features[f].values;
+        const promptMsg = `Enter observed value for Feature ${f+1} from [${vals.join(', ')}]`;
+        let obs = prompt(promptMsg, vals[0]);
+        if(obs === null){ // user cancelled
+          return;
+        }
+        obs = obs.trim();
+        if(!vals.includes(obs)){
+          alert(`Invalid value for Feature ${f+1}: "${obs}". Please use one of [${vals.join(', ')}].`);
+          return;
+        }
+        observed.push(obs);
+      }
+
+      // compute log-posteriors (to avoid underflow)
+      const logPost = {};
+      classes.forEach((cls, idx) => {
+        let lp = Math.log(priors[idx] || 1e-12);
+        for(let f=0; f<nfeat; f++){
+          const val = observed[f];
+          const vals = features[f].values;
+          const pos = vals.indexOf(val);
+          const lk = features[f].classLikelihoods[cls][pos];
+          lp += Math.log(lk || 1e-12);
+        }
+        logPost[cls] = lp;
+      });
+
+      // normalize to get posteriors
+      const maxLog = Math.max(...Object.values(logPost));
+      // subtract max for numeric stability
+      const exps = {};
+      let sumExp = 0;
+      for(const cls of classes){
+        const e = Math.exp(logPost[cls] - maxLog);
+        exps[cls] = e;
+        sumExp += e;
+      }
+      const posteriors = {};
+      for(const cls of classes){
+        posteriors[cls] = exps[cls] / sumExp;
+      }
+
+      // show result
+      const resBox = $('nbResult');
+      resBox.style.display = 'block';
+      resBox.innerHTML = `<strong>Observed:</strong> ${observed.join(', ')}<br><strong>Posterior probabilities:</strong><br>` +
+        `<table style="width:100%;margin-top:8px"><thead><tr><th>Class</th><th>Prior</th><th>Unnormalized log-prob</th><th>Posterior</th></tr></thead><tbody>` +
+        classes.map((c,i)=>`<tr><td>${c}</td><td>${priors[i].toFixed(4)}</td><td>${logPost[c].toFixed(4)}</td><td>${(posteriors[c]*100).toFixed(2)}%</td></tr>`).join('') +
+        `</tbody></table>`;
+    }
+  </script>
 </body>
 </html>
