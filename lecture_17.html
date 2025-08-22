@@ -108,3 +108,137 @@
   </p>
 </body>
 </html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lecture 17 Extension - Introduction to Machine Learning</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6;
+      background: #fdfdfd;
+      color: #222;
+    }
+    h1, h2, h3 {
+      color: #003366;
+    }
+    .example {
+      background: #eef6ff;
+      border-left: 4px solid #0055aa;
+      padding: 10px;
+      margin: 15px 0;
+    }
+    .application {
+      background: #f9f9f9;
+      border: 1px dashed #666;
+      padding: 12px;
+      margin: 15px 0;
+    }
+    code {
+      background: #eee;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Lecture 17 Extension: Introduction to Machine Learning (Part 2)</h1>
+
+  <h2>1. Why Machine Learning Works</h2>
+  <p>
+    Machine Learning (ML) is successful because it leverages <b>data-driven patterns</b> to make predictions 
+    or decisions without being explicitly programmed. Instead of hardcoding rules, models learn 
+    relationships between <i>features (inputs)</i> and <i>labels (outputs)</i>.
+  </p>
+
+  <div class="example">
+    <b>Example:</b> Spam detection does not rely on manually written rules 
+    like "if email contains 'lottery' mark as spam."  
+    Instead, an ML model learns from thousands of examples of spam and non-spam emails, 
+    automatically identifying patterns such as word frequency, sender, or links.
+  </div>
+
+  <h2>2. Mathematical Foundation</h2>
+  <p>Key mathematical areas behind ML:</p>
+  <ul>
+    <li><b>Linear Algebra:</b> Used in vector/matrix operations for models like Linear Regression, PCA, Neural Networks.</li>
+    <li><b>Probability & Statistics:</b> Basis of Bayesian Learning, Naïve Bayes, and probabilistic models.</li>
+    <li><b>Calculus:</b> Optimization using derivatives and gradients (e.g., Gradient Descent).</li>
+    <li><b>Optimization:</b> Finding parameters that minimize error functions, used in SVMs and Logistic Regression.</li>
+  </ul>
+
+  <div class="example">
+    <b>Example (Linear Regression):</b>  
+    Suppose we want to predict <i>house price</i> based on size.  
+    Model: <code>Price = β₀ + β₁ × Size</code>  
+    Learning means estimating <code>β₀</code> (intercept) and <code>β₁</code> (slope) from data.
+  </div>
+
+  <h2>3. Types of Data in ML</h2>
+  <ul>
+    <li><b>Structured Data:</b> Tables (e.g., sales records, medical data).</li>
+    <li><b>Unstructured Data:</b> Images, text, audio, video.</li>
+    <li><b>Time-series Data:</b> Stock prices, patient glucose levels, weather predictions.</li>
+  </ul>
+
+  <h2>4. Practical Workflow of ML Project</h2>
+  <ol>
+    <li>Define the problem (classification, regression, clustering).</li>
+    <li>Collect and clean data.</li>
+    <li>Split into training, validation, and test sets.</li>
+    <li>Choose an appropriate model (Linear, Tree-based, Neural Network, etc.).</li>
+    <li>Train the model (optimize parameters).</li>
+    <li>Evaluate using metrics (Accuracy, RMSE, F1-score, AUC).</li>
+    <li>Deploy and monitor performance.</li>
+  </ol>
+
+  <h2>5. Applications of ML (Extended)</h2>
+
+  <div class="application">
+    <b>Healthcare:</b> Predict diabetes using patient lifestyle and lab test results.  
+    <i>Example:</i> Logistic Regression can predict the probability of diabetes based on features like BMI, blood sugar, and family history.
+  </div>
+
+  <div class="application">
+    <b>Finance:</b> Credit scoring and fraud detection.  
+    <i>Example:</i> SVMs can separate fraudulent vs. genuine transactions based on spending patterns.
+  </div>
+
+  <div class="application">
+    <b>Transportation:</b> Self-driving cars use ML for object recognition, lane detection, and decision-making.
+  </div>
+
+  <div class="application">
+    <b>Recommender Systems:</b> Collaborative filtering (e.g., Netflix, Amazon) suggests products or movies 
+    by learning from user-item interactions.
+  </div>
+
+  <h2>6. Hands-On Example (Python Pseudocode)</h2>
+  <pre><code>
+# Predicting house price with Linear Regression
+from sklearn.linear_model import LinearRegression
+
+X = [[650], [800], [1200], [1500]]  # house sizes
+y = [70000, 85000, 125000, 150000]  # prices
+
+model = LinearRegression()
+model.fit(X, y)
+
+print("Predicted price of 1000 sqft house:", model.predict([[1000]]))
+  </code></pre>
+
+  <h2>7. Key Takeaways</h2>
+  <ul>
+    <li>ML is data-driven, adaptive, and improves with more examples.</li>
+    <li>Math (algebra, probability, calculus, optimization) forms the backbone.</li>
+    <li>Applications range from healthcare to finance, marketing, and AI systems.</li>
+    <li>Real-world ML involves careful preprocessing, evaluation, and deployment.</li>
+  </ul>
+
+</body>
+</html>
