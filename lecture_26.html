@@ -1,12 +1,250 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecture 26</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lecture 25 — Ensemble Methods & Model Evaluation</title>
+  <style>
+    :root{
+      --bg:#f7fafc; --card:#ffffff; --muted:#6b7280; --accent:#0f766e; --accent-2:#7c3aed; --title:#042a2b;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+      background:linear-gradient(180deg,#fbfeff 0%,#f3f8f9 100%); color:#062424;
+      -webkit-font-smoothing:antialiased;
+    }
+    .wrap{max-width:1100px;margin:28px auto;padding:20px;}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;}
+    header h1{margin:0;font-size:1.4rem;color:var(--title)}
+    nav a{color:var(--accent);text-decoration:none;margin-left:12px;font-size:0.95rem}
+    main{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    @media (max-width:980px){ main{grid-template-columns:1fr} .aside{order:2} }
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 8px 30px rgba(8,20,20,0.04);border:1px solid rgba(6,36,36,0.04)}
+    h2{color:var(--accent);margin-top:0}
+    p{color:#234; margin:0 0 10px 0}
+    ul{margin:8px 0 14px 20px;color:#234}
+    .models{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+    @media(max-width:760px){ .models{grid-template-columns:1fr} }
+    .model{padding:12px;border-radius:8px;border:1px solid rgba(6,36,36,0.04);background:#fff}
+    .example{border-left:4px solid var(--accent-2);padding:12px;background:linear-gradient(90deg,#fbf8ff,#ffffff);border-radius:8px;margin:12px 0}
+    pre{background:#0b1220;color:#e6eefc;padding:12px;border-radius:8px;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,"Roboto Mono",monospace;font-size:0.9rem}
+    label{display:block;margin:8px 0 6px;font-weight:700}
+    input[type="text"], input[type="number"], select, textarea { width:100%; padding:8px; border-radius:8px; border:1px solid rgba(6,36,36,0.06); font-size:0.95rem }
+    button{padding:10px 14px;border-radius:8px;border:0;background:var(--accent);color:white;font-weight:700;cursor:pointer}
+    button.secondary{background:var(--accent-2);margin-left:8px}
+    .small{font-size:0.92rem;color:var(--muted)}
+    .result{margin-top:12px;padding:12px;border-radius:8px;background:#062424;color:#dffaf0}
+    table{width:100%;border-collapse:collapse;margin-top:8px}
+    th,td{padding:6px;border-bottom:1px solid #eef6f6;text-align:left;font-size:0.95rem}
+  </style>
 </head>
 <body>
-    <h1>Lecture 26</h1>
-    <p>Content for Lecture 26 will go here.</p>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Lecture 25 — Ensemble Methods & Model Evaluation</h1>
+        <div class="small">Bagging • Random Forest • Boosting • Stacking • Voting • Practical tips & demo</div>
+      </div>
+      <nav>
+        <a href="#why">Why</a>
+        <a href="#methods">Methods</a>
+        <a href="#demo">Demo</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2 id="why">1. Why use ensembles?</h2>
+        <p>Ensemble methods combine multiple models to produce a single improved prediction. They typically reduce variance (bagging), reduce bias (boosting), or both (stacking). Ensembles are among the most effective techniques for tabular data and many competitions.</p>
+
+        <h2 id="methods">2. Six common ensemble techniques</h2>
+        <div class="models">
+          <div class="model">
+            <h4>1) Bagging (Bootstrap Aggregating)</h4>
+            <p>Train multiple base models on different bootstrap samples (sampling with replacement) and average/vote their predictions. Reduces variance. Example: bagged decision trees.</p>
+          </div>
+
+          <div class="model">
+            <h4>2) Random Forest</h4>
+            <p>Bagging applied to decision trees with additional random feature selection at each split. Highly robust, less prone to overfitting than single trees, provides feature importance.</p>
+          </div>
+
+          <div class="model">
+            <h4>3) AdaBoost</h4>
+            <p>Boosting algorithm that sequentially trains weak learners (often stumps) and reweights misclassified examples. Emphasizes hard examples and reduces bias.</p>
+          </div>
+
+          <div class="model">
+            <h4>4) Gradient Boosting Machines (GBM)</h4>
+            <p>Build trees sequentially where each new tree fits the residuals (negative gradient) of the loss. Variants: XGBoost, LightGBM, CatBoost — highly performant on tabular data.</p>
+          </div>
+
+          <div class="model">
+            <h4>5) Stacking (Stacked Generalization)</h4>
+            <p>Train diverse base models; then train a meta-learner on their predictions. Often yields gains by letting the meta-learner correct base models' errors.</p>
+          </div>
+
+          <div class="model">
+            <h4>6) Voting Ensembles</h4>
+            <p>Combine predictions from multiple models by majority vote (classification) or average (regression). Can be hard or soft (using predicted probabilities for weighted averaging).</p>
+          </div>
+        </div>
+
+        <h2 class="section-title">3. Practical examples & when to choose</h2>
+        <div class="example">
+          <strong>Example:</strong> For a Kaggle-style tabular problem, try Random Forest or Gradient Boosted Trees. If models disagree, use stacking with a simple meta-learner (logistic regression) to blend predictions.
+        </div>
+
+        <h2 class="section-title">4. Key trade-offs & tips</h2>
+        <ul>
+          <li><strong>Bias vs Variance:</strong> bagging reduces variance; boosting reduces bias.</li>
+          <li><strong>Interpretability:</strong> ensembles (especially boosting) are less interpretable; use SHAP/partial dependence for explanations.</li>
+          <li><strong>Overfitting:</strong> boosting can overfit if trees are too deep or learning rate too high; tune carefully.</li>
+          <li><strong>Feature importance:</strong> Random Forest provides built-in importance; prefer permutation importance for robustness.</li>
+          <li><strong>Computational cost:</strong> ensembles require more compute; use subsampling, early stopping, or smaller learners if needed.</li>
+        </ul>
+
+        <h2 class="section-title">5. Short Python sketches</h2>
+        <pre><code># Random Forest
+from sklearn.ensemble import RandomForestClassifier
+rf = RandomForestClassifier(n_estimators=200, max_depth=8, random_state=0)
+rf.fit(X_train, y_train)
+
+# Gradient Boosting (XGBoost sketch)
+import xgboost as xgb
+dtrain = xgb.DMatrix(X_train, label=y_train)
+params = {'objective':'binary:logistic', 'eta':0.05, 'max_depth':6}
+bst = xgb.train(params, dtrain, num_boost_round=300)
+
+# Stacking (sklearn)
+from sklearn.ensemble import StackingClassifier
+estimators = [('rf', rf), ('gb', SomeGBM()), ('svc', SVC(probability=True))]
+stack = StackingClassifier(estimators=estimators, final_estimator=LogisticRegression())
+stack.fit(X_train, y_train)
+</code></pre>
+
+        <h2 class="section-title">6. Evaluation & Diagnostics</h2>
+        <ul>
+          <li>Use cross-validation (preferably stratified for classification).</li>
+          <li>Monitor learning curves (train vs validation error) to detect over/underfitting.</li>
+          <li>For boosting, use validation set and early stopping to avoid overfitting.</li>
+          <li>Examine calibration (reliability) of predicted probabilities — use calibration plots or isotonic regression / Platt scaling.</li>
+        </ul>
+      </section>
+
+      <!-- Aside / interactive demo -->
+      <aside class="card aside">
+        <h3 class="small">Interactive Ensemble Voting Demo</h3>
+        <p class="small">Enter predictions from up to 5 base models for one example (classification). Choose majority or weighted voting and compute final prediction and probability.</p>
+
+        <label>Classes (comma-separated)</label>
+        <input id="classes" type="text" placeholder="e.g., yes,no" value="yes,no">
+
+        <label>Model names (comma-separated, up to 5)</label>
+        <input id="models" type="text" placeholder="m1,m2,m3" value="m1,m2,m3">
+
+        <label>Enter predictions for the observation (comma-separated, same order as models)</label>
+        <input id="preds" type="text" placeholder="yes,no,yes" value="yes,no,yes">
+
+        <label>If soft voting: enter model probabilities for first class (comma-separated, or leave empty)</label>
+        <input id="probs" type="text" placeholder="0.7,0.4,0.6">
+
+        <label>Voting type</label>
+        <select id="vtype">
+          <option value="hard">Hard (majority) voting</option>
+          <option value="soft">Soft (average probabilities)</option>
+          <option value="weighted">Weighted voting (specify weights)</option>
+        </select>
+
+        <label>Weights (comma-separated, used if Weighted)</label>
+        <input id="weights" type="text" placeholder="1,1,1">
+
+        <button onclick="computeEnsemble()">Compute Ensemble</button>
+
+        <div id="ensResult" class="result" style="display:none"></div>
+
+        <p class="small" style="margin-top:8px">Tip: Soft voting uses predicted probabilities (prob of first class). If only hard preds are available, use hard voting.</p>
+      </aside>
+    </main>
+
+    <footer class="card" style="margin-top:18px">
+      <strong>Next:</strong> tuning ensembles, stacking recipes, calibration, and interpretability methods (SHAP).
+    </footer>
+  </div>
+
+  <script>
+    function parseCSV(s){
+      return s.split(',').map(x=>x.trim()).filter(Boolean);
+    }
+
+    function computeEnsemble(){
+      const classes = parseCSV(document.getElementById('classes').value);
+      if(classes.length < 2){ alert('Enter at least two classes'); return; }
+      const class0 = classes[0];
+
+      const modelNames = parseCSV(document.getElementById('models').value);
+      if(modelNames.length === 0){ alert('Enter at least one model name'); return; }
+
+      const preds = parseCSV(document.getElementById('preds').value);
+      if(preds.length !== modelNames.length){ alert('Number of predictions must match number of models'); return; }
+
+      const vtype = document.getElementById('vtype').value;
+      let weights = parseCSV(document.getElementById('weights').value);
+      if(weights.length === 0) weights = modelNames.map(()=> '1');
+      if(weights.length !== modelNames.length){ alert('Weights length mismatch — using equal weights'); weights = modelNames.map(()=> '1'); }
+      weights = weights.map(x => parseFloat(x) || 1);
+
+      const probsRaw = document.getElementById('probs').value.trim();
+      const probs = probsRaw ? parseCSV(probsRaw).map(x => parseFloat(x)) : [];
+
+      const resultBox = document.getElementById('ensResult');
+      resultBox.style.display = 'block';
+
+      if(vtype === 'hard'){
+        // majority vote
+        const counts = {};
+        preds.forEach(p => counts[p] = (counts[p]||0) + 1);
+        // find winner
+        let winner = null, best = -Infinity;
+        Object.keys(counts).forEach(k => { if(counts[k] > best){ best = counts[k]; winner = k; } });
+        resultBox.innerHTML = `<strong>Hard Voting Result:</strong> ${winner} <br>Counts: ${JSON.stringify(counts)}`;
+        return;
+      }
+
+      if(vtype === 'soft'){
+        if(probs.length !== modelNames.length){ alert('Enter one probability per model for soft voting (prob of class "'+class0+'")'); return; }
+        // average probabilities
+        let sum = 0;
+        for(let i=0;i<probs.length;i++) sum += probs[i];
+        const avg = sum / probs.length;
+        // probability for class0 = avg, for other classes we split remaining mass equally (simple)
+        const otherProb = (1 - avg) / (classes.length - 1);
+        const probsMap = {};
+        probsMap[class0] = avg;
+        for(let c=1;c<classes.length;c++) probsMap[classes[c]] = otherProb;
+        // pick argmax
+        let winner = class0;
+        Object.keys(probsMap).forEach(k => { if(probsMap[k] > probsMap[winner]) winner = k; });
+        resultBox.innerHTML = `<strong>Soft Voting (avg prob) Result:</strong> ${winner} <br>Class probabilities: ${JSON.stringify(probsMap)}`;
+        return;
+      }
+
+      if(vtype === 'weighted'){
+        // weighted sum of one-hot for each class based on hard preds
+        const scores = {};
+        for(let i=0;i<modelNames.length;i++){
+          const p = preds[i];
+          const w = weights[i];
+          scores[p] = (scores[p] || 0) + w;
+        }
+        // choose max score
+        let winner = null, best = -Infinity;
+        Object.keys(scores).forEach(k => { if(scores[k] > best){ best = scores[k]; winner = k; } });
+        resultBox.innerHTML = `<strong>Weighted Voting Result:</strong> ${winner} <br>Scores: ${JSON.stringify(scores)}`;
+        return;
+      }
+    }
+  </script>
 </body>
 </html>
