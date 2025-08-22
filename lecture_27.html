@@ -1,12 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecture 27</title>
+  <meta charset="UTF-8">
+  <title>Lecture 26 - Binary Data Prediction Models</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f8f9fa;
+      color: #333;
+    }
+    header {
+      background: linear-gradient(135deg, #007bff, #00c6ff);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    section {
+      padding: 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+    h2 {
+      color: #007bff;
+      margin-top: 30px;
+    }
+    .example {
+      background: #fff;
+      padding: 15px;
+      margin: 15px 0;
+      border-left: 5px solid #007bff;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    pre {
+      background: #eee;
+      padding: 10px;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+    .calculator {
+      background: #e9f7ef;
+      padding: 20px;
+      margin-top: 30px;
+      border: 2px solid #28a745;
+      border-radius: 12px;
+    }
+    input {
+      padding: 8px;
+      margin: 5px;
+    }
+    button {
+      padding: 10px 15px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #218838;
+    }
+    footer {
+      background: #333;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      margin-top: 40px;
+    }
+  </style>
 </head>
 <body>
-    <h1>Lecture 27</h1>
-    <p>Content for Lecture 27 will go here.</p>
+  <header>
+    <h1>Lecture 26: Binary Data Prediction Models</h1>
+    <p>Logistic Regression | Decision Trees | KNN | Naïve Bayes | SVM | Random Forest</p>
+  </header>
+
+  <section>
+    <h2>Introduction</h2>
+    <p>Binary prediction problems occur when the output variable has only two categories, e.g., Yes/No, Pass/Fail, Spam/Not-Spam. 
+    In this lecture, we use a simple dataset: predicting whether a student passes an exam (1) or fails (0) based on study hours and attendance.</p>
+
+    <div class="example">
+      <h3>Example Dataset</h3>
+      <pre>
+Hours Studied | Attendance (%) | Result (Pass=1, Fail=0)
+-------------------------------------------------------
+    2         |      60        |          0
+    4         |      70        |          0
+    5         |      80        |          1
+    7         |      90        |          1
+      </pre>
+    </div>
+
+    <h2>1. Logistic Regression</h2>
+    <p>Uses the logistic (sigmoid) function to predict probabilities between 0 and 1. 
+    Decision threshold (usually 0.5) determines final prediction.</p>
+    <div class="example">
+      <strong>Application:</strong> Predicting pass probability from hours studied. <br>
+      If <code>P(pass) = 0.8</code>, classify as Pass (1).
+    </div>
+
+    <h2>2. Decision Trees</h2>
+    <p>Splits data into branches based on rules like "If Hours &gt; 4 → Pass". 
+    Easy to interpret, but prone to overfitting.</p>
+    <div class="example">
+      <strong>Rule Example:</strong> 
+      If Attendance &gt; 75% and Hours Studied &gt; 4 → Pass, else Fail.
+    </div>
+
+    <h2>3. K-Nearest Neighbors (KNN)</h2>
+    <p>Classifies a point based on the majority label of its k-nearest neighbors in feature space.</p>
+    <div class="example">
+      <strong>Example:</strong> A student with 5 hours studied, 80% attendance has neighbors (1,1,0). 
+      Majority is Pass → Predict Pass.
+    </div>
+
+    <h2>4. Naïve Bayes</h2>
+    <p>Applies Bayes theorem with assumption of independence among features. Works well with small datasets.</p>
+    <div class="example">
+      <strong>Example:</strong> 
+      Probability(Pass | Hours, Attendance) = Likelihood × Prior / Evidence.
+    </div>
+
+    <h2>5. Support Vector Machine (SVM)</h2>
+    <p>Finds the best hyperplane that separates Pass vs Fail. Maximizes the margin between two classes.</p>
+    <div class="example">
+      <strong>Example:</strong> SVM will find a boundary line such that all Pass students are on one side and Fail students on the other.
+    </div>
+
+    <h2>6. Random Forest</h2>
+    <p>Ensemble of multiple decision trees. Each tree votes, and the majority class is chosen.</p>
+    <div class="example">
+      <strong>Example:</strong> 100 trees predict Pass, 80 say Pass, 20 say Fail → Final result = Pass.
+    </div>
+
+    <h2>Interactive Calculator</h2>
+    <div class="calculator">
+      <h3>Binary Prediction Demo (Simple Logistic Approximation)</h3>
+      <p>Enter study hours and attendance to estimate pass probability:</p>
+      <input type="number" id="hours" placeholder="Hours Studied">
+      <input type="number" id="attendance" placeholder="Attendance %">
+      <button onclick="predict()">Predict</button>
+      <p id="result"></p>
+    </div>
+
+    <script>
+      function predict() {
+        let hours = parseFloat(document.getElementById('hours').value);
+        let att = parseFloat(document.getElementById('attendance').value);
+
+        // Simple logistic-like function
+        let score = 0.3*hours + 0.02*att - 2;
+        let prob = 1 / (1 + Math.exp(-score));
+
+        let output = prob >= 0.5 ? "PASS ✅" : "FAIL ❌";
+        document.getElementById('result').innerHTML =
+          "Pass Probability: " + prob.toFixed(2) + "<br>Prediction: " + output;
+      }
+    </script>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Machine Learning Lecture Series</p>
+  </footer>
 </body>
 </html>
