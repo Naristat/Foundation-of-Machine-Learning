@@ -1,12 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecture 18</title>
+  <meta charset="UTF-8">
+  <title>Lecture 18: Supervised Learning Fundamentals</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.6;
+    }
+    h1, h2, h3 {
+      color: #2c3e50;
+    }
+    .example {
+      background: #ecf0f1;
+      padding: 10px;
+      margin: 10px 0;
+      border-left: 4px solid #2980b9;
+    }
+    .application {
+      background: #f9f9f9;
+      padding: 10px;
+      margin: 10px 0;
+      border-left: 4px solid #27ae60;
+    }
+  </style>
 </head>
 <body>
-    <h1>Lecture 18</h1>
-    <p>Content for Lecture 18 will go here.</p>
+  <h1>Lecture 18: Supervised Learning Fundamentals</h1>
+
+  <h2>1. Introduction to Supervised Learning</h2>
+  <p>
+    Supervised learning is one of the most widely used paradigms in machine learning. 
+    It involves training a model using labeled data, where the input variables (features) 
+    are mapped to output variables (labels). The goal is to learn a function 
+    <em>f(x) → y</em> that can make accurate predictions on new, unseen data.
+  </p>
+
+  <h3>Key Characteristics:</h3>
+  <ul>
+    <li>Training data includes both input (X) and output (Y).</li>
+    <li>The algorithm learns a mapping function from X to Y.</li>
+    <li>Used for prediction and classification tasks.</li>
+  </ul>
+
+  <h2>2. Types of Supervised Learning</h2>
+  <ul>
+    <li><b>Regression:</b> Predicting continuous values (e.g., house price, temperature).</li>
+    <li><b>Classification:</b> Predicting discrete categories (e.g., spam vs. not spam).</li>
+  </ul>
+
+  <div class="example">
+    <h3>Example:</h3>
+    <p><b>Regression:</b> Predicting car price based on features like age, mileage, and brand.</p>
+    <p><b>Classification:</b> Classifying an email as spam or not spam based on keywords.</p>
+  </div>
+
+  <h2>3. Steps in Supervised Learning</h2>
+  <ol>
+    <li>Collect and preprocess labeled data.</li>
+    <li>Split the dataset into training and testing sets.</li>
+    <li>Choose an appropriate algorithm (e.g., Linear Regression, Decision Tree).</li>
+    <li>Train the model on training data.</li>
+    <li>Validate using cross-validation or test data.</li>
+    <li>Deploy the model for predictions.</li>
+  </ol>
+
+  <h2>4. Common Algorithms</h2>
+  <ul>
+    <li>Linear Regression</li>
+    <li>Logistic Regression</li>
+    <li>Decision Trees</li>
+    <li>Support Vector Machines (SVM)</li>
+    <li>k-Nearest Neighbors (k-NN)</li>
+    <li>Neural Networks</li>
+  </ul>
+
+  <h2>5. Challenges in Supervised Learning</h2>
+  <ul>
+    <li><b>Overfitting:</b> Model performs well on training data but poorly on unseen data.</li>
+    <li><b>Underfitting:</b> Model is too simple to capture data patterns.</li>
+    <li><b>Imbalanced Data:</b> One class dominates, leading to biased predictions.</li>
+    <li><b>Feature Selection:</b> Choosing the right features is critical.</li>
+  </ul>
+
+  <h2>6. Applications of Supervised Learning</h2>
+  <div class="application">
+    <p><b>Healthcare:</b> Predicting whether a tumor is malignant or benign.</p>
+  </div>
+  <div class="application">
+    <p><b>Finance:</b> Credit scoring and fraud detection.</p>
+  </div>
+  <div class="application">
+    <p><b>E-commerce:</b> Product recommendation systems.</p>
+  </div>
+  <div class="application">
+    <p><b>Self-driving Cars:</b> Object recognition (stop signs, pedestrians).</p>
+  </div>
+
+  <h2>7. Summary</h2>
+  <p>
+    Supervised learning is the backbone of machine learning applications today. 
+    By learning from labeled examples, it provides powerful predictive capabilities 
+    in areas such as healthcare, finance, marketing, and autonomous systems.
+  </p>
+
 </body>
 </html>
