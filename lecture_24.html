@@ -1,12 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecture 24</title>
+  <meta charset="UTF-8">
+  <title>Lecture 24 - Support Vector Machines</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+      background: #f4f7fb;
+      color: #333;
+    }
+    header {
+      background: #34495e;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      margin: 0;
+    }
+    .container {
+      padding: 20px 40px;
+    }
+    h2 {
+      color: #2c3e50;
+      margin-top: 20px;
+    }
+    .example, .application {
+      background: #ecf0f1;
+      border-left: 6px solid #3498db;
+      margin: 20px 0;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    .calculator {
+      background: #fff;
+      border: 2px solid #3498db;
+      padding: 20px;
+      margin-top: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    input[type="number"] {
+      padding: 8px;
+      margin: 5px;
+      width: 80px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #3498db;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #2980b9;
+    }
+    footer {
+      text-align: center;
+      padding: 15px;
+      margin-top: 20px;
+      background: #2c3e50;
+      color: white;
+    }
+  </style>
 </head>
 <body>
-    <h1>Lecture 24</h1>
-    <p>Content for Lecture 24 will go here.</p>
+  <header>
+    <h1>Lecture 23: Support Vector Machines (SVMs)</h1>
+  </header>
+  <div class="container">
+    <h2>1. Introduction</h2>
+    <p>
+      Support Vector Machines (SVMs) are supervised learning models used for classification and regression. 
+      They work by finding the <strong>optimal hyperplane</strong> that separates data points of different classes with the maximum margin.
+    </p>
+
+    <h2>2. Key Concepts</h2>
+    <ul>
+      <li><strong>Margin:</strong> The distance between the hyperplane and the nearest data points from each class.</li>
+      <li><strong>Support Vectors:</strong> The data points closest to the hyperplane that directly affect its position.</li>
+      <li><strong>Linear SVM:</strong> Works when data is linearly separable.</li>
+      <li><strong>Non-linear SVM:</strong> Uses the <em>kernel trick</em> to project data into higher dimensions for separation.</li>
+      <li><strong>Kernels:</strong> Functions like polynomial, RBF (Gaussian), and sigmoid used to handle complex data.</li>
+      <li><strong>Soft Margin:</strong> Allows misclassifications by introducing slack variables for noisy data.</li>
+    </ul>
+
+    <h2>3. Types of Kernels</h2>
+    <ol>
+      <li><strong>Linear Kernel</strong> – Works for linearly separable data.</li>
+      <li><strong>Polynomial Kernel</strong> – Captures polynomial relationships.</li>
+      <li><strong>RBF Kernel</strong> – Good for circular/complex boundaries.</li>
+      <li><strong>Sigmoid Kernel</strong> – Similar to neural networks.</li>
+    </ol>
+
+    <h2>4. Examples</h2>
+    <div class="example">
+      <p><strong>Example 1:</strong> Spam vs. Non-Spam Email Classification using word frequency as features.</p>
+      <p><strong>Example 2:</strong> Cancer detection (Malignant vs. Benign) based on cell size and shape.</p>
+      <p><strong>Example 3:</strong> Handwritten digit recognition (0–9) using image pixel features.</p>
+    </div>
+
+    <h2>5. Applications</h2>
+    <div class="application">
+      <ul>
+        <li>Text classification (spam filtering, sentiment analysis)</li>
+        <li>Bioinformatics (protein classification, cancer detection)</li>
+        <li>Image recognition (digits, face detection)</li>
+        <li>Financial forecasting (fraud detection, stock trend analysis)</li>
+      </ul>
+    </div>
+
+    <h2>6. Advantages & Disadvantages</h2>
+    <p><strong>Advantages:</strong></p>
+    <ul>
+      <li>Works well with high-dimensional data</li>
+      <li>Effective for both linear and non-linear classification</li>
+      <li>Memory efficient due to support vectors</li>
+    </ul>
+    <p><strong>Disadvantages:</strong></p>
+    <ul>
+      <li>Computationally expensive for large datasets</li>
+      <li>Requires careful kernel and parameter selection</li>
+    </ul>
+
+    <h2>7. Interactive Calculator</h2>
+    <div class="calculator">
+      <p><strong>SVM Margin Calculator (2D Case)</strong></p>
+      <p>Equation of hyperplane: <code>w1*x1 + w2*x2 + b = 0</code></p>
+      <label>w1: <input type="number" id="w1" value="2"></label>
+      <label>w2: <input type="number" id="w2" value="3"></label>
+      <label>b: <input type="number" id="b" value="5"></label>
+      <button onclick="calculateMargin()">Calculate Margin</button>
+      <p id="result"></p>
+    </div>
+  </div>
+
+  <footer>
+    <p>Lecture 23 - Support Vector Machines | Machine Learning Series</p>
+  </footer>
+
+  <script>
+    function calculateMargin() {
+      const w1 = parseFloat(document.getElementById('w1').value);
+      const w2 = parseFloat(document.getElementById('w2').value);
+      const b = parseFloat(document.getElementById('b').value);
+      const normW = Math.sqrt(w1*w1 + w2*w2);
+      const margin = 2 / normW;
+      document.getElementById('result').innerText = 
+        "Maximum Margin: " + margin.toFixed(4);
+    }
+  </script>
 </body>
 </html>
