@@ -1,12 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecture 17</title>
+  <meta charset="UTF-8">
+  <title>Lecture 17 - Introduction to Machine Learning</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      line-height: 1.6;
+      background: #f8f9fa;
+      color: #333;
+    }
+    h1, h2, h3 {
+      color: #0056b3;
+    }
+    .example, .application {
+      border-left: 4px solid #007bff;
+      padding: 10px 15px;
+      margin: 15px 0;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      border-radius: 6px;
+    }
+    code {
+      background: #eee;
+      padding: 3px 6px;
+      border-radius: 3px;
+    }
+  </style>
 </head>
 <body>
-    <h1>Lecture 17</h1>
-    <p>Content for Lecture 17 will go here.</p>
+  <h1>Lecture 17: Introduction to Machine Learning</h1>
+  <p>
+    Machine Learning (ML) is a field of Artificial Intelligence (AI) that enables systems to
+    learn patterns from data and make predictions or decisions without being explicitly programmed.  
+  </p>
+
+  <h2>1. What is Machine Learning?</h2>
+  <p>
+    Machine Learning is the study of algorithms that improve automatically through experience.  
+    Instead of relying on hard-coded instructions, ML systems identify patterns, adapt to new inputs, and improve their performance over time.  
+  </p>
+  <div class="example">
+    <b>Example:</b> A spam email filter learns to classify emails as “spam” or “not spam” by analyzing thousands of labeled emails.
+  </div>
+
+  <h2>2. Types of Machine Learning</h2>
+  <ul>
+    <li><b>Supervised Learning:</b> Models learn from labeled data (input → output).</li>
+    <li><b>Unsupervised Learning:</b> Models discover hidden patterns in unlabeled data.</li>
+    <li><b>Reinforcement Learning:</b> An agent learns by interacting with an environment and receiving feedback (rewards or penalties).</li>
+  </ul>
+
+  <div class="example">
+    <b>Example:</b> 
+    <ul>
+      <li>Supervised: Predicting house prices based on size, location, etc.</li>
+      <li>Unsupervised: Grouping customers into clusters for marketing.</li>
+      <li>Reinforcement: A robot learning to walk by trial and error.</li>
+    </ul>
+  </div>
+
+  <h2>3. Hypothesis Space & Inductive Bias</h2>
+  <p>
+    The <b>hypothesis space</b> is the set of all possible models a learning algorithm can choose from.  
+    <b>Inductive bias</b> is the set of assumptions a model makes to predict unseen data.  
+  </p>
+  <div class="example">
+    <b>Example:</b> Linear regression assumes the relationship between variables is linear.
+  </div>
+
+  <h2>4. Model Evaluation</h2>
+  <p>
+    To assess how well a model performs, we use evaluation techniques such as:
+  </p>
+  <ul>
+    <li><b>Accuracy:</b> Correct predictions ÷ Total predictions.</li>
+    <li><b>Cross-validation:</b> Splitting data into multiple folds to ensure model generalization.</li>
+    <li><b>Precision, Recall, F1-score:</b> Metrics for classification problems.</li>
+  </ul>
+  <div class="example">
+    <b>Example:</b> In medical diagnosis, high recall ensures that fewer sick patients are missed.
+  </div>
+
+  <h2>5. Real-Life Applications of ML</h2>
+  <div class="application">
+    <b>Healthcare:</b> Predicting disease risks from patient data, medical image analysis.
+  </div>
+  <div class="application">
+    <b>Finance:</b> Fraud detection in credit card transactions, stock market prediction.
+  </div>
+  <div class="application">
+    <b>E-commerce:</b> Personalized product recommendations (Amazon, Netflix, Spotify).
+  </div>
+  <div class="application">
+    <b>Transportation:</b> Self-driving cars using reinforcement learning and computer vision.
+  </div>
+  <div class="application">
+    <b>Natural Language Processing (NLP):</b> Voice assistants like Alexa, Google Translate.
+  </div>
+
+  <h2>6. Summary</h2>
+  <p>
+    Machine Learning is transforming industries by enabling data-driven decision-making.  
+    It covers different paradigms—supervised, unsupervised, and reinforcement learning—each applied to real-world problems.  
+    In the next lectures, we will dive into specific algorithms such as linear regression, decision trees, Bayesian learning, and support vector machines.  
+  </p>
 </body>
 </html>
