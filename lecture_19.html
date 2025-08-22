@@ -1,12 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecture 19</title>
+  <meta charset="UTF-8">
+  <title>Lecture 19 - Linear Regression & Variants</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { color: #2c3e50; }
+    h2 { color: #16a085; }
+    .example { background: #ecf0f1; padding: 10px; margin: 10px 0; border-left: 5px solid #16a085; }
+    .calculator { background: #f9f9f9; padding: 15px; border: 1px solid #ccc; margin-top: 20px; }
+    input { margin: 5px; padding: 5px; }
+  </style>
 </head>
 <body>
-    <h1>Lecture 19</h1>
-    <p>Content for Lecture 19 will go here.</p>
+  <h1>Lecture 19: Linear Regression & Variants</h1>
+  <p>This lecture covers regression techniques used in supervised learning.</p>
+
+  <h2>Models Covered</h2>
+  <ol>
+    <li>Simple Linear Regression</li>
+    <li>Multiple Linear Regression</li>
+    <li>Polynomial Regression</li>
+    <li>Ridge Regression</li>
+    <li>Lasso Regression</li>
+    <li>Elastic Net Regression</li>
+  </ol>
+
+  <h2>Example</h2>
+  <div class="example">
+    <p><b>Real-Life Example:</b> Predicting house prices using size, location, and number of rooms.</p>
+  </div>
+
+  <h2>Interactive Calculator</h2>
+  <div class="calculator">
+    <p>Predict House Price (Simple Linear Regression)</p>
+    <label>Size (sq ft): <input type="number" id="size"></label><br>
+    <label>Price per sq ft: <input type="number" id="rate"></label><br>
+    <button onclick="predict()">Predict</button>
+    <p id="output"></p>
+  </div>
+
+  <script>
+    function predict() {
+      let size = document.getElementById("size").value;
+      let rate = document.getElementById("rate").value;
+      if(size && rate) {
+        let price = size * rate;
+        document.getElementById("output").innerText = "Predicted Price: $" + price.toLocaleString();
+      } else {
+        document.getElementById("output").innerText = "Please enter all values.";
+      }
+    }
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lecture 19 - Linear Regression & Extensions</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      background: #f9fafc;
+      color: #333;
+      line-height: 1.6;
+    }
+    h1, h2 {
+      color: #2c3e50;
+    }
+    .example {
+      background: #eef7ff;
+      border-left: 6px solid #3498db;
+      padding: 10px;
+      margin: 15px 0;
+    }
+    .model {
+      background: #fdfdfd;
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 12px 0;
+      border-radius: 8px;
+    }
+    .calculator {
+      margin-top: 20px;
+      padding: 15px;
+      border: 2px solid #27ae60;
+      background: #eafaf1;
+      border-radius: 10px;
+    }
+    input, button {
+      padding: 6px;
+      margin: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Lecture 19: Linear Regression & Extensions</h1>
+
+  <h2>1. Introduction</h2>
+  <p>
+    Linear regression is one of the most fundamental supervised learning algorithms.
+    It models the relationship between a dependent variable <b>Y</b> and one or more independent variables <b>X</b>.
+    The basic form is:
+  </p>
+  <p style="text-align:center; font-size:18px;"><b>Y = β<sub>0</sub> + β<sub>1</sub>X + ε</b></p>
+  <p>
+    where β<sub>0</sub> is the intercept, β<sub>1</sub> is the slope, and ε is the error term.
+  </p>
+
+  <div class="example">
+    <b>Example:</b> Predicting a student’s exam score (Y) based on study hours (X).
+    If slope β<sub>1</sub>=5, then each extra hour of study increases the score by 5 points.
+  </div>
+
+  <h2>2. Six Models & Variations</h2>
+
+  <div class="model">
+    <h3>Model 1: Simple Linear Regression</h3>
+    <p>One independent variable (X). Example: Predicting house price from area (sq. ft).</p>
+  </div>
+
+  <div class="model">
+    <h3>Model 2: Multiple Linear Regression</h3>
+    <p>Several features. Example: House price from area, number of rooms, and location.</p>
+  </div>
+
+  <div class="model">
+    <h3>Model 3: Polynomial Regression</h3>
+    <p>Introduces higher powers of X. Example: Predicting car price depreciation curve.</p>
+  </div>
+
+  <div class="model">
+    <h3>Model 4: Ridge Regression</h3>
+    <p>Applies L2 regularization to prevent overfitting. Useful when features are correlated.</p>
+  </div>
+
+  <div class="model">
+    <h3>Model 5: Lasso Regression</h3>
+    <p>Applies L1 regularization to perform feature selection by shrinking some coefficients to zero.</p>
+  </div>
+
+  <div class="model">
+    <h3>Model 6: Elastic Net Regression</h3>
+    <p>Combines L1 and L2 penalties. Example: Predicting health outcomes using many medical features.</p>
+  </div>
+
+  <h2>3. Applications</h2>
+  <ul>
+    <li>Finance: Predicting stock returns.</li>
+    <li>Healthcare: Estimating disease risk from patient data.</li>
+    <li>Marketing: Sales forecasting based on ad spend.</li>
+    <li>Sports: Predicting player performance metrics.</li>
+  </ul>
+
+  <h2>4. Interactive Calculator</h2>
+  <div class="calculator">
+    <h3>Simple Regression Calculator</h3>
+    <p>Enter two data points (x1, y1) and (x2, y2) to compute regression line.</p>
+    <input type="number" id="x1" placeholder="x1">
+    <input type="number" id="y1" placeholder="y1"><br>
+    <input type="number" id="x2" placeholder="x2">
+    <input type="number" id="y2" placeholder="y2"><br>
+    <button onclick="computeRegression()">Compute Line</button>
+    <p id="output"></p>
+  </div>
+
+  <script>
+    function computeRegression() {
+      let x1 = parseFloat(document.getElementById('x1').value);
+      let y1 = parseFloat(document.getElementById('y1').value);
+      let x2 = parseFloat(document.getElementById('x2').value);
+      let y2 = parseFloat(document.getElementById('y2').value);
+
+      if (isNaN(x1) || isNaN(y1) || isNaN(x2) || isNaN(y2) || (x1 === x2)) {
+        document.getElementById('output').innerText = "Please enter valid values.";
+        return;
+      }
+
+      let slope = (y2 - y1) / (x2 - x1);
+      let intercept = y1 - slope * x1;
+
+      document.getElementById('output').innerHTML =
+        `<b>Regression Line:</b> Y = ${intercept.toFixed(2)} + ${slope.toFixed(2)}X`;
+    }
+  </script>
 </body>
 </html>
