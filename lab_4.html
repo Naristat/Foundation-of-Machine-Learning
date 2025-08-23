@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab 4: Gradient Descent for Best-Fit Line</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; padding:30px; background: #0f172a; color:#e5e7eb; }
+    .card { background:#111827; border:1px solid #1f2937; border-radius:16px; padding:24px; margin: 0 auto 24px; max-width: 1000px; box-shadow: 0 10px 25px rgba(0,0,0,.35);}
+    h1 { font-size: 2rem; margin: 0 0 10px; }
+    h2 { margin-top: 28px; font-size: 1.3rem; color:#93c5fd; }
+    ul { line-height:1.7; }
+    code, pre { background:#0b1220; color:#e5e7eb; border:1px solid #1f2937; border-radius:12px; padding:14px; display:block; overflow-x:auto; }
+    .meta { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 0; }
+    .badge { background:#1f2937; border:1px solid #374151; padding:6px 10px; border-radius:999px; font-size:.85rem; }
+    .nav { display:flex; justify-content:space-between; gap:16px; margin: 14px auto 0; max-width:1000px; }
+    .nav a { background:#e5e7eb; color:#111827; padding:10px 14px; border-radius:10px; text-decoration:none; font-weight:600; }
+    .note { font-size:.92rem; opacity:.9; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <h1>Lab 4: Gradient Descent for Best-Fit Line</h1>
+  <div class="meta">
+    <div class="badge">CILO: 2</div>
+    <div class="badge">Weeks: 17–20</div>
+    <div class="badge">Lab #4</div>
+  </div>
+
+  <h2> Aim </h2>
+  <p class="note">Implement batch gradient descent to learn slope and intercept for linear regression on toy data.</p>
+
+  <h2> Objectives </h2>
+  <ul>
+    <li>Initialize parameters (m, c) and learning rate.</li>
+    <li>Iteratively update gradients using mean squared error loss.</li>
+    <li>Converge to near-true slope and intercept.</li>
+    <li>Plot or print learned parameters.</li>
+  </ul>
+
+  <h2> Algorithm / Procedure </h2>
+  <ol>
+    <li>Define X, y for a linear relation with noise-free data.</li>
+    <li>Start with m=0, c=0 and choose learning rate.</li>
+    <li>For each epoch: compute predictions, gradients, update m and c.</li>
+    <li>After training, print m and c.</li>
+  </ol>
+
+  <h2> Python Code </h2>
+  <pre><code>import numpy as np
+
+X = np.array([1,2,3,4,5], dtype=float)
+y = np.array([2,4,6,8,10], dtype=float)  # y = 2x
+
+m, c = 0.0, 0.0
+L = 0.01
+epochs = 1000
+
+for _ in range(epochs):
+    y_pred = m*X + c
+    D_m = (-2/len(X)) * np.sum(X * (y - y_pred))
+    D_c = (-2/len(X)) * np.sum(y - y_pred)
+    m -= L * D_m
+    c -= L * D_c
+
+print("Slope (m):", round(m, 4), "Intercept (c):", round(c, 4))</code></pre>
+
+  <h2> Sample Output (expected) </h2>
+  <pre><code>Slope (m): 2.0 Intercept (c): 0.0</code></pre>
+</div>
+<div class="nav">
+  <a href="lab_3.html">⬅ Previous Lab</a>
+  <a href="lab_5.html">Next Lab ➡</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab 8: Random Forest Classification</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; padding:30px; background: #0f172a; color:#e5e7eb; }
+    .card { background:#111827; border:1px solid #1f2937; border-radius:16px; padding:24px; margin: 0 auto 24px; max-width: 1000px; box-shadow: 0 10px 25px rgba(0,0,0,.35);}
+    h1 { font-size: 2rem; margin: 0 0 10px; }
+    h2 { margin-top: 28px; font-size: 1.3rem; color:#93c5fd; }
+    ul { line-height:1.7; }
+    code, pre { background:#0b1220; color:#e5e7eb; border:1px solid #1f2937; border-radius:12px; padding:14px; display:block; overflow-x:auto; }
+    .meta { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 0; }
+    .badge { background:#1f2937; border:1px solid #374151; padding:6px 10px; border-radius:999px; font-size:.85rem; }
+    .nav { display:flex; justify-content:space-between; gap:16px; margin: 14px auto 0; max-width:1000px; }
+    .nav a { background:#e5e7eb; color:#111827; padding:10px 14px; border-radius:10px; text-decoration:none; font-weight:600; }
+    .note { font-size:.92rem; opacity:.9; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <h1>Lab 8: Random Forest Classification</h1>
+  <div class="meta">
+    <div class="badge">CILO: 2</div>
+    <div class="badge">Weeks: 30–32</div>
+    <div class="badge">Lab #8</div>
+  </div>
+
+  <h2> Aim </h2>
+  <p class="note">Build a random forest classifier and evaluate predictions on a toy sample.</p>
+
+  <h2> Objectives </h2>
+  <ul>
+    <li>Create labeled dataset.</li>
+    <li>Fit RandomForestClassifier with several trees.</li>
+    <li>Predict on new sample and note variability.</li>
+  </ul>
+
+  <h2> Algorithm / Procedure </h2>
+  <ol>
+    <li>Define X, y.</li>
+    <li>Instantiate RandomForestClassifier(n_estimators=50).</li>
+    <li>Fit, then predict [1,2].</li>
+  </ol>
+
+  <h2> Python Code </h2>
+  <pre><code>from sklearn.ensemble import RandomForestClassifier
+
+X = [[0,0],[1,1],[2,2],[3,3]]
+y = [0,1,1,0]
+
+clf = RandomForestClassifier(n_estimators=50, random_state=0).fit(X, y)
+print("Prediction for [1,2]:", clf.predict([[1,2]])[0])</code></pre>
+
+  <h2> Sample Output (expected) </h2>
+  <pre><code>Prediction for [1,2]: 1</code></pre>
+</div>
+<div class="nav">
+  <a href="lab_7.html">⬅ Previous Lab</a>
+  <a href="lab_9.html">Next Lab ➡</a>
+</div>
+</body>
+</html>

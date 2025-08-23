@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab 1: Descriptive Statistics – Mean, Median, Mode, Variance, Std. Dev.</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; padding:30px; background: #0f172a; color:#e5e7eb; }
+    .card { background:#111827; border:1px solid #1f2937; border-radius:16px; padding:24px; margin: 0 auto 24px; max-width: 1000px; box-shadow: 0 10px 25px rgba(0,0,0,.35);}
+    h1 { font-size: 2rem; margin: 0 0 10px; }
+    h2 { margin-top: 28px; font-size: 1.3rem; color:#93c5fd; }
+    ul { line-height:1.7; }
+    code, pre { background:#0b1220; color:#e5e7eb; border:1px solid #1f2937; border-radius:12px; padding:14px; display:block; overflow-x:auto; }
+    .meta { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 0; }
+    .badge { background:#1f2937; border:1px solid #374151; padding:6px 10px; border-radius:999px; font-size:.85rem; }
+    .nav { display:flex; justify-content:space-between; gap:16px; margin: 14px auto 0; max-width:1000px; }
+    .nav a { background:#e5e7eb; color:#111827; padding:10px 14px; border-radius:10px; text-decoration:none; font-weight:600; }
+    .note { font-size:.92rem; opacity:.9; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <h1>Lab 1: Descriptive Statistics – Mean, Median, Mode, Variance, Std. Dev.</h1>
+  <div class="meta">
+    <div class="badge">CILO: 1</div>
+    <div class="badge">Weeks: 6–7</div>
+    <div class="badge">Lab #1</div>
+  </div>
+
+  <h2> Aim </h2>
+  <p class="note">Compute and interpret mean, median, mode, variance and standard deviation for a numeric list.</p>
+
+  <h2> Objectives </h2>
+  <ul>
+    <li>Load/define a numeric dataset.</li>
+    <li>Compute central tendency (mean, median, mode).</li>
+    <li>Compute dispersion (variance, standard deviation).</li>
+    <li>Interpret results and discuss outlier sensitivity.</li>
+  </ul>
+
+  <h2> Algorithm / Procedure </h2>
+  <ol>
+    <li>Input a list of numbers.</li>
+    <li>Sort the list for the median and mode logic.</li>
+    <li>Compute mean (sum / n).</li>
+    <li>Compute median (middle after sorting) and mode (most frequent).</li>
+    <li>Compute population variance and standard deviation (√variance).</li>
+    <li>Print and interpret values.</li>
+  </ol>
+
+  <h2> Python Code </h2>
+  <pre><code>import statistics as stats
+import numpy as np
+
+data = [5, 7, 3, 7, 9, 10, 7, 5, 9, 10]
+
+mean = np.mean(data)
+median = np.median(data)
+mode = stats.mode(data)
+variance = np.var(data)      # population variance
+std_dev = np.std(data)       # population std
+
+print("Data:", data)
+print("Mean:", mean)
+print("Median:", median)
+print("Mode:", mode)
+print("Variance:", variance)
+print("Standard Deviation:", std_dev)</code></pre>
+
+  <h2> Sample Output (expected) </h2>
+  <pre><code>Data: [5, 7, 3, 7, 9, 10, 7, 5, 9, 10]
+Mean: 7.2
+Median: 7.0
+Mode: 7
+Variance: 5.56
+Standard Deviation: 2.36</code></pre>
+</div>
+<div class="nav">
+  
+  <a href="lab_2.html">Next Lab ➡</a>
+</div>
+</body>
+</html>

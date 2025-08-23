@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab 5: Constrained Optimization via Duality & KKT (Quadratic)</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; padding:30px; background: #0f172a; color:#e5e7eb; }
+    .card { background:#111827; border:1px solid #1f2937; border-radius:16px; padding:24px; margin: 0 auto 24px; max-width: 1000px; box-shadow: 0 10px 25px rgba(0,0,0,.35);}
+    h1 { font-size: 2rem; margin: 0 0 10px; }
+    h2 { margin-top: 28px; font-size: 1.3rem; color:#93c5fd; }
+    ul { line-height:1.7; }
+    code, pre { background:#0b1220; color:#e5e7eb; border:1px solid #1f2937; border-radius:12px; padding:14px; display:block; overflow-x:auto; }
+    .meta { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 0; }
+    .badge { background:#1f2937; border:1px solid #374151; padding:6px 10px; border-radius:999px; font-size:.85rem; }
+    .nav { display:flex; justify-content:space-between; gap:16px; margin: 14px auto 0; max-width:1000px; }
+    .nav a { background:#e5e7eb; color:#111827; padding:10px 14px; border-radius:10px; text-decoration:none; font-weight:600; }
+    .note { font-size:.92rem; opacity:.9; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <h1>Lab 5: Constrained Optimization via Duality & KKT (Quadratic)</h1>
+  <div class="meta">
+    <div class="badge">CILO: 2</div>
+    <div class="badge">Weeks: 21–23</div>
+    <div class="badge">Lab #5</div>
+  </div>
+
+  <h2> Aim </h2>
+  <p class="note">Solve a convex quadratic minimization with linear equality constraint and verify KKT conditions.</p>
+
+  <h2> Objectives </h2>
+  <ul>
+    <li>Model a quadratic objective in cvxpy.</li>
+    <li>Add linear equality constraint.</li>
+    <li>Solve and inspect primal solution.</li>
+    <li>Discuss stationarity, feasibility, complementary slackness.</li>
+  </ul>
+
+  <h2> Algorithm / Procedure </h2>
+  <ol>
+    <li>Define variables x, y.</li>
+    <li>Set objective minimize x^2 + y^2.</li>
+    <li>Set constraint x + y = 1.</li>
+    <li>Solve with a convex optimizer.</li>
+    <li>Verify that solution (0.5,0.5) satisfies KKT.</li>
+  </ol>
+
+  <h2> Python Code </h2>
+  <pre><code>import cvxpy as cp
+
+x = cp.Variable()
+y = cp.Variable()
+
+objective = cp.Minimize(x**2 + y**2)
+constraints = [x + y == 1]
+
+prob = cp.Problem(objective, constraints)
+result = prob.solve()
+
+print("Optimal Value:", round(result, 4))
+print("x =", round(x.value, 4), "y =", round(y.value, 4))</code></pre>
+
+  <h2> Sample Output (expected) </h2>
+  <pre><code>Optimal Value: 0.5
+x = 0.5 y = 0.5</code></pre>
+</div>
+<div class="nav">
+  <a href="lab_4.html">⬅ Previous Lab</a>
+  <a href="lab_6.html">Next Lab ➡</a>
+</div>
+</body>
+</html>
