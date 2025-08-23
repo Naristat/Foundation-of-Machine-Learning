@@ -167,3 +167,33 @@ Hours Studied | Attendance (%) | Result (Pass=1, Fail=0)
   </footer>
 </body>
 </html>
+<script>
+  // Get current filename (like lecture_10.html)
+  const currentPage = window.location.pathname.split("/").pop();
+  const lectureNum = parseInt(currentPage.match(/\d+/));
+
+  if (!isNaN(lectureNum)) {
+    const nav = document.createElement("div");
+    nav.className = "lecture-nav";
+
+    // Previous link
+    if (lectureNum > 0) {
+      const prev = document.createElement("a");
+      prev.href = `lecture_${lectureNum - 1}.html`;
+      prev.className = "prev";
+      prev.innerText = "⬅ Previous Lecture";
+      nav.appendChild(prev);
+    }
+
+    // Next link
+    if (lectureNum < 40) {
+      const next = document.createElement("a");
+      next.href = `lecture_${lectureNum + 1}.html`;
+      next.className = "next";
+      next.innerText = "Next Lecture ➡";
+      nav.appendChild(next);
+    }
+
+    document.body.appendChild(nav);
+  }
+</script>
