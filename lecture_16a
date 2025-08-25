@@ -1,0 +1,121 @@
+<!-- =========================
+FILE: lecture_16a.html
+TITLE: Lecture 17 – Optimization in ML: Example 1 (Gradient Descent on a Quadratic)
+========================= -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lecture 17 – Example 1: Gradient Descent on a Quadratic</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0f172a; --card:#111827; --text:#e5e7eb; --muted:#9ca3af; --accent:#22d3ee; --link:#38bdf8; --ok:#34d399; --warn:#f59e0b;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#0b1023, #0f172a 35%, #111827);color:var(--text);line-height:1.6}
+    header{position:sticky;top:0;background:rgba(15,23,42,.7);backdrop-filter:blur(8px);border-bottom:1px solid #1f2937;z-index:10}
+    .wrap{max-width:1000px;margin:0 auto;padding:24px}
+    h1{font-size:clamp(26px,4vw,40px);margin:16px 0 4px}
+    h2{font-size:clamp(20px,3vw,28px);margin:24px 0 8px}
+    p,li{color:var(--text)}
+    a{color:var(--link);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .badge{display:inline-block;font-size:12px;padding:4px 8px;border-radius:999px;background:#0ea5e9;color:#022c22}
+    .grid{display:grid;gap:18px}
+    .card{background:linear-gradient(180deg,#0b1220,#0c1322);border:1px solid #1f2937;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    .card .inner{padding:20px}
+    code,pre{background:#0b1020;border:1px solid #1f2937;border-radius:10px;padding:.2em .4em}
+    pre{padding:16px;overflow:auto}
+    .note{border-left:4px solid var(--accent);padding:12px 16px;background:#0b1220;border-radius:8px}
+    .nav{display:flex;gap:10px;flex-wrap:wrap}
+    .nav a{background:#0b1220;border:1px solid #1f2937;padding:8px 12px;border-radius:10px}
+    footer{border-top:1px solid #1f2937;margin-top:28px}
+    .eq{font-size:18px}
+    .pill{border:1px solid #1f2937;border-radius:999px;padding:2px 10px;color:var(--muted)}
+  </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+        <div>
+          <div class="badge">Optimization Techniques in Machine Learning</div>
+          <h1>Lecture 17 – Example 1: Gradient Descent on a Quadratic</h1>
+        </div>
+        <nav class="nav">
+          <a href="lecture_16a.html" aria-current="page">L17</a>
+          <a href="lecture_16b.html">L18</a>
+          <a href="lecture_16c.html">L19</a>
+          <a href="lecture_16d.html">L20</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap grid">
+    <section class="card"><div class="inner">
+      <h2>Objective</h2>
+      <p>Understand vanilla gradient descent by minimizing a simple convex quadratic:</p>
+      <p class="eq">\[ f(\mathbf{w}) = \tfrac{1}{2}\,\mathbf{w}^\top \mathbf{A} \, \mathbf{w} - \mathbf{b}^\top \mathbf{w} + c, \quad \mathbf{A} \succ 0. \]</p>
+      <p>The minimizer is \(\mathbf{w}^* = \mathbf{A}^{-1}\mathbf{b}\). Gradient descent iterates</p>
+      <p class="eq">\[ \mathbf{w}_{t+1} = \mathbf{w}_t - \eta \nabla f(\mathbf{w}_t) = \mathbf{w}_t - \eta (\mathbf{A} \mathbf{w}_t - \mathbf{b}). \]</p>
+    </div></section>
+
+    <section class="card"><div class="inner">
+      <h2>Convergence condition</h2>
+      <p>Let \(\lambda_{\min}\le \lambda \le \lambda_{\max}\) be eigenvalues of \(\mathbf{A}\). For a constant step-size \(\eta\), convergence is guaranteed if</p>
+      <p class="eq">\[ 0 < \eta < \frac{2}{\lambda_{\max}}. \]</p>
+      <div class="note"><strong>Tip:</strong> A good practical choice is \(\eta=\frac{1}{\lambda_{\max}}\) when \(\lambda_{\max}\) is known/estimated (e.g., power iteration).</div>
+    </div></section>
+
+    <section class="card"><div class="inner">
+      <h2>Worked Example</h2>
+      <p>Take \(\mathbf{A}=\begin{bmatrix}3&0\\0&1\end{bmatrix}\), \(\mathbf{b}=\begin{bmatrix}6\\2\end{bmatrix}\). Then \(\mathbf{w}^* = [2,\,2]^\top\). With \(\eta = 0.5\), start at \(\mathbf{w}_0=[0,0]^\top\):</p>
+      <p class="eq">\[ \nabla f(\mathbf{w}_0) = -\mathbf{b} = [-6,-2]^\top, \quad \mathbf{w}_1 = [3,1]^\top. \]</p>
+      <p>Next:</p>
+      <p class="eq">\[ \nabla f(\mathbf{w}_1) = \mathbf{Aw}_1-\mathbf{b} = [3,1]^\top, \quad \mathbf{w}_2 = [1.5,0.5]^\top. \]</p>
+      <p>Continuing yields geometric convergence to \([2,2]^\top\).</p>
+    </div></section>
+
+    <section class="card"><div class="inner">
+      <h2>Implementation Snippet (NumPy)</h2>
+      <pre><code>import numpy as np
+A = np.array([[3.,0.],[0.,1.]])
+b = np.array([6.,2.])
+w = np.array([0.,0.])
+eta = 0.5
+for t in range(10):
+    grad = A @ w - b
+    w = w - eta * grad
+    print(t+1, w)
+</code></pre>
+    </div></section>
+
+    <section class="card"><div class="inner">
+      <h2>Key Takeaways</h2>
+      <ul>
+        <li>Quadratics provide a clean sandbox to see step-size effects.</li>
+        <li>Condition number \(\kappa=\lambda_{\max}/\lambda_{\min}\) dictates speed.</li>
+        <li>Preconditioning (e.g., feature scaling) reduces \(\kappa\) and speeds convergence.</li>
+      </ul>
+    </div></section>
+
+    <section class="card"><div class="inner">
+      <div class="nav">
+        <span class="pill">You are on L17</span>
+        <a href="lecture_16b.html">Next: L18 – Logistic Regression (GD)</a>
+      </div>
+    </div></section>
+  </main>
+
+  <footer class="wrap">
+    <p>&copy; 2025 – Optimization Techniques in ML · <a href="lecture_16b.html">Continue to Lecture 18</a></p>
+  </footer>
+</body>
+</html>
