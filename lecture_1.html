@@ -76,20 +76,30 @@
     For example, [height, weight, age] of a person.
   </p>
 
-  <h2>3. Matrices</h2>
-  <p>
-    A matrix is a rectangular array of numbers arranged in rows and columns.
-    Example:
-  </p>
-  <pre>
-  A = [[1, 2, 3],
-       [4, 5, 6],
-       [7, 8, 9]]
-  </pre>
-  <p>
-    In machine learning, a dataset with <i>m</i> observations and <i>n</i> features 
-    is represented as an <i>m × n</i> matrix.
-  </p>
+<h2>3. Matrices</h2>
+<p>
+  A matrix is a rectangular array of numbers arranged in rows and columns.
+  Example:
+</p>
+
+<!-- MathJax Matrix -->
+<p>
+  \[
+  A = \begin{bmatrix}
+  1 & 2 & 3 \\
+  4 & 5 & 6 \\
+  7 & 8 & 9
+  \end{bmatrix}
+  \]
+</p>
+
+<p>
+  In machine learning, a dataset with <i>m</i> observations and <i>n</i> features 
+  is represented as an <i>m × n</i> matrix.
+</p>
+
+
+
 
   <h2>4. Matrix Operations</h2>
   <ul>
@@ -109,23 +119,46 @@
     <li><b>Recommendation Systems:</b> Use matrix factorization (Netflix, Amazon product recommendations).</li>
   </ul>
 
-  <h2>6. Example</h2>
-  <p>Suppose we have two matrices:</p>
-  <pre>
-  A = [[1, 2],
-       [3, 4]]
+\section*{6. Example}
 
-  B = [[5, 6],
-       [7, 8]]
-  </pre>
-  <p><b>Matrix Multiplication:</b></p>
-  <pre>
-  A × B = [[1*5 + 2*7, 1*6 + 2*8],
-           [3*5 + 4*7, 3*6 + 4*8]]
+Suppose we have two matrices:
 
-        = [[19, 22],
-           [43, 50]]
-  </pre>
+\[
+A = \begin{bmatrix}
+1 & 2 \\
+3 & 4
+\end{bmatrix}, \quad
+B = \begin{bmatrix}
+5 & 6 \\
+7 & 8
+\end{bmatrix}
+\]
+
+\textbf{Matrix Multiplication:}
+
+\[
+A \times B =
+\begin{bmatrix}
+1 & 2 \\
+3 & 4
+\end{bmatrix}
+\begin{bmatrix}
+5 & 6 \\
+7 & 8
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 \cdot 5 + 2 \cdot 7 & 1 \cdot 6 + 2 \cdot 8 \\
+3 \cdot 5 + 4 \cdot 7 & 3 \cdot 6 + 4 \cdot 8
+\end{bmatrix}
+\]
+
+\[
+= \begin{bmatrix}
+19 & 22 \\
+43 & 50
+\end{bmatrix}
+\]
 
   <h2>7. Interactive Matrix Calculator</h2>
   <div class="calculator">
