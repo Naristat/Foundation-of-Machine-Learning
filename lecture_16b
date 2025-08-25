@@ -1,0 +1,96 @@
+
+
+
+<!-- =========================
+FILE: lecture_16b.html
+TITLE: Lecture 18 – Optimization in ML: Example 2 (Binary Logistic Regression with GD)
+========================= -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lecture 18 – Example 2: Logistic Regression (Gradient Descent)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0f172a; --card:#111827; --text:#e5e7eb; --muted:#9ca3af; --accent:#22d3ee; --link:#38bdf8}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#0b1023, #0f172a 35%, #111827);color:var(--text);line-height:1.6}
+    header{position:sticky;top:0;background:rgba(15,23,42,.7);backdrop-filter:blur(8px);border-bottom:1px solid #1f2937;z-index:10}
+    .wrap{max-width:1000px;margin:0 auto;padding:24px}
+    h1{font-size:clamp(26px,4vw,40px);margin:16px 0 4px}
+    h2{font-size:clamp(20px,3vw,28px);margin:24px 0 8px}
+    .card{background:linear-gradient(180deg,#0b1220,#0c1322);border:1px solid #1f2937;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    .card .inner{padding:20px}
+    a{color:var(--link)}
+    code,pre{background:#0b1020;border:1px solid #1f2937;border-radius:10px;padding:.2em .4em}
+    pre{padding:16px;overflow:auto}
+  </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+  <header>
+    <div class="wrap" style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+      <div>
+        <div style="display:inline-block;font-size:12px;padding:4px 8px;border-radius:999px;background:#0ea5e9;color:#022c22">Optimization Techniques in ML</div>
+        <h1>Lecture 18 – Example 2: Logistic Regression (Gradient Descent)</h1>
+      </div>
+      <nav>
+        <a href="lecture_16a.html">L17</a> ·
+        <a href="lecture_16b.html" aria-current="page">L18</a> ·
+        <a href="lecture_16c.html">L19</a> ·
+        <a href="lecture_16d.html">L20</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card"><div class="inner">
+      <h2>Model & Loss</h2>
+      <p>For inputs \(\mathbf{x}_i\in\mathbb{R}^d\), labels \(y_i\in\{0,1\}\), parameters \(\mathbf{w}, b\):</p>
+      <p>\[ \hat{p}_i = \sigma(\mathbf{w}^\top \mathbf{x}_i + b), \quad \sigma(z)=\frac{1}{1+e^{-z}}. \]</p>
+      <p>Negative log-likelihood (binary cross-entropy):</p>
+      <p>\[ \mathcal{L}(\mathbf{w},b) = -\sum_{i=1}^n\big[ y_i\log \hat{p}_i + (1-y_i)\log(1-\hat{p}_i)\big]. \]</p>
+    </div></section>
+
+    <section class="card"><div class="inner">
+      <h2>Gradients</h2>
+      <p>Let \(\mathbf{X}\in\mathbb{R}^{n\times d}\) and \(\hat{\mathbf{p}}=\sigma(\mathbf{X}\mathbf{w}+b\mathbf{1})\). Then</p>
+      <p>\[ \nabla_{\mathbf{w}}\mathcal{L} = \mathbf{X}^\top(\hat{\mathbf{p}}-\mathbf{y}), \qquad \partial_b\mathcal{L}= \mathbf{1}^\top(\hat{\mathbf{p}}-\mathbf{y}). \]</p>
+      <p>Gradient descent update with step-size \(\eta\):</p>
+      <p>\[ \mathbf{w} \leftarrow \mathbf{w} - \eta\, \nabla_{\mathbf{w}}\mathcal{L}, \qquad b \leftarrow b - \eta\, \partial_b\mathcal{L}. \]</p>
+    </div></section>
+
+    <section class="card"><div class="inner">
+      <h2>Worked Example (Tiny Dataset)</h2>
+      <pre><code>import numpy as np
+X = np.array([[0.,0.], [0.,1.], [1.,0.], [1.,1.]])
+y = np.array([0., 0., 0., 1.])  # AND gate
+w = np.zeros(2); b = 0.0
+eta = 0.5
+for t in range(10):
+    z = X @ w + b
+    p = 1/(1+np.exp(-z))
+    grad_w = X.T @ (p - y)
+    grad_b = np.sum(p - y)
+    w -= eta*grad_w
+    b -= eta*grad_b
+    print(t+1, w, b)
+</code></pre>
+      <p>Weights move to separate the positive example \((1,1)\) from others.</p>
+    </div></section>
+
+    <section class="card"><div class="inner">
+      <h2>Regularization (Optional)</h2>
+      <p>Add L2: \(\mathcal{L}_\text{reg} = \mathcal{L} + \tfrac{\lambda}{2}\lVert\mathbf{w}\rVert^2\) ⇒ gradient adds \(\lambda\mathbf{w}\). Helps generalization & conditioning.</p>
+    </div></section>
+
+    <section class="card"><div class="inner">
+      <p><a href="lecture_16a.html">&#8592; Back to L17</a> · <a href="lecture_16c.html">Forward to L19 &#8594;</a></p>
+    </div></section>
+  </main>
+</body>
+</html>
