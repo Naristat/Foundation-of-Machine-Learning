@@ -227,7 +227,19 @@
     }
   </script>
 
-    if (!isNaN(lectureNum)) {
+    </section>
+
+  <footer>
+    <p>&copy; 2025 Machine Learning Lecture Series</p>
+  </footer>
+</body>
+</html>
+<script>
+  // Get current filename (like lecture_10.html)
+  const currentPage = window.location.pathname.split("/").pop();
+  const lectureNum = parseInt(currentPage.match(/\d+/));
+
+  if (!isNaN(lectureNum)) {
     const nav = document.createElement("div");
     nav.className = "lecture-nav";
 
