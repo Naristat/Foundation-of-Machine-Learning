@@ -278,63 +278,6 @@
 </html>
 
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Unique Users Counter</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 40px;
-      background: #f4f4f9;
-      color: #333;
-    }
-    .counter-box {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      max-width: 300px;
-      text-align: center;
-    }
-    h2 { color: #0073e6; }
-  </style>
-</head>
-<body>
-
-  <div class="counter-box">
-    <h2>Website Visitors</h2>
-    <p id="user-id"></p>
-    <p><b>Total Unique Users:</b> <span id="unique-count">0</span></p>
-  </div>
-
-  <script>
-    // Generate unique user ID if not present
-    if (!localStorage.getItem("unique_user_id")) {
-      localStorage.setItem("unique_user_id", Date.now() + "_" + Math.random());
-    }
-
-    // Show the user's unique ID
-    document.getElementById("user-id").textContent = 
-      "Your ID: " + localStorage.getItem("unique_user_id");
-
-    // ---- DEMO ONLY ----
-    // Store unique IDs in browser (simulating server storage)
-    let allUsers = JSON.parse(localStorage.getItem("all_users") || "[]");
-    let currentUser = localStorage.getItem("unique_user_id");
-
-    if (!allUsers.includes(currentUser)) {
-      allUsers.push(currentUser);
-      localStorage.setItem("all_users", JSON.stringify(allUsers));
-    }
-
-    // Show unique count
-    document.getElementById("unique-count").textContent = allUsers.length;
-  </script>
-
-</body>
-</html>
 
 
 
