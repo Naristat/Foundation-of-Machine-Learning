@@ -1,0 +1,99 @@
+
+
+<!-- =========================
+FILE: lecture_16c.html
+TITLE: Lecture 19 – Optimization in ML: Example 3 (Newton's Method & Line Search)
+========================= -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lecture 19 – Example 3: Newton's Method & Line Search</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0f172a; --card:#111827; --text:#e5e7eb; --muted:#9ca3af; --link:#38bdf8; --accent:#22d3ee}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#0b1023, #0f172a 35%, #111827);color:var(--text);line-height:1.6}
+    .wrap{max-width:1000px;margin:0 auto;padding:24px}
+    header{position:sticky;top:0;background:rgba(15,23,42,.7);backdrop-filter:blur(8px);border-bottom:1px solid #1f2937;z-index:10}
+    h1{font-size:clamp(26px,4vw,40px);margin:16px 0 4px}
+    .card{background:linear-gradient(180deg,#0b1220,#0c1322);border:1px solid #1f2937;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    .card .inner{padding:20px}
+    code,pre{background:#0b1020;border:1px solid #1f2937;border-radius:10px;padding:.2em .4em}
+    pre{padding:16px;overflow:auto}
+    a{color:var(--link)}
+  </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+  <header>
+    <div class="wrap" style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+      <div>
+        <div style="display:inline-block;font-size:12px;padding:4px 8px;border-radius:999px;background:#0ea5e9;color:#022c22">Optimization Techniques in ML</div>
+        <h1>Lecture 19 – Example 3: Newton's Method & Line Search</h1>
+      </div>
+      <nav>
+        <a href="lecture_16a.html">L17</a> ·
+        <a href="lecture_16b.html">L18</a> ·
+        <a href="lecture_16c.html" aria-current="page">L19</a> ·
+        <a href="lecture_16d.html">L20</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card"><div class="inner">
+      <h2>Newton's Update</h2>
+      <p>Given twice-differentiable \(f\), Newton's method updates</p>
+      <p>\[ \mathbf{w}_{t+1} = \mathbf{w}_t - \big[\nabla^2 f(\mathbf{w}_t)\big]^{-1} \nabla f(\mathbf{w}_t). \]</p>
+      <p>Near a local minimum where Hessian is positive definite, Newton enjoys quadratic convergence.</p>
+    </div></section>
+
+    <section class="card"><div class="inner">
+      <h2>Armijo Backtracking Line Search</h2>
+      <p>Choose direction \(\mathbf{p}_t = -\big[\nabla^2 f(\mathbf{w}_t)\big]^{-1} \nabla f(\mathbf{w}_t)\). Find smallest \(m\in\{0,1,2,...\}\) such that with \(\alpha=\beta^m\):</p>
+      <p>\[ f(\mathbf{w}_t + \alpha \mathbf{p}_t) \le f(\mathbf{w}_t) + c\,\alpha\,\nabla f(\mathbf{w}_t)^\top \mathbf{p}_t, \quad c\in(0,1),\ \beta\in(0,1). \]</p>
+    </div></section>
+
+    <section class="card"><div class="inner">
+      <h2>Worked Example (Ridge-Logistic Newton Step)</h2>
+      <pre><code>import numpy as np
+X = np.array([[1.,0.], [0.,1.], [1.,1.], [2.,1.]])
+y = np.array([0., 0., 1., 1.])
+w = np.zeros(2); b = 0.0; lam = 1e-2
+for t in range(6):
+    z = X @ w + b
+    p = 1/(1+np.exp(-z))
+    # gradient (add L2 on w)
+    grad_w = X.T @ (p - y) + lam*w
+    grad_b = np.sum(p - y)
+    # Hessian (block form)
+    S = np.diag(p*(1-p))
+    H_ww = X.T @ S @ X + lam*np.eye(2)
+    H_wb = X.T @ (p*(1-p))
+    H_bb = np.sum(p*(1-p))
+    # Solve Newton step for (w,b)
+    H = np.block([[H_ww, H_wb.reshape(-1,1)], [H_wb.reshape(1,-1), np.array([[H_bb]])]])
+    g = np.concatenate([grad_w, [grad_b]])
+    step = np.linalg.solve(H, g)
+    w -= step[:2]; b -= step[2]
+    print(t+1, w, b)
+</code></pre>
+      <p>Combine with backtracking to ensure monotone decrease in \(f\).</p>
+    </div></section>
+
+    <section class="card"><div class="inner">
+      <h2>Notes</h2>
+      <ul>
+        <li>Per-iteration cost is higher than GD due to Hessian solves.</li>
+        <li>Trust-region methods are an alternative when Hessian is ill-conditioned.</li>
+      </ul>
+      <p><a href="lecture_16b.html">&#8592; Back to L18</a> · <a href="lecture_16d.html">Forward to L20 &#8594;</a></p>
+    </div></section>
+  </main>
+</body>
+</html>
