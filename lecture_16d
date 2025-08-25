@@ -1,0 +1,121 @@
+<!-- =========================
+FILE: lecture_16d.html
+TITLE: Lecture 20 – Optimization in ML: Example 4 (SGD, Mini-batch, Momentum & Schedules)
+========================= -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lecture 20 – Example 4: SGD, Mini-batch, Momentum & LR Schedules</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0f172a; --card:#111827; --text:#e5e7eb; --muted:#9ca3af; --link:#38bdf8}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#0b1023, #0f172a 35%, #111827);color:var(--text);line-height:1.6}
+    header{position:sticky;top:0;background:rgba(15,23,42,.7);backdrop-filter:blur(8px);border-bottom:1px solid #1f2937;z-index:10}
+    .wrap{max-width:1000px;margin:0 auto;padding:24px}
+    h1{font-size:clamp(26px,4vw,40px);margin:16px 0 4px}
+    .card{background:linear-gradient(180deg,#0b1220,#0c1322);border:1px solid #1f2937;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    .card .inner{padding:20px}
+    code,pre{background:#0b1020;border:1px solid #1f2937;border-radius:10px;padding:.2em .4em}
+    pre{padding:16px;overflow:auto}
+    a{color:var(--link)}
+  </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+  <header>
+    <div class="wrap" style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+      <div>
+        <div style="display:inline-block;font-size:12px;padding:4px 8px;border-radius:999px;background:#0ea5e9;color:#022c22">Optimization Techniques in ML</div>
+        <h1>Lecture 20 – Example 4: SGD, Mini-batch, Momentum & LR Schedules</h1>
+      </div>
+      <nav>
+        <a href="lecture_16a.html">L17</a> ·
+        <a href="lecture_16b.html">L18</a> ·
+        <a href="lecture_16c.html">L19</a> ·
+        <a href="lecture_16d.html" aria-current="page">L20</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card"><div class="inner">
+      <h2>Stochastic Gradient Descent (SGD)</h2>
+      <p>For loss \(\mathcal{L}(\mathbf{w}) = \frac{1}{n}\sum_{i=1}^n \ell(\mathbf{w}; \mathbf{x}_i,y_i)\), pick a random sample (or mini-batch) and update</p>
+      <p>\[ \mathbf{w}_{t+1} = \mathbf{w}_t - \eta_t \, \widehat{\nabla} \mathcal{L}(\mathbf{w}_t). \]</p>
+      <p>With diminishing step-sizes (e.g., \(\eta_t = \eta_0/(1+\gamma t)\)) and convex \(\ell\), SGD converges in expectation.</p>
+    </div></section>
+
+    <section class="card"><div class="inner">
+      <h2>Momentum & Nesterov</h2>
+      <pre><code># Classical momentum
+v = beta * v + (1-beta) * grad
+w = w - eta * v
+
+# Nesterov lookahead (pseudo)
+w_look = w - eta*beta*v
+grad = grad_at(w_look)
+v = beta*v + (1-beta)*grad
+w = w - eta*v
+</code></pre>
+      <p>Momentum accelerates along gentle valleys and damps oscillations in steep directions.</p>
+    </div></section>
+
+    <section class="card"><div class="inner">
+      <h2>Learning-Rate Schedules</h2>
+      <ul>
+        <li><strong>Step decay:</strong> \(\eta_t = \eta_0\,\gamma^{\lfloor t/T\rfloor}\)</li>
+        <li><strong>Cosine:</strong> \(\eta_t = \eta_{\min}+\tfrac{1}{2}(\eta_0-\eta_{\min})(1+\cos(\pi t/T))\)</li>
+        <li><strong>Cyclical:</strong> triangular/triangular2 with periodic restarts</li>
+        <li><strong>Warmup:</strong> start small then ramp to \(\eta_0\)</li>
+      </ul>
+    </div></section>
+
+    <section class="card"><div class="inner">
+      <h2>Worked Example (Mini-batch Logistic with Momentum)</h2>
+      <pre><code>import numpy as np
+rng = np.random.default_rng(0)
+X = rng.normal(size=(400, 3))
+w_true = np.array([1.5,-2.0,0.5]); b_true = -0.3
+logits = X @ w_true + b_true
+p = 1/(1+np.exp(-logits))
+y = (rng.uniform(size=400) < p).astype(float)
+
+w = np.zeros(3); b = 0.0
+eta = 0.1; beta = 0.9
+v_w = np.zeros_like(w); v_b = 0.0
+batch = 32
+for t in range(200):
+    idx = rng.choice(len(X), size=batch, replace=False)
+    Xb, yb = X[idx], y[idx]
+    z = Xb @ w + b
+    pb = 1/(1+np.exp(-z))
+    grad_w = Xb.T @ (pb - yb) / batch
+    grad_b = np.sum(pb - yb) / batch
+    v_w = beta*v_w + (1-beta)*grad_w
+    v_b = beta*v_b + (1-beta)*grad_b
+    w -= eta * v_w
+    b -= eta * v_b
+</code></pre>
+    </div></section>
+
+    <section class="card"><div class="inner">
+      <h2>Adam (Bonus)</h2>
+      <p>Bias-corrected moment estimates:</p>
+      <pre><code>m = beta1*m + (1-beta1)*grad
+v = beta2*v + (1-beta2)*(grad**2)
+mh = m/(1-beta1**t)
+vh = v/(1-beta2**t)
+w -= eta * mh/(np.sqrt(vh) + 1e-8)
+</code></pre>
+      <p>Adam adapts per-parameter step sizes; useful for sparse/ill-scaled problems.</p>
+      <p><a href="lecture_16c.html">&#8592; Back to L19</a></p>
+    </div></section>
+  </main>
+</body>
+</html>
