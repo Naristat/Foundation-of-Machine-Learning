@@ -70,6 +70,25 @@
         <li><b>Cholesky factorization:</b> try to compute it; if it succeeds (no negative square root), matrix is PD.</li>
       </ol>
 
+
+      <h3>Example A (2×2 positive definite)</h3>
+<p>
+\[
+A = \begin{bmatrix} 2 & -1 \\ -1 & 2 \end{bmatrix}, \quad
+x = \begin{bmatrix} x_1 \\ x_2 \end{bmatrix}
+\]
+\[
+x^\top A x 
+= \begin{bmatrix} x_1 & x_2 \end{bmatrix}
+\begin{bmatrix} 2 & -1 \\ -1 & 2 \end{bmatrix}
+\begin{bmatrix} x_1 \\ x_2 \end{bmatrix}
+= 2x_1^2 - 2x_1x_2 + 2x_2^2 
+= 2(x_1^2 - x_1x_2 + x_2^2) > 0 \quad (x \neq 0)
+\]
+Eigenvalues: \(\lambda_1 = 1,\; \lambda_2 = 3\) → \(A\) is PD.
+</p>
+
+
       <h2>4. Worked examples</h2>
 
       <h3>Example A (2×2 positive definite)</h3>
