@@ -71,7 +71,11 @@
       </ol>
 
 
-      <h3>Example A (2×2 positive definite)</h3>
+     
+
+
+      <h2>4. Worked examples</h2>
+       <h3>Example A (2×2 positive definite)</h3>
 <p>
 \[
 A = \begin{bmatrix} 2 & -1 \\ -1 & 2 \end{bmatrix}, \quad
@@ -88,40 +92,20 @@ x^\top A x
 Eigenvalues: \(\lambda_1 = 1,\; \lambda_2 = 3\) → \(A\) is PD.
 </p>
 
-
-      <h2>4. Worked examples</h2>
-
-      <h3>Example A (2×2 positive definite)</h3>
-      <pre>
-\[
-A = \begin{bmatrix} 2 & -1 \\ -1 & 2 \end{bmatrix}, \quad
-x = \begin{bmatrix} x_1 \\ x_2 \end{bmatrix}
-\]
-
-\[
-x^\top A x = 2x_1^2 - 2x_1x_2 + 2x_2^2 = 2(x_1^2 - x_1x_2 + x_2^2) > 0 \quad (x \neq 0)
-\]
-
-Eigenvalues: \(\lambda_1 = 1,\;\lambda_2 = 3\) → \(A\) is PD
-      </pre>
-
-      <h3>Example B (PSD but not PD)</h3>
-      <pre>
+    <h3>Example B (PSD but not PD)</h3>
+<p>
 \[
 A = \begin{bmatrix} 1 & 1 \\ 1 & 1 \end{bmatrix}
 \]
-
-Eigenvalues: \(\lambda_1 = 0,\;\lambda_2 = 2\) → PSD (but not PD, since one eigenvalue is 0)
-      </pre>
-
-      <h3>Example C (Indefinite)</h3>
-      <pre>
+Eigenvalues: \(\lambda_1 = 0,\; \lambda_2 = 2\) → PSD (but not PD, since one eigenvalue is 0).
+</p>
+<h3>Example C (Indefinite)</h3>
+<p>
 \[
 A = \begin{bmatrix} 1 & 2 \\ 2 & -1 \end{bmatrix}
 \]
-
-Eigenvalues: \(\lambda_1 \approx 2.236,\;\lambda_2 \approx -2.236\) → indefinite
-      </pre>
+Eigenvalues: \(\lambda_1 \approx 2.236,\; \lambda_2 \approx -2.236\) → Indefinite.
+</p>
 
       <h2>5. Applications in Machine Learning</h2>
       <ul>
