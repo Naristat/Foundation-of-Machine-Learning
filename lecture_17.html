@@ -1,259 +1,194 @@
+<!-- ========================= lecture_21.html ========================= -->
 <!DOCTYPE html>
 <html lang="en">
-     </div>
-        <nav class="nav">
-                    <a href="https://surnamnarendra.github.io/Fundamentals-of-Machine-Learning/" aria-current="page">Home</a>
-          <a href="lecture_17.html" aria-current="page">L21</a>
-          <a href="lecture_18.html">L22</a>
-          <a href="lecture_19.html">L23</a>
-          <a href="lecture_20.html">L24</a>
-              <a href="lecture_21.html" aria-current="page">L25</a>
-          <a href="lecture_22.html">L26</a>
-          <a href="lecture_23.html">L27</a>
-          <a href="lecture_24.html">L28</a>
-          <a href="lecture_25.html" aria-current="page">L29</a>
-          <a href="lecture_26.html">L30</a>
-        </nav>
-      </div>
 <head>
-  <meta charset="UTF-8">
-  <title>Lecture 21 - Introduction to Machine Learning</title>
+  <meta charset="UTF-8" />
+  <title>Lecture 21 - Foundations & Terminology</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 40px;
-      line-height: 1.6;
-      background: #f8f9fa;
-      color: #333;
+    :root{
+      --bg:#f8f9fa; --ink:#222; --brand:#0056b3; --accent:#007bff; --soft:#ffffff;
+      --muted:#6c757d; --warn:#ff8800; --success:#198754; --danger:#dc3545;
     }
-    h1, h2, h3 {
-      color: #0056b3;
-    }
-    .example, .application {
-      border-left: 4px solid #007bff;
-      padding: 10px 15px;
-      margin: 15px 0;
-      background: #fff;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      border-radius: 6px;
-    }
-    code {
-      background: #eee;
-      padding: 3px 6px;
-      border-radius: 3px;
-    }
+    *{box-sizing:border-box}
+    body{font-family:Arial,Helvetica,sans-serif;margin:24px 5vw;line-height:1.6;background:var(--bg);color:var(--ink)}
+    .nav{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 24px}
+    .nav a{padding:8px 12px;border-radius:8px;background:#fff;border:1px solid #e5e7eb;text-decoration:none;color:#0d6efd}
+    .nav a[aria-current="page"]{background:#e7f1ff;border-color:#b6d4fe;color:#084298;font-weight:700}
+    h1,h2,h3{color:var(--brand);margin-top:22px}
+    .card{background:var(--soft);border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.06);padding:16px;margin:14px 0;border-left:5px solid var(--accent)}
+    .example{border-left-color:var(--accent)}
+    .application{border-left-color:var(--success)}
+    .note{border-left-color:#6f42c1}
+    .warn{border-left-color:var(--warn)}
+    .grid{display:grid;gap:12px}
+    @media(min-width:900px){.grid.cols-2{grid-template-columns:1fr 1fr}.grid.cols-3{grid-template-columns:1fr 1fr 1fr}}
+    code, kbd{background:#eef2f7;border-radius:4px;padding:2px 6px}
+    table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden}
+    th,td{padding:10px;border-bottom:1px solid #e9ecef;text-align:left}
+    th{background:#f1f5f9}
+    .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;background:#eef6ff;border:1px solid #cfe2ff;color:#084298}
+    .toc{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:12px}
+    .toc a{display:block;padding:4px 0;color:#0d6efd;text-decoration:none}
+    .tag{font-size:12px;color:#555}
   </style>
 </head>
 <body>
-  <h1>Lecture 21: Introduction to Machine Learning</h1>
+  <nav class="nav">
+    <a href="https://surnamnarendra.github.io/Fundamentals-of-Machine-Learning/" aria-current="page">Home</a>
+    <a href="lecture_21.html" aria-current="page">L21</a>
+    <a href="lecture_22.html">L22</a>
+    <a href="lecture_23.html">L23</a>
+    <a href="lecture_24.html">L24</a>
+    <a href="lecture_25.html">L25</a>
+    <a href="lecture_26.html">L26</a>
+    <a href="lecture_27.html">L27</a>
+    <a href="lecture_28.html">L28</a>
+    <a href="lecture_29.html">L29</a>
+    <a href="lecture_30.html">L30</a>
+  </nav>
+
+  <h1>Lecture 21: Foundations & Core Terminology</h1>
   <p>
-    Machine Learning (ML) is a field of Artificial Intelligence (AI) that enables systems to
-    learn patterns from data and make predictions or decisions without being explicitly programmed.  
+    Machine Learning (ML) builds systems that <i>learn patterns from data</i> to make predictions or decisions.
+    This lecture establishes a rigorous vocabulary and mental model you’ll use throughout the course.
   </p>
 
-  <h2>1. What is Machine Learning?</h2>
-  <p>
-    Machine Learning is the study of algorithms that improve automatically through experience.  
-    Instead of relying on hard-coded instructions, ML systems identify patterns, adapt to new inputs, and improve their performance over time.  
-  </p>
-  <div class="example">
-    <b>Example:</b> A spam email filter learns to classify emails as “spam” or “not spam” by analyzing thousands of labeled emails.
+  <div class="toc">
+    <b>Contents</b>
+    <a href="#taxonomy">1. Problem Taxonomy</a>
+    <a href="#data">2. Data, Features, Labels</a>
+    <a href="#sets">3. Train/Validation/Test & Leakage</a>
+    <a href="#loss">4. Loss, Risk & Objective</a>
+    <a href="#capacity">5. Bias–Variance, Capacity & Regularization</a>
+    <a href="#assumptions">6. Assumptions & Inductive Bias</a>
+    <a href="#workflow">7. End-to-End Workflow (Bird’s-eye)</a>
+    <a href="#glossary">8. Terminology Glossary (Quick Reference)</a>
   </div>
 
-  <h2>2. Types of Machine Learning</h2>
-  <ul>
-    <li><b>Supervised Learning:</b> Models learn from labeled data (input → output).</li>
-    <li><b>Unsupervised Learning:</b> Models discover hidden patterns in unlabeled data.</li>
-    <li><b>Reinforcement Learning:</b> An agent learns by interacting with an environment and receiving feedback (rewards or penalties).</li>
-  </ul>
+  <h2 id="taxonomy">1) Problem Taxonomy</h2>
+  <div class="grid cols-2">
+    <div class="card">
+      <h3>Supervised Learning</h3>
+      <ul>
+        <li><b>Regression</b> – predict continuous value (e.g., price).</li>
+        <li><b>Classification</b> – predict category (spam vs ham).</li>
+        <li><b>Ranking</b> – order items (search results).</li>
+        <li><b>Structured Prediction</b> – sequences/sets/graphs.</li>
+      </ul>
+      <div class="example"><b>Example:</b> Predict HbA1c from lifestyle + labs (regression).</div>
+    </div>
+    <div class="card">
+      <h3>Unsupervised / Self-supervised</h3>
+      <ul>
+        <li><b>Clustering</b> – discover groups (customer segments).</li>
+        <li><b>Dimensionality Reduction</b> – compress features (PCA).</li>
+        <li><b>Association Rules</b> – “A → B” co-occurrence.</li>
+      </ul>
+      <div class="example"><b>Example:</b> Group food logs into diet patterns.</div>
+    </div>
+  </div>
 
-  <div class="example">
-    <b>Example:</b> 
+  <div class="card">
+    <h3>Other Learning Settings</h3>
     <ul>
-      <li>Supervised: Predicting house prices based on size, location, etc.</li>
-      <li>Unsupervised: Grouping customers into clusters for marketing.</li>
-      <li>Reinforcement: A robot learning to walk by trial and error.</li>
+      <li><b>Reinforcement Learning</b> – learn actions via reward.</li>
+      <li><b>Online / Streaming</b> – update per new sample.</li>
+      <li><b>Semi-supervised</b> – few labels + many unlabeled.</li>
+      <li><b>Transfer Learning</b> – reuse knowledge across tasks.</li>
+      <li><b>Active Learning</b> – choose what to label next.</li>
     </ul>
   </div>
 
-  <h2>3. Hypothesis Space & Inductive Bias</h2>
-  <p>
-    The <b>hypothesis space</b> is the set of all possible models a learning algorithm can choose from.  
-    <b>Inductive bias</b> is the set of assumptions a model makes to predict unseen data.  
-  </p>
-  <div class="example">
-    <b>Example:</b> Linear regression assumes the relationship between variables is linear.
+  <h2 id="data">2) Data, Features, Labels</h2>
+  <div class="grid cols-2">
+    <div class="card">
+      <h3>Core Units</h3>
+      <ul>
+        <li><b>Dataset</b> = rows (<i>instances/samples</i>) × columns (<i>features</i>).</li>
+        <li><b>Feature (x)</b> – input variable.</li>
+        <li><b>Label/Target (y)</b> – what to predict.</li>
+        <li><b>Parameters</b> – learned by training (e.g., weights).</li>
+        <li><b>Hyperparameters</b> – chosen by you (e.g., tree depth).</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Feature Types</h3>
+      <ul>
+        <li><b>Numeric</b>: continuous (glucose mg/dL), integer (age).</li>
+        <li><b>Categorical</b>: nominal (city), ordinal (stage I &lt; II &lt; III).</li>
+        <li><b>Binary</b>: yes/no, 0/1.</li>
+        <li><b>Text/Image/Audio/Time-series</b>: unstructured.</li>
+      </ul>
+      <div class="note"><b>Encoding:</b> one-hot, label, target encoding (with care!).</div>
+    </div>
   </div>
 
-  <h2>4. Model Evaluation</h2>
-  <p>
-    To assess how well a model performs, we use evaluation techniques such as:
-  </p>
+  <h2 id="sets">3) Train/Validation/Test & Leakage</h2>
   <ul>
-    <li><b>Accuracy:</b> Correct predictions ÷ Total predictions.</li>
-    <li><b>Cross-validation:</b> Splitting data into multiple folds to ensure model generalization.</li>
-    <li><b>Precision, Recall, F1-score:</b> Metrics for classification problems.</li>
+    <li><b>Train set</b> – fit parameters.</li>
+    <li><b>Validation set</b> – tune hyperparameters, pick models.</li>
+    <li><b>Test set</b> – final unbiased performance estimate.</li>
   </ul>
-  <div class="example">
-    <b>Example:</b> In medical diagnosis, high recall ensures that fewer sick patients are missed.
+  <div class="card warn">
+    <b>Data Leakage:</b> information from validation/test appears in training 
+    (e.g., scaling on full dataset, future timestamps used). <span class="pill">Always fit preprocessors on train only</span>.
   </div>
 
-  <h2>5. Real-Life Applications of ML</h2>
-  <div class="application">
-    <b>Healthcare:</b> Predicting disease risks from patient data, medical image analysis.
-  </div>
-  <div class="application">
-    <b>Finance:</b> Fraud detection in credit card transactions, stock market prediction.
-  </div>
-  <div class="application">
-    <b>E-commerce:</b> Personalized product recommendations (Amazon, Netflix, Spotify).
-  </div>
-  <div class="application">
-    <b>Transportation:</b> Self-driving cars using reinforcement learning and computer vision.
-  </div>
-  <div class="application">
-    <b>Natural Language Processing (NLP):</b> Voice assistants like Alexa, Google Translate.
+  <h2 id="loss">4) Loss, Risk & Objective</h2>
+  <table>
+    <tr><th>Task</th><th>Common Loss</th><th>Intuition</th></tr>
+    <tr><td>Regression</td><td>MSE / MAE</td><td>Penalize distance between prediction and truth.</td></tr>
+    <tr><td>Classification</td><td>Log Loss / Hinge</td><td>Encourage confident, correct probabilities/margins.</td></tr>
+  </table>
+  <div class="card">
+    <b>Empirical Risk Minimization (ERM):</b> minimize average loss on training data. Add regularization to control complexity.
   </div>
 
-  <h2>6. Summary</h2>
-  <p>
-    Machine Learning is transforming industries by enabling data-driven decision-making.  
-    It covers different paradigms—supervised, unsupervised, and reinforcement learning—each applied to real-world problems.  
-    In the next lectures, we will dive into specific algorithms such as linear regression, decision trees, Bayesian learning, and support vector machines.  
-  </p>
-</body>
-</html>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Lecture 21 Extension - Introduction to Machine Learning</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      line-height: 1.6;
-      background: #fdfdfd;
-      color: #222;
-    }
-    h1, h2, h3 {
-      color: #003366;
-    }
-    .example {
-      background: #eef6ff;
-      border-left: 4px solid #0055aa;
-      padding: 10px;
-      margin: 15px 0;
-    }
-    .application {
-      background: #f9f9f9;
-      border: 1px dashed #666;
-      padding: 12px;
-      margin: 15px 0;
-    }
-    code {
-      background: #eee;
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
-  </style>
-</head>
-<body>
-
-  <h1>Lecture 17 Extension: Introduction to Machine Learning (Part 2)</h1>
-
-  <h2>1. Why Machine Learning Works</h2>
-  <p>
-    Machine Learning (ML) is successful because it leverages <b>data-driven patterns</b> to make predictions 
-    or decisions without being explicitly programmed. Instead of hardcoding rules, models learn 
-    relationships between <i>features (inputs)</i> and <i>labels (outputs)</i>.
-  </p>
-
-  <div class="example">
-    <b>Example:</b> Spam detection does not rely on manually written rules 
-    like "if email contains 'lottery' mark as spam."  
-    Instead, an ML model learns from thousands of examples of spam and non-spam emails, 
-    automatically identifying patterns such as word frequency, sender, or links.
-  </div>
-
-  <h2>2. Mathematical Foundation</h2>
-  <p>Key mathematical areas behind ML:</p>
+  <h2 id="capacity">5) Bias–Variance, Capacity & Regularization</h2>
   <ul>
-    <li><b>Linear Algebra:</b> Used in vector/matrix operations for models like Linear Regression, PCA, Neural Networks.</li>
-    <li><b>Probability & Statistics:</b> Basis of Bayesian Learning, Naïve Bayes, and probabilistic models.</li>
-    <li><b>Calculus:</b> Optimization using derivatives and gradients (e.g., Gradient Descent).</li>
-    <li><b>Optimization:</b> Finding parameters that minimize error functions, used in SVMs and Logistic Regression.</li>
+    <li><b>Underfitting (high bias)</b> – model too simple.</li>
+    <li><b>Overfitting (high variance)</b> – fits noise, poor generalization.</li>
+    <li><b>Capacity</b> – richness of hypothesis class (e.g., degree of polynomial, tree depth).</li>
+    <li><b>Regularization</b> – L2/Ridge, L1/Lasso, ElasticNet, Early stopping, Dropout.</li>
+  </ul>
+  <div class="example"><b>Example:</b> Linear model with L2 reduces weight magnitudes → smoother fit.</div>
+
+  <h2 id="assumptions">6) Assumptions & Inductive Bias</h2>
+  <ul>
+    <li><b>I.I.D.</b> samples often assumed; time-series violate this.</li>
+    <li><b>Stationarity</b> in time-series; concept drift breaks it.</li>
+    <li><b>Inductive Bias</b>: assumptions enabling generalization (e.g., linearity).</li>
+    <li><b>No Free Lunch</b>: no single algorithm best for all problems.</li>
   </ul>
 
-  <div class="example">
-    <b>Example (Linear Regression):</b>  
-    Suppose we want to predict <i>house price</i> based on size.  
-    Model: <code>Price = β₀ + β₁ × Size</code>  
-    Learning means estimating <code>β₀</code> (intercept) and <code>β₁</code> (slope) from data.
-  </div>
-
-  <h2>3. Types of Data in ML</h2>
-  <ul>
-    <li><b>Structured Data:</b> Tables (e.g., sales records, medical data).</li>
-    <li><b>Unstructured Data:</b> Images, text, audio, video.</li>
-    <li><b>Time-series Data:</b> Stock prices, patient glucose levels, weather predictions.</li>
-  </ul>
-
-  <h2>4. Practical Workflow of ML Project</h2>
+  <h2 id="workflow">7) End-to-End Workflow (Bird’s-eye)</h2>
   <ol>
-    <li>Define the problem (classification, regression, clustering).</li>
-    <li>Collect and clean data.</li>
-    <li>Split into training, validation, and test sets.</li>
-    <li>Choose an appropriate model (Linear, Tree-based, Neural Network, etc.).</li>
-    <li>Train the model (optimize parameters).</li>
-    <li>Evaluate using metrics (Accuracy, RMSE, F1-score, AUC).</li>
-    <li>Deploy and monitor performance.</li>
+    <li>Define objective & success metrics.</li>
+    <li>Acquire & audit data (schema, quality, bias).</li>
+    <li>Split → preprocess → feature engineer.</li>
+    <li>Train baseline → iterate with CV and tuning.</li>
+    <li>Evaluate → explain → stress test for robustness.</li>
+    <li>Deploy with monitoring (drift, performance, fairness).</li>
   </ol>
 
-  <h2>5. Applications of ML (Extended)</h2>
-
-  <div class="application">
-    <b>Healthcare:</b> Predict diabetes using patient lifestyle and lab test results.  
-    <i>Example:</i> Logistic Regression can predict the probability of diabetes based on features like BMI, blood sugar, and family history.
+  <h2 id="glossary">8) Terminology Glossary (Quick Reference)</h2>
+  <div class="grid cols-3">
+    <div class="card"><b>Confusion Matrix</b><br/><span class="tag">TP, FP, TN, FN</span></div>
+    <div class="card"><b>Precision</b> = TP/(TP+FP)</div>
+    <div class="card"><b>Recall (TPR)</b> = TP/(TP+FN)</div>
+    <div class="card"><b>Specificity (TNR)</b> = TN/(TN+FP)</div>
+    <div class="card"><b>F1</b> = 2·Prec·Rec/(Prec+Rec)</div>
+    <div class="card"><b>ROC-AUC / PR-AUC</b> – threshold-independent summaries</div>
+    <div class="card"><b>Calibration</b> – predicted probs ≈ empirical freq</div>
+    <div class="card"><b>RMSE/MAE/R²</b> – regression metrics</div>
+    <div class="card"><b>Class Imbalance</b> – skewed label frequencies</div>
+    <div class="card"><b>Sampling</b> – stratified, SMOTE, undersample</div>
+    <div class="card"><b>Feature Scaling</b> – standardize, min-max, robust</div>
+    <div class="card"><b>Pipelines</b> – chain transforms + model safely</div>
   </div>
 
   <div class="application">
-    <b>Finance:</b> Credit scoring and fraud detection.  
-    <i>Example:</i> SVMs can separate fraudulent vs. genuine transactions based on spending patterns.
+    <b>Mini Project Idea:</b> Build a baseline classifier for diabetes risk using demographic + lifestyle data. Start with logistic regression, log loss as objective, ROC-AUC as selection metric.
   </div>
-
-  <div class="application">
-    <b>Transportation:</b> Self-driving cars use ML for object recognition, lane detection, and decision-making.
-  </div>
-
-  <div class="application">
-    <b>Recommender Systems:</b> Collaborative filtering (e.g., Netflix, Amazon) suggests products or movies 
-    by learning from user-item interactions.
-  </div>
-
-  <h2>6. Hands-On Example (Python Pseudocode)</h2>
-  <pre><code>
-# Predicting house price with Linear Regression
-from sklearn.linear_model import LinearRegression
-
-X = [[650], [800], [1200], [1500]]  # house sizes
-y = [70000, 85000, 125000, 150000]  # prices
-
-model = LinearRegression()
-model.fit(X, y)
-
-print("Predicted price of 1000 sqft house:", model.predict([[1000]]))
-  </code></pre>
-
-  <h2>7. Key Takeaways</h2>
-  <ul>
-    <li>ML is data-driven, adaptive, and improves with more examples.</li>
-    <li>Math (algebra, probability, calculus, optimization) forms the backbone.</li>
-    <li>Applications range from healthcare to finance, marketing, and AI systems.</li>
-    <li>Real-world ML involves careful preprocessing, evaluation, and deployment.</li>
-  </ul>
-
 </body>
 </html>
