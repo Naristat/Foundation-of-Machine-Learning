@@ -1,7 +1,29 @@
+<!-- ========================= lecture_22.html ========================= -->
 <!DOCTYPE html>
 <html lang="en">
-  </div>
-        <nav class="nav">
+<head>
+  <meta charset="UTF-8" />
+  <title>Lecture 22 - Data Preparation & Feature Engineering</title>
+  <style>
+    :root{--bg:#f7fbff;--ink:#222;--brand:#003366;--accent:#0d6efd;--soft:#ffffff;--muted:#6c757d;--warn:#ff8800}
+    body{font-family:Arial,Helvetica,sans-serif;margin:24px 5vw;background:var(--bg);color:var(--ink);line-height:1.6}
+    .nav{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 24px}
+    .nav a{padding:8px 12px;border-radius:8px;background:#fff;border:1px solid #e5e7eb;text-decoration:none;color:#0d6efd}
+    .nav a[aria-current="page"]{background:#e7f1ff;border-color:#b6d4fe;color:#084298;font-weight:700}
+    h1,h2,h3{color:var(--brand)}
+    .card{background:#fff;border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 2px 8px rgba(0,0,0,.06);border-left:5px solid var(--accent)}
+    .grid{display:grid;gap:14px}
+    @media(min-width:900px){.grid.cols-2{grid-template-columns:1fr 1fr}.grid.cols-3{grid-template-columns:1fr 1fr 1fr}}
+    code{background:#eef2f7;border-radius:4px;padding:2px 6px}
+    table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden}
+    th,td{padding:10px;border-bottom:1px solid #e9ecef;text-align:left}
+    th{background:#f1f5f9}
+    .warn{border-left-color:var(--warn)}
+    .try{border-left-color:#20c997}
+  </style>
+</head>
+<body>
+ <nav class="nav">
                     <a href="https://surnamnarendra.github.io/Fundamentals-of-Machine-Learning/" aria-current="page">Home</a>
           <a href="lecture_17.html" aria-current="page">L21</a>
           <a href="lecture_18.html">L22</a>
@@ -14,111 +36,124 @@
           <a href="lecture_25.html" aria-current="page">L29</a>
           <a href="lecture_26.html">L30</a>
         </nav>
-      </div>
-<head>
-  <meta charset="UTF-8">
-  <title>Lecture 22: Supervised Learning Fundamentals</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      line-height: 1.6;
-    }
-    h1, h2, h3 {
-      color: #2c3e50;
-    }
-    .example {
-      background: #ecf0f1;
-      padding: 10px;
-      margin: 10px 0;
-      border-left: 4px solid #2980b9;
-    }
-    .application {
-      background: #f9f9f9;
-      padding: 10px;
-      margin: 10px 0;
-      border-left: 4px solid #27ae60;
-    }
-  </style>
-</head>
-<body>
-  <h1>Lecture 22: Supervised Learning Fundamentals</h1>
 
-  <h2>1. Introduction to Supervised Learning</h2>
+  <h1>Lecture 22: Data Preparation & Feature Engineering</h1>
   <p>
-    Supervised learning is one of the most widely used paradigms in machine learning. 
-    It involves training a model using labeled data, where the input variables (features) 
-    are mapped to output variables (labels). The goal is to learn a function 
-    <em>f(x) → y</em> that can make accurate predictions on new, unseen data.
+    High-quality data beats clever modeling. Today we systematize data cleaning, splitting, encoding, scaling,
+    handling imbalance/missingness, and building robust feature pipelines.
   </p>
 
-  <h3>Key Characteristics:</h3>
+  <h2>1) Data Quality Dimensions</h2>
+  <table>
+    <tr><th>Dimension</th><th>Questions</th><th>Remedies</th></tr>
+    <tr><td>Completeness</td><td>Missingness pattern MCAR/MAR/MNAR?</td><td>Impute (mean/median/mode), model-based, indicator flags</td></tr>
+    <tr><td>Consistency</td><td>Units, duplicated ids?</td><td>Standardize units, de-duplicate, canonicalize categories</td></tr>
+    <tr><td>Validity</td><td>Schema ranges respected?</td><td>Clamp, winsorize, domain rules</td></tr>
+    <tr><td>Timeliness</td><td>Stale or future values?</td><td>Cut by time, roll-forward features</td></tr>
+    <tr><td>Bias</td><td>Sampling/label bias?</td><td>Audit distributions, stratify, fairness metrics</td></tr>
+  </table>
+
+  <h2>2) Splits & Leakage (Patterns)</h2>
+  <div class="grid cols-2">
+    <div class="card">
+      <b>Random / Stratified Split</b> – IID data, keep label proportions.<br/>
+      <b>Group Split</b> – keep all samples of an entity together (patients/users).<br/>
+      <b>Time-based Split</b> – train on past, test on future.
+    </div>
+    <div class="card warn">
+      <b>Leakage Watchlist</b>
+      <ul>
+        <li>Fit scalers/encoders on full data → <i>don’t</i>.</li>
+        <li>Features computed using future info.</li>
+        <li>Duplicates of test rows in train.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>3) Encoding Categorical Variables</h2>
   <ul>
-    <li>Training data includes both input (X) and output (Y).</li>
-    <li>The algorithm learns a mapping function from X to Y.</li>
-    <li>Used for prediction and classification tasks.</li>
+    <li><b>One-hot</b> – safe, may increase dimensionality.</li>
+    <li><b>Ordinal</b> – for true order (small&lt;medium&lt;large).</li>
+    <li><b>Target / Mean Encoding</b> – powerful, but use CV to avoid leakage.</li>
+    <li><b>Hashing</b> – for high-cardinality features (stable width).</li>
   </ul>
 
-  <h2>2. Types of Supervised Learning</h2>
+  <h2>4) Scaling & Transformations</h2>
   <ul>
-    <li><b>Regression:</b> Predicting continuous values (e.g., house price, temperature).</li>
-    <li><b>Classification:</b> Predicting discrete categories (e.g., spam vs. not spam).</li>
+    <li><b>Standardize</b> (z-score) – good for linear/SVM/kNN.</li>
+    <li><b>Min–Max</b> – keep 0..1 range (NNs/interpretability).</li>
+    <li><b>Robust Scaler</b> – median/IQR for outliers.</li>
+    <li><b>Log / Box-Cox / Yeo-Johnson</b> – handle skew.</li>
   </ul>
 
-  <div class="example">
-    <h3>Example:</h3>
-    <p><b>Regression:</b> Predicting car price based on features like age, mileage, and brand.</p>
-    <p><b>Classification:</b> Classifying an email as spam or not spam based on keywords.</p>
+  <h2>5) Missing Values & Outliers</h2>
+  <div class="grid cols-2">
+    <div class="card">
+      <b>Imputation</b>
+      <ul>
+        <li>Simple: mean/median/mode + <code>is_missing</code> flag.</li>
+        <li>Model-based: kNN, iterative imputer.</li>
+        <li>Domain: carry-forward (time-series), clinical ranges.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <b>Outliers</b>
+      <ul>
+        <li>Detect: z-score, IQR, isolation forest.</li>
+        <li>Handle: cap/winsorize, transform, robust models.</li>
+      </ul>
+    </div>
   </div>
 
-  <h2>3. Steps in Supervised Learning</h2>
-  <ol>
-    <li>Collect and preprocess labeled data.</li>
-    <li>Split the dataset into training and testing sets.</li>
-    <li>Choose an appropriate algorithm (e.g., Linear Regression, Decision Tree).</li>
-    <li>Train the model on training data.</li>
-    <li>Validate using cross-validation or test data.</li>
-    <li>Deploy the model for predictions.</li>
-  </ol>
-
-  <h2>4. Common Algorithms</h2>
+  <h2>6) Class Imbalance</h2>
   <ul>
-    <li>Linear Regression</li>
-    <li>Logistic Regression</li>
-    <li>Decision Trees</li>
-    <li>Support Vector Machines (SVM)</li>
-    <li>k-Nearest Neighbors (k-NN)</li>
-    <li>Neural Networks</li>
+    <li><b>Resampling</b> – Random under/over, SMOTE/ADASYN.</li>
+    <li><b>Class weights</b> – cost-sensitive learning.</li>
+    <li><b>Metrics</b> – prefer ROC-AUC/PR-AUC, F1, recall at k.</li>
   </ul>
 
-  <h2>5. Challenges in Supervised Learning</h2>
-  <ul>
-    <li><b>Overfitting:</b> Model performs well on training data but poorly on unseen data.</li>
-    <li><b>Underfitting:</b> Model is too simple to capture data patterns.</li>
-    <li><b>Imbalanced Data:</b> One class dominates, leading to biased predictions.</li>
-    <li><b>Feature Selection:</b> Choosing the right features is critical.</li>
-  </ul>
+  <h2>7) Feature Engineering Patterns</h2>
+  <div class="grid cols-3">
+    <div class="card">
+      <b>Numeric</b>
+      <ul><li>Ratios, differences, interactions (x1·x2)</li><li>Rolling stats (mean/var) for sequences</li></ul>
+    </div>
+    <div class="card">
+      <b>Categorical</b>
+      <ul><li>Count/frequency encoding</li><li>Crossed features (city×device)</li></ul>
+    </div>
+    <div class="card">
+      <b>Datetime</b>
+      <ul><li>Hour/Day/Month, weekend/holiday</li><li>Cyclical sin/cos for hour-of-day</li></ul>
+    </div>
+    <div class="card">
+      <b>Text (NLP)</b>
+      <ul><li>Bag-of-Words, TF-IDF, n-grams</li><li>Embeddings (word/sentence) – use pre-trained</li></ul>
+    </div>
+    <div class="card">
+      <b>Images</b>
+      <ul><li>Resize/normalize</li><li>Augment: flip, crop, jitter</li></ul>
+    </div>
+    <div class="card">
+      <b>Time-series</b>
+      <ul><li>Lags, rolling window features</li><li>Seasonal indicators</li></ul>
+    </div>
+  </div>
 
-  <h2>6. Applications of Supervised Learning</h2>
-  <div class="application">
-    <p><b>Healthcare:</b> Predicting whether a tumor is malignant or benign.</p>
-  </div>
-  <div class="application">
-    <p><b>Finance:</b> Credit scoring and fraud detection.</p>
-  </div>
-  <div class="application">
-    <p><b>E-commerce:</b> Product recommendation systems.</p>
-  </div>
-  <div class="application">
-    <p><b>Self-driving Cars:</b> Object recognition (stop signs, pedestrians).</p>
+  <h2>8) Safe Pipelines</h2>
+  <div class="card">
+    <b>Principle:</b> Put <i>all preprocessing inside a pipeline</i> so that fitting uses <i>train-only</i> statistics and transforms are applied identically to validation/test.
+    <pre><code># Pseudocode (sklearn-style)
+Pipeline([
+  ("impute", SimpleImputer(strategy="median")),
+  ("encode", OneHotEncoder(handle_unknown="ignore")),
+  ("scale", StandardScaler(with_mean=False)),
+  ("model", LogisticRegression(class_weight="balanced"))
+])</code></pre>
   </div>
 
-  <h2>7. Summary</h2>
-  <p>
-    Supervised learning is the backbone of machine learning applications today. 
-    By learning from labeled examples, it provides powerful predictive capabilities 
-    in areas such as healthcare, finance, marketing, and autonomous systems.
-  </p>
-
+  <div class="card try">
+    <b>Try This:</b> Build two versions of your dataset: (A) raw; (B) with engineered features (ratios, lags, TF-IDF). Compare ROC-AUC via 5-fold CV. Report which features moved the needle most.
+  </div>
 </body>
 </html>
