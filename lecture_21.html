@@ -1,7 +1,30 @@
+<!-- ========================= lecture_26.html ========================= -->
 <!DOCTYPE html>
 <html lang="en">
-  </div>
-        <nav class="nav">
+<head>
+  <meta charset="UTF-8" />
+  <title>Lecture 25 - Linear Regression</title>
+  <style>
+    :root{--bg:#f8f9fa;--ink:#222;--brand:#002855;--accent:#0d6efd;--soft:#ffffff;--muted:#6c757d;--warn:#ff8800;--try:#20c997}
+    body{font-family:Arial,Helvetica,sans-serif;margin:24px 5vw;background:var(--bg);color:var(--ink);line-height:1.6}
+    .nav{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 24px}
+    .nav a{padding:8px 12px;border-radius:8px;background:#fff;border:1px solid #e5e7eb;text-decoration:none;color:#0d6efd}
+    .nav a[aria-current="page"]{background:#e7f1ff;border-color:#b6d4fe;color:#084298;font-weight:700}
+    h1,h2,h3{color:var(--brand)}
+    .card{background:#fff;border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 2px 8px rgba(0,0,0,.06);border-left:5px solid var(--accent)}
+    .grid{display:grid;gap:14px}
+    @media(min-width:900px){.grid.cols-2{grid-template-columns:1fr 1fr}.grid.cols-3{grid-template-columns:1fr 1fr 1fr}}
+    code{background:#eef2f7;border-radius:4px;padding:2px 6px}
+    table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden}
+    th,td{padding:10px;border-bottom:1px solid #e9ecef;text-align:left}
+    th{background:#f1f5f9}
+    .warn{border-left-color:var(--warn)}
+    .try{border-left-color:var(--try)}
+    .math{font-family:"Times New Roman",serif;background:#f8f9fc;padding:6px 10px;border-radius:6px;display:inline-block}
+  </style>
+</head>
+<body>
+   <nav class="nav">
                     <a href="https://surnamnarendra.github.io/Fundamentals-of-Machine-Learning/" aria-current="page">Home</a>
           <a href="lecture_17.html" aria-current="page">L21</a>
           <a href="lecture_18.html">L22</a>
@@ -14,337 +37,159 @@
           <a href="lecture_25.html" aria-current="page">L29</a>
           <a href="lecture_26.html">L30</a>
         </nav>
-      </div>
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Lecture 25 — Instance-Based & Similarity Learning</title>
-  <style>
-    :root{
-      --bg:#fbfdff; --card:#ffffff; --muted:#6b7280; --accent:#2563eb; --accent-2:#059669;
-      --title:#0b2447;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-      background: linear-gradient(180deg,#f7fbff 0%, #ffffff 100%); color:#0f172a;
-    }
-    .wrap{max-width:1100px;margin:28px auto;padding:20px;}
-    header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;}
-    header h1{margin:0;font-size:1.4rem;color:var(--title)}
-    nav a{color:var(--accent);text-decoration:none;margin-left:12px;font-size:0.95rem}
-    main{display:grid;grid-template-columns:1fr 360px;gap:20px}
-    @media (max-width:980px){ main{grid-template-columns:1fr} .aside{order:2} }
-    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 20px rgba(15,23,42,0.06);border:1px solid rgba(15,23,42,0.04)}
-    h2{margin:0 0 10px 0;color:var(--accent)}
-    p{color:#374151;margin:0 0 10px 0}
-    ul{margin:8px 0 14px 20px;color:#374151}
-    .models{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
-    @media(max-width:760px){ .models{grid-template-columns:1fr} }
-    .model{padding:12px;border-radius:8px;border:1px solid rgba(9,30,66,0.04);background:#fff}
-    pre{background:#0b1220;color:#e6eefc;padding:12px;border-radius:8px;overflow:auto;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;font-size:0.87rem}
-    .example{border-left:4px solid var(--accent);padding:12px;background:linear-gradient(90deg,#f8fbff,#ffffff);border-radius:8px;margin:12px 0}
-    label{display:block;margin:10px 0 6px;font-weight:600;color:#0f172a;font-size:0.92rem}
-    input[type="number"], select, input[type="text"]{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(15,23,42,0.08);font-size:0.95rem}
-    .btn{display:inline-block;padding:10px 14px;border-radius:8px;border:0;background:var(--accent);color:white;font-weight:600;cursor:pointer;margin-top:10px}
-    .btn.secondary{background:var(--accent-2);margin-left:8px}
-    .muted{color:var(--muted);font-size:0.92rem}
-    .result{margin-top:12px;padding:12px;border-radius:8px;background:#0f172a;color:#fff}
-    table{width:100%;border-collapse:collapse;margin-top:8px}
-    th,td{padding:6px;border-bottom:1px solid #eef2f7;text-align:left;font-size:0.95rem}
-    .small{font-size:0.9rem;color:var(--muted)}
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <header>
-      <div>
-        <h1>Lecture 25 — Instance-Based & Similarity Learning</h1>
-        <div class="small muted">k-NN, distance metrics, indexing, approximate neighbors, metric learning — with interactive demo</div>
-      </div>
-      <nav>
-        <a href="#what">What</a>
-        <a href="#models">Methods</a>
-        <a href="#demo">Calculator</a>
-      </nav>
-    </header>
 
-    <main>
-      <!-- Main content -->
-      <section class="card">
-        <h2 id="what">1. What is Instance-Based Learning?</h2>
-        <p>
-          Instance-based learning (also called lazy learning) stores training examples and makes predictions
-          by comparing a query to stored instances at prediction time instead of learning a global parametric model.
-        </p>
-        <div class="example">
-          <strong>Intuition:</strong> "Find similar past examples and use their labels."  
-          For classification: majority vote among nearest neighbors. For regression: average or weighted average of neighbors' target values.
-        </div>
+  <h1>Lecture 25: Linear Regression</h1>
+  <p>
+    Linear Regression is one of the most fundamental and widely used algorithms in machine learning and statistics.
+    It models the relationship between a dependent variable (target) and one or more independent variables (features)
+    by fitting a straight line (or hyperplane) through the data.
+  </p>
 
-        <h2 id="models">2. Six Key Methods / Ideas</h2>
-        <div class="models">
-          <div class="model">
-            <h4>1) k-Nearest Neighbors (k-NN)</h4>
-            <p>Basic method: find k nearest training points by a distance metric and predict by majority (classification) or average (regression).</p>
-            <p class="small"><strong>Use when:</strong> small-to-medium datasets, easy baseline, non-linear decision boundaries.</p>
-          </div>
-
-          <div class="model">
-            <h4>2) Weighted k-NN</h4>
-            <p>Neighbors contribute with weights (commonly inverse distance). Close neighbors influence prediction more — reduces sensitivity to noisy far neighbors.</p>
-          </div>
-
-          <div class="model">
-            <h4>3) Radius Neighbors</h4>
-            <p>Use all neighbors within a fixed radius r. Useful when density varies — adaptively uses more neighbors in dense regions.</p>
-          </div>
-
-          <div class="model">
-            <h4>4) Spatial Indexing: KD-Tree / Ball-Tree</h4>
-            <p>Efficient structures for nearest neighbor search in low-to-moderate dimensions (KD-Tree) or higher dimensions (Ball-Tree).</p>
-          </div>
-
-          <div class="model">
-            <h4>5) Approximate Nearest Neighbors / LSH</h4>
-            <p>Locality Sensitive Hashing and other approximate methods speed up search at the cost of occasional inexact neighbors — crucial at web scale.</p>
-          </div>
-
-          <div class="model">
-            <h4>6) Metric Learning & Embeddings (Siamese Nets)</h4>
-            <p>Learn a distance function (or embedding) so that similar items are close and dissimilar items are far. Widely used for face verification, retrieval.</p>
-          </div>
-        </div>
-
-        <h2 id="metrics">3. Distance Metrics & When to Use</h2>
-        <ul>
-          <li><strong>Euclidean (L2)</strong>: geometric distance; sensitive to scale — standardize features first.</li>
-          <li><strong>Manhattan (L1)</strong>: sum absolute differences; robust to outliers in some cases.</li>
-          <li><strong>Cosine similarity</strong>: angle between vectors; good for text (TF-IDF) and high-dimensional sparse data.</li>
-          <li><strong>Mahalanobis</strong>: accounts for feature covariance — used when features are correlated.</li>
-        </ul>
-
-        <h2 id="example">4. Practical Examples</h2>
-        <ul>
-          <li><strong>Recommendation (item similarity):</strong> find users/items with similar profiles.</li>
-          <li><strong>Anomaly detection:</strong> points far from nearest neighbors flagged as outliers.</li>
-          <li><strong>Image retrieval:</strong> search for images with similar embeddings (Siamese networks).</li>
-          <li><strong>Healthcare:</strong> predict patient outcome by looking at similar patient histories.</li>
-        </ul>
-
-        <h2 id="notes">5. Tips & Pitfalls</h2>
-        <ul>
-          <li>Scale/standardize features — distances are scale-dependent.</li>
-          <li>Curse of dimensionality: distances become less meaningful in very high dimensions — reduce dimensionality or use learned embeddings.</li>
-          <li>Imbalanced classes: use weighted voting, or adjust class priors.</li>
-          <li>Use approximate methods or indexing for large datasets to keep queries fast.</li>
-        </ul>
-
-        <h2 id="code">6. Short Python sketch (scikit-learn)</h2>
-        <pre><code>from sklearn.neighbors import KNeighborsClassifier
-knn = KNeighborsClassifier(n_neighbors=5, weights='distance', metric='euclidean')
-knn.fit(X_train, y_train)
-pred = knn.predict(X_test)
-        </code></pre>
-
-        <p class="small">Next: interactive demo below — try k, switch metrics, add points and see predictions change.</p>
-      </section>
-
-      <!-- Aside with interactive demo -->
-      <aside class="card aside">
-        <h2 class="muted">Interactive K-NN Demo</h2>
-        <p class="small">This small tool stores a toy 2D dataset (points with labels). You can add points, choose k and metric, and predict a new point.</p>
-
-        <label for="metric">Distance metric</label>
-        <select id="metric">
-          <option value="euclidean">Euclidean (L2)</option>
-          <option value="manhattan">Manhattan (L1)</option>
-          <option value="cosine">Cosine (similarity)</option>
-        </select>
-
-        <label for="k">k (number of neighbors)</label>
-        <input id="k" type="number" min="1" value="3">
-
-        <label for="weighting">Weighting</label>
-        <select id="weighting">
-          <option value="uniform">Uniform vote</option>
-          <option value="distance">Inverse distance weighting</option>
-        </select>
-
-        <hr>
-
-        <h3 class="small">Dataset (toy)</h3>
-        <table id="pointsTable" aria-live="polite">
-          <thead><tr><th>x</th><th>y</th><th>label</th></tr></thead>
-          <tbody></tbody>
-        </table>
-
-        <label for="nx">New point X</label>
-        <input id="nx" type="number" placeholder="e.g., 4.2">
-
-        <label for="ny">New point Y</label>
-        <input id="ny" type="number" placeholder="e.g., 3.1">
-
-        <label for="nlabel">Label (for adding)</label>
-        <input id="nlabel" type="text" placeholder="e.g., A or B">
-
-        <button class="btn" onclick="addPoint()">Add point to dataset</button>
-        <button class="btn secondary" onclick="predictPoint()">Predict label for new point</button>
-        <button class="btn" onclick="resetData()">Reset dataset</button>
-
-        <div id="demoResult" class="result" style="display:none"></div>
-        <div class="small" style="margin-top:10px">Tip: Add/rescore points and try different metrics or k.</div>
-      </aside>
-    </main>
-
-    <footer style="margin-top:18px" class="card">
-      <h3 style="margin:0 0 8px 0">Further study</h3>
-      <ul>
-        <li>Explore KD-Tree and Ball-Tree implementations for faster neighbor search.</li>
-        <li>Study Locality Sensitive Hashing (LSH) for approximate nearest neighbors.</li>
-        <li>Learn metric learning (contrastive loss, triplet loss) to build better embeddings.</li>
-      </ul>
-      <div class="small muted" style="margin-top:8px">Lecture sequence: 17 Intro → 18 Supervised → 19 Regression → 20 Trees → 21 (this) → 22 Feature Reduction → ...</div>
-    </footer>
+  <h2>1) Mathematical Foundation</h2>
+  <div class="card">
+    <p class="math">y = w<sub>0</sub> + w<sub>1</sub>x<sub>1</sub> + w<sub>2</sub>x<sub>2</sub> + ... + w<sub>n</sub>x<sub>n</sub> + ε</p>
+    <ul>
+      <li><b>y</b>: Dependent variable (target)</li>
+      <li><b>x<sub>i</sub></b>: Independent variables (features)</li>
+      <li><b>w<sub>i</sub></b>: Coefficients (weights) learned by the model</li>
+      <li><b>w<sub>0</sub></b>: Intercept term</li>
+      <li><b>ε</b>: Error term (residuals)</li>
+    </ul>
+    <p>The goal is to estimate coefficients <b>w</b> that minimize the squared error:</p>
+    <p class="math">J(w) = \(\frac{1}{m}\) ∑ (y<sub>i</sub> - ŷ<sub>i</sub>)²</p>
   </div>
 
-  <script>
-    // Demo dataset (2D toy points)
-    let data = [
-      {x:1, y:1, label:'A'},
-      {x:1.2, y:0.8, label:'A'},
-      {x:2, y:1.6, label:'A'},
-      {x:4, y:4, label:'B'},
-      {x:4.2, y:3.5, label:'B'},
-      {x:3.6, y:4.1, label:'B'},
-    ];
+  <h2>2) Assumptions of Linear Regression</h2>
+  <table>
+    <tr><th>Assumption</th><th>Description</th></tr>
+    <tr><td>Linearity</td><td>Relationship between predictors and target is linear.</td></tr>
+    <tr><td>Independence</td><td>Observations are independent of each other.</td></tr>
+    <tr><td>Homoscedasticity</td><td>Constant variance of errors across values of predictors.</td></tr>
+    <tr><td>No multicollinearity</td><td>Predictors should not be highly correlated with each other.</td></tr>
+    <tr><td>Normality of errors</td><td>Residuals are normally distributed.</td></tr>
+  </table>
 
-    // utility distance functions
-    function euclidean(a,b){
-      return Math.hypot(a.x - b.x, a.y - b.y);
-    }
-    function manhattan(a,b){
-      return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
-    }
-    function cosineDist(a,b){
-      // cosine similarity -> convert to distance = 1 - cos
-      const dot = a.x*b.x + a.y*b.y;
-      const magA = Math.hypot(a.x, a.y);
-      const magB = Math.hypot(b.x, b.y);
-      if(magA===0 || magB===0) return 1; // max distance
-      const cos = dot / (magA*magB);
-      return 1 - cos;
-    }
+  <h2>3) Graphical Representation</h2>
+  <div class="grid cols-2">
+    <div class="card">
+      <b>Simple Linear Regression</b>
+      <p>A straight line fitted to data points in 2D (X vs Y).</p>
+      <img src="https://upload.wikimedia.org/wikipedia/commons/3/3a/Linear_regression.svg" width="100%" alt="Simple Linear Regression Graph"/>
+    </div>
+    <div class="card">
+      <b>Multiple Linear Regression</b>
+      <p>A hyperplane fitted in higher dimensions.</p>
+      <img src="https://upload.wikimedia.org/wikipedia/commons/3/3d/Multiple_regression_plane.png" width="100%" alt="Multiple Regression Graph"/>
+    </div>
+  </div>
 
-    function renderTable(){
-      const tbody = document.querySelector('#pointsTable tbody');
-      tbody.innerHTML = '';
-      data.forEach(pt=>{
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${pt.x}</td><td>${pt.y}</td><td>${pt.label}</td>`;
-        tbody.appendChild(tr);
-      });
-    }
+  <h2>4) Applications</h2>
+  <ul>
+    <li><b>Economics:</b> Predicting sales, revenue, or demand based on multiple factors.</li>
+    <li><b>Healthcare:</b> Predicting patient health indicators (e.g., blood pressure, BMI).</li>
+    <li><b>Business:</b> Forecasting costs, marketing effectiveness, or pricing models.</li>
+    <li><b>Science:</b> Modeling relationships between physical variables.</li>
+  </ul>
 
-    function addPoint(){
-      const nx = parseFloat(document.getElementById('nx').value);
-      const ny = parseFloat(document.getElementById('ny').value);
-      const nlabel = document.getElementById('nlabel').value.trim();
-      if(isNaN(nx) || isNaN(ny) || nlabel===''){
-        alert('Enter numeric X, Y and a label to add a point.');
-        return;
-      }
-      data.push({x:nx, y:ny, label:nlabel});
-      renderTable();
-      document.getElementById('nx').value = '';
-      document.getElementById('ny').value = '';
-      document.getElementById('nlabel').value = '';
-      hideResult();
-    }
+  <h2>5) Hands-on Example 1: Diabetes Classification (Binary → Logistic Extension)</h2>
+  <div class="card try">
+    <p>Although diabetes prediction is a classification problem, linear regression can be used first as a baseline model by predicting continuous probabilities (then thresholded).</p>
+    <pre><code>from sklearn.datasets import load_diabetes
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
 
-    function resetData(){
-      data = [
-        {x:1, y:1, label:'A'},
-        {x:1.2, y:0.8, label:'A'},
-        {x:2, y:1.6, label:'A'},
-        {x:4, y:4, label:'B'},
-        {x:4.2, y:3.5, label:'B'},
-        {x:3.6, y:4.1, label:'B'},
-      ];
-      renderTable();
-      hideResult();
-    }
+X, y = load_diabetes(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    function getDistance(a,b, metric){
-      if(metric==='euclidean') return euclidean(a,b);
-      if(metric==='manhattan') return manhattan(a,b);
-      if(metric==='cosine') return cosineDist(a,b);
-      return euclidean(a,b);
-    }
+model = LinearRegression()
+model.fit(X_train, y_train)
 
-    function predictPoint(){
-      const nx = parseFloat(document.getElementById('nx').value);
-      const ny = parseFloat(document.getElementById('ny').value);
-      const metric = document.getElementById('metric').value;
-      const k = Math.max(1, Math.floor(Number(document.getElementById('k').value) || 3));
-      const weighting = document.getElementById('weighting').value;
+preds = model.predict(X_test)
+print("MSE:", mean_squared_error(y_test, preds))</code></pre>
+    <ul>
+      <li>Use diabetes dataset (continuous outcome, disease progression).</li>
+      <li>Train/test split, evaluate with <b>MSE</b> and <b>R² score</b>.</li>
+      <li>Next step → upgrade to Logistic Regression for classification (Lecture 27).</li>
+    </ul>
+  </div>
 
-      if(isNaN(nx) || isNaN(ny)){
-        alert('Enter numeric X and Y for prediction (use "New point" fields).');
-        return;
-      }
-      const q = {x:nx, y:ny};
+  <h2>6) Hands-on Example 2: Sales Forecasting (Continuous Target)</h2>
+  <div class="card try">
+    <p>We predict <b>monthly sales</b> using advertising spend on TV, radio, and newspaper.</p>
+    <pre><code>import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
 
-      // compute distances
-      const neighbors = data.map(pt => {
-        return {pt, dist: getDistance(q, pt, metric)};
-      }).sort((a,b)=>a.dist - b.dist);
+# Example Sales Data
+sales = pd.DataFrame({
+    "TV":[230.1,44.5,17.2,151.5,180.8],
+    "Radio":[37.8,39.3,45.9,41.3,10.8],
+    "Newspaper":[69.2,45.1,69.3,58.5,58.4],
+    "Sales":[22.1,10.4,9.3,18.5,12.9]
+})
 
-      // take k nearest (or fewer if dataset smaller)
-      const kNeighbors = neighbors.slice(0, Math.min(k, neighbors.length));
+X = sales[["TV","Radio","Newspaper"]]
+y = sales["Sales"]
 
-      // voting
-      const votes = {};
-      kNeighbors.forEach(n => {
-        const lbl = n.pt.label;
-        let w = 1;
-        if(weighting === 'distance'){
-          // inverse distance weighting; handle zero distance
-          w = (n.dist === 0) ? 1e6 : 1 / n.dist;
-        }
-        votes[lbl] = (votes[lbl] || 0) + w;
-      });
+X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=42)
+model = LinearRegression()
+model.fit(X_train,y_train)
 
-      // determine winner
-      let winner = null; let best = -Infinity;
-      Object.keys(votes).forEach(lbl=>{
-        if(votes[lbl] > best){ best = votes[lbl]; winner = lbl; }
-      });
+preds = model.predict(X_test)
+print("R² Score:", r2_score(y_test,preds))</code></pre>
+    <p>
+      By interpreting coefficients, we can see which medium (TV, Radio, Newspaper) contributes most to sales.
+    </p>
+  </div>
 
-      // prepare explanation
-      const explain = kNeighbors.map((n, i) => {
-        return `${i+1}. (${n.pt.x}, ${n.pt.y}) label=${n.pt.label} — dist=${n.dist.toFixed(3)}`;
-      }).join('<br>');
+  <h2>7) Regularization (Ridge, Lasso, ElasticNet)</h2>
+  <div class="grid cols-3">
+    <div class="card">
+      <b>Ridge</b>
+      <p>Penalizes large coefficients using L2 norm.</p>
+      <p class="math">J = RSS + λ ∑ w²</p>
+    </div>
+    <div class="card">
+      <b>Lasso</b>
+      <p>Penalizes absolute values of coefficients (L1 norm) → feature selection.</p>
+      <p class="math">J = RSS + λ ∑ |w|</p>
+    </div>
+    <div class="card">
+      <b>ElasticNet</b>
+      <p>Combination of Ridge + Lasso.</p>
+      <p class="math">J = RSS + λ<sub>1</sub>∑ w² + λ<sub>2</sub>∑ |w|</p>
+    </div>
+  </div>
 
-      const resultBox = document.getElementById('demoResult');
-      resultBox.style.display = 'block';
-      resultBox.innerHTML = `<strong>Predicted label:</strong> ${winner} <br><strong>Votes:</strong> ${JSON.stringify(votes)} <br><div style="margin-top:8px"><strong>Neighbors:</strong><br>${explain}</div>`;
-    }
+  <h2>8) Practical Playbook</h2>
+  <div class="card">
+    <ul>
+      <li>Check assumptions with residual plots.</li>
+      <li>Scale features when using regularization.</li>
+      <li>Use cross-validation to avoid overfitting.</li>
+      <li>Interpret coefficients carefully (units matter).</li>
+    </ul>
+    <pre><code># Pipeline with scaling + regularization
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import Ridge
 
-    function hideResult(){
-      document.getElementById('demoResult').style.display = 'none';
-    }
+pipe = Pipeline([
+    ("scale", StandardScaler()),
+    ("ridge", Ridge(alpha=1.0))
+])
+pipe.fit(X_train, y_train)</code></pre>
+  </div>
 
-    // initial render
-    renderTable();
-    hideResult();
-
-    // keyboard UX: Enter triggers predict
-    ['nx','ny'].forEach(id=>{
-      document.getElementById(id).addEventListener('keydown', function(e){
-        if(e.key === 'Enter') predictPoint();
-      });
-    });
-  </script>
+  <div class="card try">
+    <b>Try This:</b> 
+    <ul>
+      <li>Fit Linear, Ridge, and Lasso models on the <b>sales dataset</b>.</li>
+      <li>Compare R² and MSE values.</li>
+      <li>Check which features drop out when using Lasso.</li>
+    </ul>
+  </div>
 </body>
 </html>
