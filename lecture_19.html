@@ -1,7 +1,26 @@
+<!-- ========================= lecture_23.html ========================= -->
 <!DOCTYPE html>
 <html lang="en">
-  </div>
-        <nav class="nav">
+<head>
+  <meta charset="UTF-8" />
+  <title>Lecture 23 - Supervised Learning Algorithms</title>
+  <style>
+    :root{--bg:#fafafa;--ink:#222;--brand:#004488;--accent:#0aa2ff;--soft:#ffffff}
+    body{font-family:Arial,Helvetica,sans-serif;margin:24px 5vw;background:var(--bg);color:var(--ink);line-height:1.6}
+    .nav{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 24px}
+    .nav a{padding:8px 12px;border-radius:8px;background:#fff;border:1px solid #e5e7eb;text-decoration:none;color:#0d6efd}
+    .nav a[aria-current="page"]{background:#e7f1ff;border-color:#b6d4fe;color:#084298;font-weight:700}
+    h1,h2,h3{color:var(--brand)}
+    .card{background:#fff;border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 2px 8px rgba(0,0,0,.06);border-left:5px solid var(--accent)}
+    .grid{display:grid;gap:14px}
+    @media(min-width:1000px){.grid.cols-2{grid-template-columns:1fr 1fr}.grid.cols-3{grid-template-columns:1fr 1fr 1fr}}
+    code{background:#eef2f7;border-radius:4px;padding:2px 6px}
+    .pro{color:#198754}.con{color:#dc3545}
+    ul.tight>li{margin:4px 0}
+  </style>
+</head>
+<body>
+  <nav class="nav">
                     <a href="https://surnamnarendra.github.io/Fundamentals-of-Machine-Learning/" aria-current="page">Home</a>
           <a href="lecture_17.html" aria-current="page">L21</a>
           <a href="lecture_18.html">L22</a>
@@ -14,192 +33,211 @@
           <a href="lecture_25.html" aria-current="page">L29</a>
           <a href="lecture_26.html">L30</a>
         </nav>
-      </div>
-<head>
-  <meta charset="UTF-8">
-  <title>Lecture 23 - Linear Regression & Variants</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    h1 { color: #2c3e50; }
-    h2 { color: #16a085; }
-    .example { background: #ecf0f1; padding: 10px; margin: 10px 0; border-left: 5px solid #16a085; }
-    .calculator { background: #f9f9f9; padding: 15px; border: 1px solid #ccc; margin-top: 20px; }
-    input { margin: 5px; padding: 5px; }
-  </style>
-</head>
-<body>
-  <h1>Lecture 23: Linear Regression & Variants</h1>
-  <p>This lecture covers regression techniques used in supervised learning.</p>
 
-  <h2>Models Covered</h2>
-  <ol>
-    <li>Simple Linear Regression</li>
-    <li>Multiple Linear Regression</li>
-    <li>Polynomial Regression</li>
-    <li>Ridge Regression</li>
-    <li>Lasso Regression</li>
-    <li>Elastic Net Regression</li>
-  </ol>
+  <h1>Lecture 23: Supervised Learning Algorithms (Classic & Strong Baselines)</h1>
 
-  <h2>Example</h2>
-  <div class="example">
-    <p><b>Real-Life Example:</b> Predicting house prices using size, location, and number of rooms.</p>
+  <h2>1) Linear & Logistic Regression</h2>
+  <div class="grid cols-2">
+    <div class="card">
+      <b>Linear Regression</b>
+      <ul class="tight">
+        <li>Model: <code>y = w·x + b</code></li>
+        <li>Loss: MSE; regularize with Ridge/Lasso/ElasticNet</li>
+        <li>Assumes linearity; check residual plots</li>
+      </ul>
+    </div>
+    <div class="card">
+      <b>Logistic Regression</b>
+      <ul class="tight">
+        <li>Sigmoid maps to probability</li>
+        <li>Loss: log loss; supports class weights</li>
+        <li>Great baseline for classification</li>
+      </ul>
+    </div>
   </div>
 
-  <h2>Interactive Calculator</h2>
-  <div class="calculator">
-    <p>Predict House Price (Simple Linear Regression)</p>
-    <label>Size (sq ft): <input type="number" id="size"></label><br>
-    <label>Price per sq ft: <input type="number" id="rate"></label><br>
-    <button onclick="predict()">Predict</button>
-    <p id="output"></p>
+  <h2>2) k-Nearest Neighbors (kNN)</h2>
+  <div class="card">
+    <ul class="tight">
+      <li>Non-parametric; decision by neighbors (distance-weighted).</li>
+      <li><span class="pro">Pros:</span> simple, strong on local structure.</li>
+      <li><span class="con">Cons:</span> slow at prediction; needs scaling; curse of dimensionality.</li>
+    </ul>
   </div>
 
-  <script>
-    function predict() {
-      let size = document.getElementById("size").value;
-      let rate = document.getElementById("rate").value;
-      if(size && rate) {
-        let price = size * rate;
-        document.getElementById("output").innerText = "Predicted Price: $" + price.toLocaleString();
-      } else {
-        document.getElementById("output").innerText = "Please enter all values.";
-      }
-    }
-  </script>
+  <h2>3) Naïve Bayes</h2>
+  <div class="card">
+    <ul class="tight">
+      <li>Assumes conditional independence of features given class.</li>
+      <li>Variants: Gaussian, Multinomial, Bernoulli.</li>
+      <li>Excellent for text (Multinomial + TF-IDF).</li>
+    </ul>
+  </div>
+
+  <h2>4) Decision Trees & Ensembles</h2>
+  <div class="grid cols-3">
+    <div class="card">
+      <b>Decision Trees</b>
+      <ul class="tight"><li>Splits by impurity (Gini/Entropy/MSE).</li><li>Interpretable but can overfit; control depth.</li></ul>
+    </div>
+    <div class="card">
+      <b>Random Forests</b>
+      <ul class="tight"><li>Bagging of trees → lower variance.</li><li>Robust, handles mixed features.</li></ul>
+    </div>
+    <div class="card">
+      <b>Gradient Boosting (XGB/LightGBM/GBM)</b>
+      <ul class="tight"><li>Trees added sequentially to fix errors.</li><li>Often state-of-the-art on tabular data.</li></ul>
+    </div>
+  </div>
+
+  <h2>5) Support Vector Machines (SVM)</h2>
+  <div class="card">
+    <ul class="tight">
+      <li>Maximize margin; kernels map to higher dimensions.</li>
+      <li>Good for medium-sized, high-dimensional problems.</li>
+      <li>Scale features; tune <code>C</code> and kernel params.</li>
+    </ul>
+  </div>
+
+  <h2>6) Practical Baseline Recipe</h2>
+  <div class="card">
+    <pre><code># Classification baseline (pseudocode)
+Pipeline([
+  ("pre", ColumnTransformer([
+       ("num", StandardScaler(), num_cols),
+       ("cat", OneHotEncoder(handle_unknown="ignore"), cat_cols)
+  ])),
+  ("clf", LogisticRegression(max_iter=200, class_weight="balanced"))
+])</code></pre>
+    <ul>
+      <li>Report: accuracy, F1, ROC-AUC, PR-AUC, confusion matrix.</li>
+      <li>Calibrate probabilities if needed (Platt/Isotonic).</li>
+    </ul>
+  </div>
+
+  <h2>7) When to Use What?</h2>
+  <ul>
+    <li><b>Few features + linear trend</b>: Linear/Logistic (with reg.).</li>
+    <li><b>Mixed datatypes/tabular</b>: Trees/RandomForest/Gradient Boosting.</li>
+    <li><b>Text</b>: Naïve Bayes or Linear SVM with TF-IDF.</li>
+    <li><b>Small dataset, complex boundary</b>: SVM (RBF).</li>
+  </ul>
+
+  <div class="card">
+    <b>Hands-on Challenge:</b> Train LR, RF, and GBM on the same dataset with a single pipeline.
+    Use 5-fold CV; compare PR-AUC for the positive class; plot calibration curves and discuss trade-offs.
+  </div>
 </body>
 </html>
+
+
+<!-- ========================= lecture_24.html ========================= -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Lecture 23 - Linear Regression & Extensions</title>
+  <meta charset="UTF-8" />
+  <title>Lecture 24 - Unsupervised Learning & Representation</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 30px;
-      background: #f9fafc;
-      color: #333;
-      line-height: 1.6;
-    }
-    h1, h2 {
-      color: #2c3e50;
-    }
-    .example {
-      background: #eef7ff;
-      border-left: 6px solid #3498db;
-      padding: 10px;
-      margin: 15px 0;
-    }
-    .model {
-      background: #fdfdfd;
-      border: 1px solid #ccc;
-      padding: 10px;
-      margin: 12px 0;
-      border-radius: 8px;
-    }
-    .calculator {
-      margin-top: 20px;
-      padding: 15px;
-      border: 2px solid #27ae60;
-      background: #eafaf1;
-      border-radius: 10px;
-    }
-    input, button {
-      padding: 6px;
-      margin: 4px;
-    }
+    :root{--bg:#fffef8;--ink:#222;--brand:#7a3e00;--accent:#ff7a00;--soft:#ffffff}
+    body{font-family:Arial,Helvetica,sans-serif;margin:24px 5vw;background:var(--bg);color:var(--ink);line-height:1.6}
+    .nav{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 24px}
+    .nav a{padding:8px 12px;border-radius:8px;background:#fff;border:1px solid #e5e7eb;text-decoration:none;color:#0d6efd}
+    .nav a[aria-current="page"]{background:#fff4e6;border-color:#ffd8b5;color:#7a3e00;font-weight:700}
+    h1,h2,h3{color:var(--brand)}
+    .card{background:#fff;border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 2px 8px rgba(0,0,0,.06);border-left:5px solid var(--accent)}
+    .grid{display:grid;gap:14px}
+    @media(min-width:1000px){.grid.cols-2{grid-template-columns:1fr 1fr}.grid.cols-3{grid-template-columns:1fr 1fr 1fr}}
+    code{background:#eef2f7;border-radius:4px;padding:2px 6px}
+    ul.tight>li{margin:4px 0}
   </style>
 </head>
 <body>
-  <h1>Lecture 19: Linear Regression & Extensions</h1>
 
-  <h2>1. Introduction</h2>
-  <p>
-    Linear regression is one of the most fundamental supervised learning algorithms.
-    It models the relationship between a dependent variable <b>Y</b> and one or more independent variables <b>X</b>.
-    The basic form is:
-  </p>
-  <p style="text-align:center; font-size:18px;"><b>Y = β<sub>0</sub> + β<sub>1</sub>X + ε</b></p>
-  <p>
-    where β<sub>0</sub> is the intercept, β<sub>1</sub> is the slope, and ε is the error term.
-  </p>
 
-  <div class="example">
-    <b>Example:</b> Predicting a student’s exam score (Y) based on study hours (X).
-    If slope β<sub>1</sub>=5, then each extra hour of study increases the score by 5 points.
+  <h1>Lecture 24: Unsupervised Learning & Representation</h1>
+
+  <h2>1) Clustering</h2>
+  <div class="grid cols-3">
+    <div class="card">
+      <b>k-Means</b>
+      <ul class="tight"><li>Minimize within-cluster variance.</li><li>Needs k; spherical clusters.</li></ul>
+    </div>
+    <div class="card">
+      <b>Hierarchical</b>
+      <ul class="tight"><li>Agglomerative (linkage: single/complete/average/ward).</li><li>Dendrogram to pick clusters.</li></ul>
+    </div>
+    <div class="card">
+      <b>DBSCAN / HDBSCAN</b>
+      <ul class="tight"><li>Density-based; finds arbitrary shapes.</li><li>Detects noise; no need for k.</li></ul>
+    </div>
   </div>
 
-  <h2>2. Six Models & Variations</h2>
-
-  <div class="model">
-    <h3>Model 1: Simple Linear Regression</h3>
-    <p>One independent variable (X). Example: Predicting house price from area (sq. ft).</p>
+  <h2>2) Mixture Models & Soft Clustering</h2>
+  <div class="card">
+    <b>Gaussian Mixture Models (GMM)</b> assume data from a mixture of Gaussians; EM algorithm learns means/covariances; gives soft cluster probabilities.
   </div>
 
-  <div class="model">
-    <h3>Model 2: Multiple Linear Regression</h3>
-    <p>Several features. Example: House price from area, number of rooms, and location.</p>
+  <h2>3) Dimensionality Reduction</h2>
+  <div class="grid cols-2">
+    <div class="card">
+      <b>PCA / SVD</b>
+      <ul class="tight">
+        <li>Linear projections maximizing variance.</li>
+        <li>Great for noise reduction & visualization.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <b>t-SNE / UMAP</b>
+      <ul class="tight">
+        <li>Nonlinear, for visualization; preserve local neighborhoods.</li>
+        <li>Not for downstream modeling directly; tune perplexity/nn.</li>
+      </ul>
+    </div>
   </div>
 
-  <div class="model">
-    <h3>Model 3: Polynomial Regression</h3>
-    <p>Introduces higher powers of X. Example: Predicting car price depreciation curve.</p>
+  <h2>4) Association Rules</h2>
+  <div class="card">
+    <ul class="tight">
+      <li><b>Support</b>, <b>Confidence</b>, <b>Lift</b> to evaluate rules.</li>
+      <li>Market basket analysis; recommend co-purchased items.</li>
+    </ul>
   </div>
 
-  <div class="model">
-    <h3>Model 4: Ridge Regression</h3>
-    <p>Applies L2 regularization to prevent overfitting. Useful when features are correlated.</p>
+  <h2>5) Anomaly Detection</h2>
+  <div class="grid cols-3">
+    <div class="card"><b>Isolation Forest</b> – isolates anomalies with short paths.</div>
+    <div class="card"><b>One-Class SVM</b> – boundary around normal data.</div>
+    <div class="card"><b>Autoencoders</b> – reconstruction error flags anomalies.</div>
   </div>
 
-  <div class="model">
-    <h3>Model 5: Lasso Regression</h3>
-    <p>Applies L1 regularization to perform feature selection by shrinking some coefficients to zero.</p>
-  </div>
-
-  <div class="model">
-    <h3>Model 6: Elastic Net Regression</h3>
-    <p>Combines L1 and L2 penalties. Example: Predicting health outcomes using many medical features.</p>
-  </div>
-
-  <h2>3. Applications</h2>
+  <h2>6) Representation Learning (Brief)</h2>
   <ul>
-    <li>Finance: Predicting stock returns.</li>
-    <li>Healthcare: Estimating disease risk from patient data.</li>
-    <li>Marketing: Sales forecasting based on ad spend.</li>
-    <li>Sports: Predicting player performance metrics.</li>
+    <li><b>Word/Doc Embeddings</b> – dense vectors encode semantics.</li>
+    <li><b>Pretrained CNN features</b> for images (transfer learning).</li>
+    <li><b>Sequence encoders</b> (RNN/Transformer) for text/time-series.</li>
   </ul>
 
-  <h2>4. Interactive Calculator</h2>
-  <div class="calculator">
-    <h3>Simple Regression Calculator</h3>
-    <p>Enter two data points (x1, y1) and (x2, y2) to compute regression line.</p>
-    <input type="number" id="x1" placeholder="x1">
-    <input type="number" id="y1" placeholder="y1"><br>
-    <input type="number" id="x2" placeholder="x2">
-    <input type="number" id="y2" placeholder="y2"><br>
-    <button onclick="computeRegression()">Compute Line</button>
-    <p id="output"></p>
+  <h2>7) Practical Playbook</h2>
+  <div class="card">
+    <pre><code># Customer Segmentation (pseudocode)
+Pipeline([
+  ("prep", ColumnTransformer([
+       ("num", StandardScaler(), num_cols),
+       ("cat", OneHotEncoder(handle_unknown="ignore"), cat_cols)
+  ])),
+  ("dim", PCA(n_components=10)),
+  ("cluster", KMeans(n_clusters=5, n_init="auto"))
+])</code></pre>
+    <ul>
+      <li>Validate clusters: silhouette, Davies-Bouldin, stability across seeds.</li>
+      <li>Profile clusters with summary stats; name them for stakeholders.</li>
+    </ul>
   </div>
 
-  <script>
-    function computeRegression() {
-      let x1 = parseFloat(document.getElementById('x1').value);
-      let y1 = parseFloat(document.getElementById('y1').value);
-      let x2 = parseFloat(document.getElementById('x2').value);
-      let y2 = parseFloat(document.getElementById('y2').value);
-
-      if (isNaN(x1) || isNaN(y1) || isNaN(x2) || isNaN(y2) || (x1 === x2)) {
-        document.getElementById('output').innerText = "Please enter valid values.";
-        return;
-      }
-
-      let slope = (y2 - y1) / (x2 - x1);
-      let intercept = y1 - slope * x1;
-
-      document.getElementById('output').innerHTML =
-        `<b>Regression Line:</b> Y = ${intercept.toFixed(2)} + ${slope.toFixed(2)}X`;
-    }
-  </script>
+  <div class="card">
+    <b>Exercise:</b> Compare k-Means vs GMM at k=3..8 on the same standardized data.
+    Plot silhouette scores; pick k; interpret centroids and business actions.
+  </div>
 </body>
 </html>
+
